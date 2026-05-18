@@ -228,13 +228,13 @@
 	}
 
 	.glow-bar-line-start {
-		background: linear-gradient(90deg, transparent 0%, rgba(203, 213, 225, 0.55) 35%, #ffffff 100%);
-		transform-origin: right;
+		background: linear-gradient(90deg, #ffffff 0%, rgba(203, 213, 225, 0.55) 65%, transparent 100%);
+		transform-origin: left;
 	}
 
 	.glow-bar-line-end {
-		background: linear-gradient(90deg, #ffffff 0%, rgba(203, 213, 225, 0.55) 65%, transparent 100%);
-		transform-origin: left;
+		background: linear-gradient(90deg, transparent 0%, rgba(203, 213, 225, 0.55) 35%, #ffffff 100%);
+		transform-origin: right;
 	}
 
 	.glow-bar-gem {
