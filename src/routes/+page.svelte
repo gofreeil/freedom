@@ -266,6 +266,13 @@
 	>
 		הצטרפו כדי לתמוך מבפנים
 	</h2>
+
+	<h2
+		class="mt-12 text-center text-2xl md:text-4xl font-black leading-snug
+		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+	>
+		עקבו אחרינו ברשתות החברתיות
+	</h2>
 </section>
 
 <style>
