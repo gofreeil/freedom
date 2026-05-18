@@ -205,10 +205,18 @@
 		width: 110px;
 		margin-top: 0.6rem;
 		border-radius: 9999px;
-		background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
+		background: linear-gradient(
+			90deg,
+			#64748b 0%,
+			#cbd5e1 25%,
+			#ffffff 50%,
+			#cbd5e1 75%,
+			#64748b 100%
+		);
 		box-shadow:
-			0 0 10px rgba(167, 139, 250, 0.9),
-			0 0 22px rgba(96, 165, 250, 0.55);
+			0 0 10px rgba(241, 245, 249, 0.95),
+			0 0 24px rgba(203, 213, 225, 0.7),
+			0 0 40px rgba(148, 163, 184, 0.45);
 		transform-origin: center;
 		animation: bar-reveal 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
 	}
@@ -217,7 +225,7 @@
 		0% {
 			transform: scaleX(0);
 			opacity: 0;
-			filter: brightness(2.4);
+			filter: brightness(3);
 		}
 		60% {
 			opacity: 1;
