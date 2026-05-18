@@ -3,15 +3,6 @@
 	import { get } from 'svelte/store';
     import { goto, beforeNavigate } from "$app/navigation";
     import { onMount } from "svelte";
-    import { page } from '$app/state';
-
-    interface Props {
-        currentUser?: any;
-        onLogout?: () => void;
-        onShowAuth?: () => void;
-    }
-
-    let { currentUser, onLogout, onShowAuth }: Props = $props();
 
     let languages = [
         { name: "עברית", code: "he", flag: "il" },
@@ -229,39 +220,6 @@
                                 </div>
                             {/if}
                         </div>
-
-                        {#if currentUser}
-                            <a href="/profile" class="relative group flex-shrink-0" aria-label="לאזור האישי – {currentUser.username ?? 'משתמש'}">
-                                {#if currentUser.avatar_url}
-                                    <img
-                                        src={currentUser.avatar_url}
-                                        alt=""
-                                        class="h-9 w-9 rounded-full object-cover border-2 border-purple-500/40 shadow-lg"
-                                    />
-                                {:else}
-                                    <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-blue-500 shadow-lg border border-white/10" aria-hidden="true">
-                                        <span class="font-bold text-white text-xs">{currentUser.username?.charAt(0) || "U"}</span>
-                                    </div>
-                                {/if}
-                            </a>
-                        {:else}
-                            <a
-                                href="/profile"
-                                class="relative group flex-shrink-0"
-                                aria-label="האזור האישי"
-                            >
-                                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 rounded-full border-2 border-white/20 group-hover:border-purple-400 transition-all">
-                                    <circle cx="20" cy="20" r="20" fill="#374151"/>
-                                    <circle cx="20" cy="16" r="7" fill="#6b7280"/>
-                                    <ellipse cx="20" cy="34" rx="12" ry="8" fill="#6b7280"/>
-                                </svg>
-                                <span class="absolute bottom-full right-1/2 translate-x-1/2 mb-2 hidden group-hover:block
-                                             bg-gray-900 text-white text-[10px] font-bold rounded-lg px-2 py-1
-                                             whitespace-nowrap border border-white/10 shadow-xl pointer-events-none">
-                                    האזור האישי
-                                </span>
-                            </a>
-                        {/if}
                     </div>
                 </div>
         </div>
