@@ -155,7 +155,11 @@
 					>
 						{column.heading}
 					</h3>
-					<span class="glow-bar"></span>
+					<span class="glow-bar">
+						<span class="glow-bar-line glow-bar-line-start"></span>
+						<span class="glow-bar-gem"></span>
+						<span class="glow-bar-line glow-bar-line-end"></span>
+					</span>
 				</div>
 				<div class="flex flex-col gap-6">
 					{#each column.sites as site (site.title)}
@@ -200,28 +204,45 @@
 
 <style>
 	.glow-bar {
-		display: block;
-		height: 5px;
-		width: 110px;
-		margin-top: 0.6rem;
-		border-radius: 9999px;
-		background: linear-gradient(
-			90deg,
-			#64748b 0%,
-			#cbd5e1 25%,
-			#ffffff 50%,
-			#cbd5e1 75%,
-			#64748b 100%
-		);
-		box-shadow:
-			0 0 10px rgba(241, 245, 249, 0.95),
-			0 0 24px rgba(203, 213, 225, 0.7),
-			0 0 40px rgba(148, 163, 184, 0.45);
-		transform-origin: center;
-		animation: bar-reveal 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		width: 150px;
+		margin-top: 0.55rem;
 	}
 
-	@keyframes bar-reveal {
+	.glow-bar-line {
+		flex: 1;
+		height: 3px;
+		box-shadow:
+			0 0 8px rgba(241, 245, 249, 0.85),
+			0 0 18px rgba(203, 213, 225, 0.5);
+		animation: line-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+	}
+
+	.glow-bar-line-start {
+		background: linear-gradient(90deg, transparent 0%, rgba(203, 213, 225, 0.55) 35%, #ffffff 100%);
+		transform-origin: right;
+	}
+
+	.glow-bar-line-end {
+		background: linear-gradient(90deg, #ffffff 0%, rgba(203, 213, 225, 0.55) 65%, transparent 100%);
+		transform-origin: left;
+	}
+
+	.glow-bar-gem {
+		width: 9px;
+		height: 9px;
+		flex-shrink: 0;
+		background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #64748b 100%);
+		box-shadow:
+			0 0 8px rgba(241, 245, 249, 0.95),
+			0 0 18px rgba(203, 213, 225, 0.6);
+		animation: gem-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+	}
+
+	@keyframes line-reveal {
 		0% {
 			transform: scaleX(0);
 			opacity: 0;
@@ -237,8 +258,25 @@
 		}
 	}
 
+	@keyframes gem-pop {
+		0% {
+			transform: rotate(45deg) scale(0);
+			opacity: 0;
+			filter: brightness(3);
+		}
+		60% {
+			opacity: 1;
+		}
+		100% {
+			transform: rotate(45deg) scale(1);
+			opacity: 1;
+			filter: brightness(1);
+		}
+	}
+
 	@media (prefers-reduced-motion: reduce) {
-		.glow-bar {
+		.glow-bar-line,
+		.glow-bar-gem {
 			animation: none;
 		}
 	}
