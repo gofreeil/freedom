@@ -112,7 +112,7 @@
 			class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400
 			       bg-clip-text text-transparent"
 		>
-			יוצאים לחירות
+			יוצאים לחירות —
 		</span>
 		הינה תנועה חברתית, העוסקת לקדם ולשפר את החברה בישראל לחברה יותר
 		אחראית, סולידרית וחופשיה. התנועה עוסקת לשחרר את התושבים מריכוזי הכח הנמצאים היום
@@ -160,7 +160,7 @@
 				></div>
 			{/if}
 			<div class="flex flex-1 flex-col {i === 1 ? 'md:-mt-12' : ''}">
-				<div class="mb-6 flex flex-col items-center">
+				<div class="mb-12 flex flex-col items-center">
 					<h3
 						class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
 						       text-4xl md:text-6xl font-black text-center"
