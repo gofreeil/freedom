@@ -106,7 +106,7 @@
 	</h1>
 </section>
 
-<section class="max-w-4xl mx-auto px-6 pb-12 text-center" dir="rtl">
+<section class="max-w-5xl mx-auto px-6 pb-6 text-center" dir="rtl">
 	<h2
 		class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
 		       text-3xl md:text-5xl font-black mb-2"
@@ -146,10 +146,10 @@
 
 <section class="max-w-6xl mx-auto px-6 pb-20" dir="rtl">
 	<h2
-		class="mx-auto mb-12 max-w-3xl text-center text-xl md:text-3xl font-black leading-snug
+		class="mx-auto mb-16 max-w-5xl text-center text-xl md:text-3xl font-black leading-snug
 		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
 	>
-		מודל המשילות של העם מתפקד ומתקדם על ידי רשת של כלים ופלטפורמות:
+		מודל המשילות של העם, מתפקד ומתקדם על ידי רשת של כלים ופלטפורמות חדשניות
 	</h2>
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16">
 		{#each columns as column, i (column.heading)}
