@@ -1,3 +1,100 @@
+<script lang="ts">
+	interface Site {
+		title: string;
+		description: string;
+		href?: string;
+		image?: string;
+		comingSoon?: boolean;
+	}
+
+	const columns: { heading: string; sites: Site[] }[] = [
+		{
+			heading: 'משילות',
+			sites: [
+				{
+					title: 'ועדי שכונות',
+					description: 'מהפכת משילות העם על המוסדות — הכר והשתתף.',
+					href: 'https://www.melecshop.com/page/peace-on-earth_VRHH',
+					image: '/images/news/vaadei-shchunot.png'
+				},
+				{
+					title: 'מבקר רשויות המדינה',
+					description: 'מבקרים את הרשויות, ממצים את זכות התושב.',
+					href: 'https://right-to-live.vercel.app/',
+					image: '/images/mevaker-rashuyot.png'
+				},
+				{
+					title: 'דירוג ציבורי',
+					description: 'העם מדרג את הרשויות ועובדי הציבור.',
+					href: 'https://public-rating-il.vercel.app/',
+					image: '/images/public-rating.jpeg'
+				},
+				{
+					title: 'המומחים',
+					description: 'בקרוב.',
+					comingSoon: true
+				},
+				{
+					title: 'משאלי העם',
+					description: 'הבע דעתך על הסוגיות האקטואליות.',
+					href: 'https://referendum-azure.vercel.app/',
+					image: '/images/referendum.png'
+				}
+			]
+		},
+		{
+			heading: 'קהילה',
+			sites: [
+				{
+					title: 'קהילה בשכונה',
+					description: 'הקהילה החברתית של יוצאים לחירות בשכונה שלך.',
+					href: 'https://community-blush.vercel.app/'
+				},
+				{
+					title: 'בתי דין ופיוס',
+					description: 'מתנדבים לתת לך עזרה מלאה בדין / פיוס בכל סיכסוך.',
+					href: 'https://chachmei-haeda.vercel.app/',
+					image: '/images/bati-hapius.png'
+				},
+				{
+					title: 'הגמ"ח הארצי',
+					description: 'כל הגמחים תחת קורת גג אחת.',
+					href: 'https://national-gemach.vercel.app/',
+					image: '/images/gemach-harzi.png'
+				}
+			]
+		},
+		{
+			heading: 'כלכלה',
+			sites: [
+				{
+					title: 'קבוצת רכישה',
+					description: 'הצטרף לקבוצת הרכישה שלנו והוזל מיד את ההוצאות!',
+					href: 'https://purchasing-groups.vercel.app/',
+					image: '/images/whatsapp_cta.png'
+				},
+				{
+					title: 'השקעות קבוצתיות',
+					description: 'התחבר עם קבוצת המשקיעים החברתית שלנו.',
+					href: 'https://www.melecshop.com/page/free',
+					image: '/images/partners/investments.png'
+				},
+				{
+					title: 'בעלי המקצוע שלנו',
+					description: 'בעלי מקצוע כשירים שחתמו על תנאי הקהילה ונותנים הטבות.',
+					href: 'https://index-chi-sage.vercel.app/',
+					image: '/images/professionals.png'
+				},
+				{
+					title: 'חנות החירות',
+					description: 'בקרוב.',
+					comingSoon: true
+				}
+			]
+		}
+	];
+</script>
+
 <section class="flex items-center justify-center pt-0 pb-4 md:pb-6">
 	<h1
 		class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent
@@ -42,5 +139,56 @@
 			referrerpolicy="strict-origin-when-cross-origin"
 			allowfullscreen
 		></iframe>
+	</div>
+</section>
+
+<section class="max-w-6xl mx-auto px-6 pb-20" dir="rtl">
+	<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+		{#each columns as column (column.heading)}
+			<div class="flex flex-col">
+				<h3
+					class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
+					       text-2xl md:text-3xl font-black text-center mb-6"
+				>
+					{column.heading}
+				</h3>
+				<div class="flex flex-col gap-6">
+					{#each column.sites as site (site.title)}
+						<svelte:element
+							this={site.href ? 'a' : 'div'}
+							href={site.href}
+							target={site.href ? '_blank' : undefined}
+							rel={site.href ? 'noopener noreferrer' : undefined}
+							class="group block overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
+							       transition-all hover:border-purple-500/50 hover:bg-white/10
+							       {site.comingSoon ? 'opacity-60' : 'hover:scale-[1.02]'}"
+						>
+							<div class="h-40 w-full overflow-hidden bg-slate-800">
+								{#if site.image}
+									<img
+										src={site.image}
+										alt={site.title}
+										class="h-full w-full object-cover transition-transform group-hover:scale-105"
+										decoding="async"
+										loading="lazy"
+									/>
+								{:else}
+									<div
+										class="flex h-full w-full items-center justify-center
+										       bg-gradient-to-br from-blue-500/20 to-purple-500/20"
+									>
+										<span class="text-2xl font-black text-purple-300/70">{site.title}</span>
+									</div>
+								{/if}
+							</div>
+							<div class="p-4">
+								<p class="mb-1 text-lg font-black text-white">{site.title}</p>
+								<p class="text-sm leading-snug text-gray-400">{site.description}</p>
+							</div>
+						</svelte:element>
+					{/each}
+				</div>
+			</div>
+		{/each}
 	</div>
 </section>
