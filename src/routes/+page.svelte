@@ -113,17 +113,17 @@
 	>
 		מי אנחנו?
 	</h2>
-	<p class="text-lg md:text-xl text-gray-300 leading-snug">
+	<p class="intro-p text-lg md:text-xl text-gray-300 leading-snug">
 		יוצאים לחירות הינה תנועה חברתית, העוסקת לקדם ולשפר את החברה בישראל לחברה יותר
 		אחראית, סולידרית וחופשיה. התנועה עוסקת לשחרר את התושבים מריכוזי הכח הנמצאים היום
 		אצל קומץ השולטים בבנקים, בתקשורת, בכלכלה, בפוליטיקה וברשויות המדינה.
 	</p>
-	<p class="text-lg md:text-xl text-gray-300 leading-snug mt-3">
+	<p class="intro-p text-lg md:text-xl text-gray-300 leading-snug mt-3">
 		<span class="font-black text-purple-300">החזון —</span>
 		התאחדות התושבים, ביזור הכח הריכוזי שבמוסדות המדינה, פיקוח, ביקורת, ומעורבות של העם
 		בקבלת ההחלטות.
 	</p>
-	<p class="text-lg md:text-xl text-gray-300 leading-snug mt-3">
+	<p class="intro-p text-lg md:text-xl text-gray-300 leading-snug mt-3">
 		<span class="font-black text-purple-300">הפעלות —</span>
 		יוצאים לחירות פיתחה אפליקציות המקדמות את המשילות, הקימה רכזים חברתיים בשכונות ברחבי
 		הארץ, וקהילה גדולה המקדמת את ערכי החופש, האחווה, והמשילות של העם על מוסדותיו!
@@ -151,9 +151,15 @@
 	>
 		מודל המשילות של העם, מתפקד ומתקדם על ידי רשת של כלים ופלטפורמות חדשניות
 	</h2>
-	<div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16">
+	<div class="flex flex-col md:flex-row md:items-stretch gap-8 md:gap-12">
 		{#each columns as column, i (column.heading)}
-			<div class="flex flex-col {i === 1 ? 'md:-mt-12' : ''}">
+			{#if i > 0}
+				<div
+					class="hidden md:block w-px self-stretch
+					       bg-gradient-to-b from-transparent via-slate-400/40 to-transparent"
+				></div>
+			{/if}
+			<div class="flex flex-1 flex-col {i === 1 ? 'md:-mt-12' : ''}">
 				<div class="mb-6 flex flex-col items-center">
 					<h3
 						class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
@@ -209,6 +215,11 @@
 </section>
 
 <style>
+	.intro-p {
+		text-align: justify;
+		text-align-last: center;
+	}
+
 	.glow-bar {
 		display: flex;
 		align-items: center;
