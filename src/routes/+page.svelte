@@ -145,7 +145,7 @@
 </section>
 
 <section class="max-w-6xl mx-auto px-6 pb-20" dir="rtl">
-	<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+	<div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16">
 		{#each columns as column, i (column.heading)}
 			<div class="flex flex-col {i === 1 ? 'md:-mt-12' : ''}">
 				<div class="mb-6 flex flex-col items-center">
