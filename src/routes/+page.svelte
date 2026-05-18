@@ -107,14 +107,14 @@
 </section>
 
 <section class="max-w-5xl mx-auto px-6 pb-6 text-center" dir="rtl">
-	<h2
-		class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
-		       text-3xl md:text-5xl font-black mb-2"
-	>
-		מי אנחנו?
-	</h2>
 	<p class="intro-p text-lg md:text-xl text-gray-300 leading-snug">
-		יוצאים לחירות הינה תנועה חברתית, העוסקת לקדם ולשפר את החברה בישראל לחברה יותר
+		<span
+			class="font-black bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400
+			       bg-clip-text text-transparent"
+		>
+			יוצאים לחירות
+		</span>
+		הינה תנועה חברתית, העוסקת לקדם ולשפר את החברה בישראל לחברה יותר
 		אחראית, סולידרית וחופשיה. התנועה עוסקת לשחרר את התושבים מריכוזי הכח הנמצאים היום
 		אצל קומץ השולטים בבנקים, בתקשורת, בכלכלה, בפוליטיקה וברשויות המדינה.
 	</p>
