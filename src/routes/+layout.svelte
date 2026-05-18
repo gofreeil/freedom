@@ -13,8 +13,8 @@
 
 <svelte:head>
 	<title>יוצאים לחירות</title>
-	<link rel="icon" href="/images/yotzim-lecherut.png" type="image/png" />
-	<link rel="apple-touch-icon" href="/images/yotzim-lecherut.png" />
+	<link rel="icon" href="/images/ad_neighborhoods.png" type="image/png" />
+	<link rel="apple-touch-icon" href="/images/ad_neighborhoods.png" />
 </svelte:head>
 
 <a href="#main-content" class="skip-link">דלג לתוכן הראשי</a>
