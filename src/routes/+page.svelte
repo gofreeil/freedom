@@ -106,7 +106,7 @@
 	</h1>
 </section>
 
-<section class="max-w-3xl mx-auto px-6 pb-12 text-center" dir="rtl">
+<section class="max-w-4xl mx-auto px-6 pb-12 text-center" dir="rtl">
 	<h2
 		class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
 		       text-3xl md:text-5xl font-black mb-2"
@@ -130,7 +130,7 @@
 	</p>
 </section>
 
-<section class="max-w-3xl mx-auto px-6 pb-16">
+<section class="max-w-4xl mx-auto px-6 pb-16">
 	<div class="relative w-full overflow-hidden rounded-2xl shadow-2xl" style="padding-top:56.25%">
 		<iframe
 			class="absolute inset-0 h-full w-full"
