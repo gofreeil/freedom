@@ -30,3 +30,17 @@
 		הארץ, וקהילה גדולה המקדמת את ערכי החופש, האחווה, והמשילות של העם על מוסדותיו!
 	</p>
 </section>
+
+<section class="max-w-3xl mx-auto px-6 pb-16">
+	<div class="relative w-full overflow-hidden rounded-2xl shadow-2xl" style="padding-top:56.25%">
+		<iframe
+			class="absolute inset-0 h-full w-full"
+			src="https://www.youtube-nocookie.com/embed/CjBbU2ZOsa8?start=2"
+			title="יוצאים לחירות"
+			frameborder="0"
+			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+			referrerpolicy="strict-origin-when-cross-origin"
+			allowfullscreen
+		></iframe>
+	</div>
+</section>
