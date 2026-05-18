@@ -32,6 +32,7 @@
 				{
 					title: 'המומחים',
 					description: 'בקרוב.',
+					image: '/images/the-experts.png',
 					comingSoon: true
 				},
 				{
@@ -48,7 +49,8 @@
 				{
 					title: 'קהילה בשכונה',
 					description: 'הקהילה החברתית של יוצאים לחירות בשכונה שלך.',
-					href: 'https://community-blush.vercel.app/'
+					href: 'https://community-blush.vercel.app/',
+					image: '/images/community-neighborhood.png'
 				},
 				{
 					title: 'בתי דין ופיוס',
@@ -146,12 +148,15 @@
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 		{#each columns as column, i (column.heading)}
 			<div class="flex flex-col {i === 1 ? 'md:-mt-12' : ''}">
-				<h3
-					class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
-					       text-2xl md:text-3xl font-black text-center mb-6"
-				>
-					{column.heading}
-				</h3>
+				<div class="mb-6 flex flex-col items-center">
+					<h3
+						class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
+						       text-4xl md:text-6xl font-black text-center"
+					>
+						{column.heading}
+					</h3>
+					<span class="glow-bar"></span>
+				</div>
 				<div class="flex flex-col gap-6">
 					{#each column.sites as site (site.title)}
 						<svelte:element
@@ -192,3 +197,41 @@
 		{/each}
 	</div>
 </section>
+
+<style>
+	.glow-bar {
+		display: block;
+		height: 5px;
+		width: 110px;
+		margin-top: 0.6rem;
+		border-radius: 9999px;
+		background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
+		box-shadow:
+			0 0 10px rgba(167, 139, 250, 0.9),
+			0 0 22px rgba(96, 165, 250, 0.55);
+		transform-origin: center;
+		animation: bar-reveal 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+	}
+
+	@keyframes bar-reveal {
+		0% {
+			transform: scaleX(0);
+			opacity: 0;
+			filter: brightness(2.4);
+		}
+		60% {
+			opacity: 1;
+		}
+		100% {
+			transform: scaleX(1);
+			opacity: 1;
+			filter: brightness(1);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.glow-bar {
+			animation: none;
+		}
+	}
+</style>
