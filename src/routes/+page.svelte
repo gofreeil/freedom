@@ -146,10 +146,10 @@
 
 <section class="max-w-6xl mx-auto px-6 pb-20" dir="rtl">
 	<h2
-		class="mx-auto mb-16 max-w-5xl text-center text-xl md:text-3xl font-black leading-snug
+		class="mx-auto mb-24 max-w-5xl text-center text-xl md:text-3xl font-black leading-snug
 		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
 	>
-		מודל המשילות של העם, מתפקד ומתקדם על ידי רשת של כלים ופלטפורמות חדשניות
+		מודל המשילות של העם, מתפקד ומתקדם על ידי רשת של כלים ופלטפורמות חדשניות:
 	</h2>
 	<div class="flex flex-col md:flex-row md:items-stretch gap-8 md:gap-12">
 		{#each columns as column, i (column.heading)}
