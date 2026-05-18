@@ -124,7 +124,7 @@
 		בקבלת ההחלטות.
 	</p>
 	<p class="intro-p text-lg md:text-xl text-gray-300 leading-snug mt-3">
-		<span class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent">הפעלות —</span>
+		<span class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent">הפעילות —</span>
 		יוצאים לחירות פיתחה אפליקציות המקדמות את המשילות, הקימה רכזים חברתיים בשכונות ברחבי
 		הארץ, וקהילה גדולה המקדמת את ערכי החופש, האחווה, והמשילות של העם על מוסדותיו!
 	</p>
