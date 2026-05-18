@@ -212,6 +212,18 @@
 			</div>
 		{/each}
 	</div>
+
+	<div
+		class="mx-auto mt-20 h-px max-w-3xl
+		       bg-gradient-to-r from-transparent via-slate-400/40 to-transparent"
+	></div>
+
+	<h2
+		class="mt-12 text-center text-2xl md:text-4xl font-black leading-snug
+		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+	>
+		הצטרפו כדי לתמוך מבפנים
+	</h2>
 </section>
 
 <style>
