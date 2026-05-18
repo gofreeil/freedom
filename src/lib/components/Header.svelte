@@ -20,16 +20,6 @@
     ];
 
     let showLangDropdown = $state(false);
-    let onlineUsers = $state(1);
-
-    let tooltipX = $state(0);
-    let tooltipY = $state(0);
-    let showProfileTooltip = $state(false);
-
-    function handleProfileMouseMove(e: MouseEvent) {
-        tooltipX = e.clientX + 12;
-        tooltipY = e.clientY + 18;
-    }
 
     // חיפוש
     let searchQuery     = $state('');
@@ -408,83 +398,9 @@
                     {/if}
                 </div>
             </div>
-            {#if true}
-                <div class="flex items-center gap-4">
-                    <!-- מספר גולשים -->
-                    <div
-                        class="flex items-center gap-2 bg-blue-900/30 px-3 py-2 rounded-lg border border-blue-500/30 online-counter"
-                        aria-label="{onlineUsers} משתמשים מחוברים כעת"
-                        role="status"
-                    >
-                        <span class="text-green-400 text-xl" aria-hidden="true">●</span>
-                        <span class="text-white text-sm font-bold" aria-hidden="true">{onlineUsers}</span>
-                        <span class="text-gray-300 text-sm" aria-hidden="true">{tFn("connected")}</span>
-                    </div>
-
-                    {#if currentUser}
-                        {@const userName = currentUser.username ?? "U"}
-                        <div class="flex items-center gap-3">
-                            <!-- תמונת פרופיל עם hover -->
-                            <a
-                                href="/profile"
-                                class="relative flex-shrink-0"
-                                aria-label="לאזור האישי – {userName}"
-                                onmouseenter={() => showProfileTooltip = true}
-                                onmouseleave={() => showProfileTooltip = false}
-                                onmousemove={handleProfileMouseMove}
-                            >
-                                {#if currentUser.avatar_url}
-                                    <img
-                                        src={currentUser.avatar_url}
-                                        alt=""
-                                        class="h-14 w-14 rounded-full object-cover border-2 border-purple-500/40
-                                               shadow-lg hover:border-purple-400 transition-all"
-                                    />
-                                {:else}
-                                    <div class="flex h-14 w-14 items-center justify-center rounded-full
-                                                bg-gradient-to-br from-green-400 to-blue-500 shadow-lg
-                                                border-2 border-transparent hover:border-purple-400 transition-all"
-                                         aria-hidden="true">
-                                        <span class="font-bold text-white text-sm">{userName.charAt(0)}</span>
-                                    </div>
-                                {/if}
-                            </a>
-                        </div>
-                    {:else}
-                        <a
-                            href="/profile"
-                            class="relative group flex-shrink-0"
-                            aria-label="האזור האישי"
-                        >
-                            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 rounded-full border-2 border-white/20 group-hover:border-purple-400 transition-all">
-                                <circle cx="20" cy="20" r="20" fill="#374151"/>
-                                <circle cx="20" cy="16" r="7" fill="#6b7280"/>
-                                <ellipse cx="20" cy="34" rx="12" ry="8" fill="#6b7280"/>
-                            </svg>
-                            <span class="absolute top-full right-1/2 translate-x-1/2 mt-2 hidden group-hover:block
-                                         bg-gray-900 text-white text-sm font-bold rounded-lg px-3 py-1.5
-                                         whitespace-nowrap border border-white/10 shadow-xl pointer-events-none z-50">
-                                האזור האישי
-                            </span>
-                        </a>
-                    {/if}
-                </div>
-            {/if}
         </div>
     </div>
 </header>
-
-<!-- Cursor-following profile tooltip -->
-{#if showProfileTooltip}
-    <div
-        class="fixed z-[9999] pointer-events-none"
-        style="left: {tooltipX}px; top: {tooltipY}px;"
-    >
-        <div class="bg-gray-900 text-white text-xs rounded-lg px-3 py-1.5 shadow-xl whitespace-nowrap border border-white/10">
-            👤 לפרופיל שלי
-        </div>
-    </div>
-{/if}
 
 <style>
     @keyframes pulse-slow {
@@ -499,20 +415,5 @@
 
     :global(.animate-pulse-slow) {
         animation: pulse-slow 11s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    @keyframes blink-every-2min {
-        0%,
-        0.83%,
-        100% {
-            opacity: 1;
-        }
-        0.415% {
-            opacity: 0.3;
-        }
-    }
-
-    :global(.online-counter) {
-        animation: blink-every-2min 120s ease-in-out infinite;
     }
 </style>
