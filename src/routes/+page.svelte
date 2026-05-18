@@ -181,8 +181,8 @@
 		מודל המשילות של העם, מתפקד ומתקדם על ידי רשת של כלים&nbsp;ופלטפורמות חדשניות:
 	</h2>
 
-	{#if dustActive}
-		<div class="magic-dust" aria-hidden="true">
+	<div class="magic-dust" aria-hidden="true">
+		{#if dustActive}
 			{#each magicDust as p, i (i)}
 				<span
 					class="dust-particle"
@@ -191,8 +191,8 @@
 					       animation-delay:{p.delay}s; animation-duration:{p.duration}s;"
 				></span>
 			{/each}
-		</div>
-	{/if}
+		{/if}
+	</div>
 	<div class="flex flex-col md:flex-row md:items-stretch gap-8 md:gap-12">
 		{#each columns as column, i (column.heading)}
 			{#if i > 0}
@@ -330,7 +330,7 @@
 			opacity: 0.85;
 		}
 		100% {
-			top: 100%;
+			top: 130%;
 			left: var(--end-left, 50%);
 			transform: translate(-50%, -50%) scale(0.35);
 			opacity: 0;
@@ -350,6 +350,19 @@
 		gap: 6px;
 		width: 150px;
 		margin-top: 0.55rem;
+		animation: bar-charge 1.2s ease-out 3.7s both;
+	}
+
+	@keyframes bar-charge {
+		0%,
+		100% {
+			filter: brightness(1);
+			transform: scale(1);
+		}
+		45% {
+			filter: brightness(2.3) drop-shadow(0 0 10px rgba(186, 230, 253, 0.9));
+			transform: scale(1.14);
+		}
 	}
 
 	.glow-bar-line {
@@ -358,7 +371,7 @@
 		box-shadow:
 			0 0 8px rgba(241, 245, 249, 0.85),
 			0 0 18px rgba(203, 213, 225, 0.5);
-		animation: line-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 3.6s both;
+		animation: line-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
 	}
 
 	.glow-bar-line-start {
@@ -379,7 +392,7 @@
 		box-shadow:
 			0 0 8px rgba(241, 245, 249, 0.95),
 			0 0 18px rgba(203, 213, 225, 0.6);
-		animation: gem-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 3.3s both;
+		animation: gem-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
 	}
 
 	@keyframes line-reveal {
@@ -415,6 +428,7 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
+		.glow-bar,
 		.glow-bar-line,
 		.glow-bar-gem {
 			animation: none;
