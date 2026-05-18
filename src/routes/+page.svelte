@@ -95,6 +95,27 @@
 			]
 		}
 	];
+
+	// אבקת קסם — חלקיקים דטרמיניסטיים (כדי למנוע אי-התאמת hydration)
+	const seeded = (n: number) => {
+		const x = Math.sin(n) * 10000;
+		return x - Math.floor(x);
+	};
+	const dustStreams = [17, 50, 83]; // מרכזי שלושת העמודים (% רוחב)
+	const magicDust = Array.from({ length: 36 }, (_, i) => {
+		const stream = i % 3;
+		const r1 = seeded(i + 1);
+		const r2 = seeded(i + 7.3);
+		const r3 = seeded(i + 13.7);
+		const r4 = seeded(i + 21.1);
+		return {
+			startLeft: 50 + (r2 * 14 - 7),
+			endLeft: dustStreams[stream] + (r1 * 18 - 9),
+			delay: (r3 * 5).toFixed(2),
+			duration: (3.4 + r4 * 2.8).toFixed(2),
+			size: (2.5 + r1 * 3.8).toFixed(1)
+		};
+	});
 </script>
 
 <section class="flex items-center justify-center pt-0 pb-4 md:pb-6">
@@ -146,11 +167,22 @@
 
 <section class="max-w-6xl mx-auto px-6 pb-20" dir="rtl">
 	<h2
-		class="mx-auto mb-32 max-w-5xl text-center text-2xl md:text-4xl font-black leading-snug
+		class="mx-auto mb-8 max-w-6xl text-center text-2xl md:text-4xl font-black leading-snug
 		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
 	>
-		מודל המשילות של העם, מתפקד ומתקדם על ידי רשת של כלים ופלטפורמות חדשניות:
+		מודל המשילות של העם, מתפקד ומתקדם על ידי רשת של כלים&nbsp;ופלטפורמות חדשניות:
 	</h2>
+
+	<div class="magic-dust" aria-hidden="true">
+		{#each magicDust as p, i (i)}
+			<span
+				class="dust-particle"
+				style="left:{p.startLeft}%; width:{p.size}px; height:{p.size}px;
+				       --start-left:{p.startLeft}%; --end-left:{p.endLeft}%;
+				       animation-delay:{p.delay}s; animation-duration:{p.duration}s;"
+			></span>
+		{/each}
+	</div>
 	<div class="flex flex-col md:flex-row md:items-stretch gap-8 md:gap-12">
 		{#each columns as column, i (column.heading)}
 			{#if i > 0}
@@ -230,6 +262,64 @@
 	.intro-p {
 		text-align: justify;
 		text-align-last: center;
+	}
+
+	.magic-dust {
+		position: relative;
+		width: 100%;
+		height: 7rem;
+		margin-bottom: 1.5rem;
+		pointer-events: none;
+		overflow: visible;
+	}
+
+	@media (min-width: 768px) {
+		.magic-dust {
+			height: 10rem;
+		}
+	}
+
+	.dust-particle {
+		position: absolute;
+		top: 0;
+		border-radius: 50%;
+		background: radial-gradient(circle, #ffffff 0%, #7dd3fc 55%, rgba(125, 211, 252, 0) 100%);
+		box-shadow:
+			0 0 6px rgba(186, 230, 253, 0.9),
+			0 0 14px rgba(56, 189, 248, 0.6);
+		opacity: 0;
+		animation-name: dust-flow;
+		animation-timing-function: ease-in;
+		animation-iteration-count: infinite;
+		will-change: transform, top, left, opacity;
+	}
+
+	@keyframes dust-flow {
+		0% {
+			top: 0%;
+			left: var(--start-left, 50%);
+			transform: translate(-50%, -50%) scale(0);
+			opacity: 0;
+		}
+		14% {
+			transform: translate(-50%, -50%) scale(1);
+			opacity: 1;
+		}
+		78% {
+			opacity: 0.85;
+		}
+		100% {
+			top: 100%;
+			left: var(--end-left, 50%);
+			transform: translate(-50%, -50%) scale(0.35);
+			opacity: 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.magic-dust {
+			display: none;
+		}
 	}
 
 	.glow-bar {
