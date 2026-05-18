@@ -144,8 +144,8 @@
 
 <section class="max-w-6xl mx-auto px-6 pb-20" dir="rtl">
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-		{#each columns as column (column.heading)}
-			<div class="flex flex-col">
+		{#each columns as column, i (column.heading)}
+			<div class="flex flex-col {i === 1 ? 'md:-mt-12' : ''}">
 				<h3
 					class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
 					       text-2xl md:text-3xl font-black text-center mb-6"

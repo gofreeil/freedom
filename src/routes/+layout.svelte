@@ -3,8 +3,6 @@
 	import "flag-icons/css/flag-icons.min.css";
 	import "$lib/i18n";
 	import Header from "$lib/components/Header.svelte";
-	import RightAdBanner from "$lib/components/RightAdBanner.svelte";
-	import AdsSidebar from "$lib/components/AdsSidebar.svelte";
 	import Footer from "$lib/components/Footer.svelte";
 	import MobileAdsDrawer from "$lib/components/MobileAdsDrawer.svelte";
 
@@ -23,11 +21,9 @@
 	<Header />
 
 	<div class="layout-container flex-grow">
-		<RightAdBanner />
 		<main id="main-content" tabindex="-1" class="main-content">
 			{@render children()}
 		</main>
-		<AdsSidebar />
 	</div>
 
 	<Footer />
