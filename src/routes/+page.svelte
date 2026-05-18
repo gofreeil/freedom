@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+
 	interface Site {
 		title: string;
 		description: string;
@@ -105,16 +107,22 @@
 	const magicDust = Array.from({ length: 36 }, (_, i) => {
 		const stream = i % 3;
 		const r1 = seeded(i + 1);
-		const r2 = seeded(i + 7.3);
 		const r3 = seeded(i + 13.7);
 		const r4 = seeded(i + 21.1);
 		return {
-			startLeft: 50 + (r2 * 14 - 7),
+			startLeft: 50,
 			endLeft: dustStreams[stream] + (r1 * 18 - 9),
-			delay: (r3 * 5).toFixed(2),
-			duration: (3.4 + r4 * 2.8).toFixed(2),
+			delay: (r3 * 1.8).toFixed(2),
+			duration: (2.2 + r4 * 1.6).toFixed(2),
 			size: (2.5 + r1 * 3.8).toFixed(1)
 		};
+	});
+
+	// אבקת הקסם רצה כמה שניות בלבד ואז מוסרת מה-DOM
+	let dustActive = $state(true);
+	onMount(() => {
+		const timer = setTimeout(() => (dustActive = false), 5000);
+		return () => clearTimeout(timer);
 	});
 </script>
 
@@ -173,16 +181,18 @@
 		מודל המשילות של העם, מתפקד ומתקדם על ידי רשת של כלים&nbsp;ופלטפורמות חדשניות:
 	</h2>
 
-	<div class="magic-dust" aria-hidden="true">
-		{#each magicDust as p, i (i)}
-			<span
-				class="dust-particle"
-				style="left:{p.startLeft}%; width:{p.size}px; height:{p.size}px;
-				       --start-left:{p.startLeft}%; --end-left:{p.endLeft}%;
-				       animation-delay:{p.delay}s; animation-duration:{p.duration}s;"
-			></span>
-		{/each}
-	</div>
+	{#if dustActive}
+		<div class="magic-dust" aria-hidden="true">
+			{#each magicDust as p, i (i)}
+				<span
+					class="dust-particle"
+					style="left:{p.startLeft}%; width:{p.size}px; height:{p.size}px;
+					       --start-left:{p.startLeft}%; --end-left:{p.endLeft}%;
+					       animation-delay:{p.delay}s; animation-duration:{p.duration}s;"
+				></span>
+			{/each}
+		</div>
+	{/if}
 	<div class="flex flex-col md:flex-row md:items-stretch gap-8 md:gap-12">
 		{#each columns as column, i (column.heading)}
 			{#if i > 0}
@@ -271,6 +281,17 @@
 		margin-bottom: 1.5rem;
 		pointer-events: none;
 		overflow: visible;
+		animation: dust-fade 4.6s linear forwards;
+	}
+
+	@keyframes dust-fade {
+		0%,
+		72% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
 	}
 
 	@media (min-width: 768px) {
@@ -337,7 +358,7 @@
 		box-shadow:
 			0 0 8px rgba(241, 245, 249, 0.85),
 			0 0 18px rgba(203, 213, 225, 0.5);
-		animation: line-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+		animation: line-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 3.6s both;
 	}
 
 	.glow-bar-line-start {
@@ -358,7 +379,7 @@
 		box-shadow:
 			0 0 8px rgba(241, 245, 249, 0.95),
 			0 0 18px rgba(203, 213, 225, 0.6);
-		animation: gem-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+		animation: gem-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 3.3s both;
 	}
 
 	@keyframes line-reveal {
