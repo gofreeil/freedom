@@ -145,6 +145,12 @@
 </section>
 
 <section class="max-w-6xl mx-auto px-6 pb-20" dir="rtl">
+	<h2
+		class="mx-auto mb-12 max-w-3xl text-center text-xl md:text-3xl font-black leading-snug
+		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+	>
+		מודל המשילות של העם מתפקד ומתקדם על ידי רשת של כלים ופלטפורמות:
+	</h2>
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16">
 		{#each columns as column, i (column.heading)}
 			<div class="flex flex-col {i === 1 ? 'md:-mt-12' : ''}">
