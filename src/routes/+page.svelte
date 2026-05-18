@@ -1,4 +1,4 @@
-<section class="flex items-center justify-center py-24 md:py-40">
+<section class="flex items-center justify-center py-10 md:py-16">
 	<h1
 		class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent
 		       text-5xl md:text-7xl lg:text-8xl font-black text-center leading-tight px-4"
@@ -7,10 +7,10 @@
 	</h1>
 </section>
 
-<section class="max-w-3xl mx-auto px-6 pb-24 text-center" dir="rtl">
+<section class="max-w-3xl mx-auto px-6 pb-12 text-center" dir="rtl">
 	<h2
 		class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
-		       text-3xl md:text-5xl font-black mb-6"
+		       text-3xl md:text-5xl font-black mb-4"
 	>
 		מי אנחנו?
 	</h2>
