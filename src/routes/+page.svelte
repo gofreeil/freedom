@@ -142,6 +142,27 @@
 			clearTimeout(timer);
 		};
 	});
+
+	// מונה חברים — ספירה מהירה מ-001 עד 1,000
+	let memberCount = $state(1);
+	const formatCount = (n: number) =>
+		n >= 1000 ? n.toLocaleString('en-US') : String(n).padStart(3, '0');
+	let memberDisplay = $derived(formatCount(memberCount));
+	onMount(() => {
+		const target = 1000;
+		const duration = 1800;
+		const start = performance.now();
+		let raf: number;
+		const tick = (now: number) => {
+			const t = Math.min((now - start) / duration, 1);
+			const eased = 1 - Math.pow(1 - t, 3);
+			memberCount = Math.max(1, Math.round(eased * target));
+			if (t < 1) raf = requestAnimationFrame(tick);
+			else memberCount = target;
+		};
+		raf = requestAnimationFrame(tick);
+		return () => cancelAnimationFrame(raf);
+	});
 </script>
 
 <section class="flex items-center justify-center pt-0 pb-4 md:pb-6">
@@ -189,6 +210,17 @@
 			allowfullscreen
 		></iframe>
 	</div>
+</section>
+
+<section class="max-w-4xl mx-auto px-6 pb-14 text-center" dir="rtl">
+	<p class="text-xl md:text-2xl font-black text-gray-200">
+		יוצאים לחירות מונה
+		<span
+			class="mx-1 inline-block tabular-nums text-2xl md:text-3xl
+			       bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent"
+		>{memberDisplay}</span>
+		חברים וממשיכים לעלות!
+	</p>
 </section>
 
 <section class="max-w-6xl mx-auto px-6 pb-20" dir="rtl" class:revealed>
@@ -291,6 +323,24 @@
 	>
 		עקבו אחרינו ברשתות החברתיות
 	</h2>
+
+	<div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+		{#each socials as s (s.name)}
+			<a
+				href={s.href}
+				target="_blank"
+				rel="noopener noreferrer"
+				aria-label={s.name}
+				class="social-icon flex h-12 w-12 items-center justify-center rounded-full
+				       border border-purple-500/20 bg-white/5 text-gray-300
+				       transition-all hover:scale-110 hover:border-purple-500/50 hover:bg-white/10 hover:text-white"
+			>
+				<svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+					{@html s.path}
+				</svg>
+			</a>
+		{/each}
+	</div>
 </section>
 
 <style>
