@@ -995,24 +995,24 @@
 		z-index: 10;
 	}
 
-	/* בקלפים שמאחור — רק הכותרת רואים; שאר התוכן (פס הזוהר, רשימת האתרים)
-	   חבוי לחלוטין כדי שהקלף ייראה ככותרת קטנה ושקופה בלבד */
-	.col-slide:not([data-offset='0']) .glow-bar,
-	.col-slide:not([data-offset='0']) .col-slide-inner > div:last-child {
-		display: none;
-	}
-	.col-slide:not([data-offset='0']) .col-slide-inner > div:first-child {
-		margin-bottom: 0;
-	}
-
-	/* רק הפעיל מקבל קליקים מלאים; לקלפים שמאחור — הכותרת בלבד לחיצה,
-	   כדי שלחיצה תגלגל את הקלף קדימה במקום לעקוב אחר קישור פנימי */
-	.col-slide:not([data-offset='0']) {
-		pointer-events: none;
-	}
-	.col-slide:not([data-offset='0']) > .col-slide-inner > div:first-child {
-		pointer-events: auto;
-		cursor: pointer;
+	/* הכללים שמסתירים תוכן ומבטלים אינטראקציה בקלפים האחוריים שייכים
+	   אך ורק לקרוסלה בנייד — בדסקטופ שלוש העמודות מוצגות במלואן זו לצד זו
+	   ולכן אין לגעת בהן. */
+	@media (max-width: 767px) {
+		.col-slide:not([data-offset='0']) .glow-bar,
+		.col-slide:not([data-offset='0']) .col-slide-inner > div:last-child {
+			display: none;
+		}
+		.col-slide:not([data-offset='0']) .col-slide-inner > div:first-child {
+			margin-bottom: 0;
+		}
+		.col-slide:not([data-offset='0']) {
+			pointer-events: none;
+		}
+		.col-slide:not([data-offset='0']) > .col-slide-inner > div:first-child {
+			pointer-events: auto;
+			cursor: pointer;
+		}
 	}
 
 	/* מדסקטופ ומעלה — חוזרים לפריסת שלוש עמודות רגילה זו לצד זו */
