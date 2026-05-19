@@ -318,7 +318,7 @@
 	</p>
 </section>
 
-<section class="max-w-6xl mx-auto px-6 pb-20" dir="rtl" class:revealed>
+<section class="max-w-6xl mx-auto px-6 pb-2 md:pb-20" dir="rtl" class:revealed>
 	<h2
 		class="mx-auto mb-3 max-w-6xl text-center text-2xl md:text-4xl font-black leading-snug
 		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
