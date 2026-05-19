@@ -326,7 +326,7 @@
 	</p>
 </section>
 
-<section class="max-w-4xl mx-auto px-6 pb-8 md:pb-10">
+<section class="max-w-4xl mx-auto px-6 pb-0">
 	<div class="relative w-full overflow-hidden rounded-2xl shadow-2xl" style="padding-top:56.25%">
 		{#if videoPlaying}
 			<iframe
@@ -372,7 +372,7 @@
 	</div>
 </section>
 
-<section class="max-w-4xl mx-auto px-6 pt-6 pb-14 text-center" dir="rtl">
+<section class="max-w-4xl mx-auto px-6 pb-14 text-center" dir="rtl">
 	<p class="text-xl md:text-2xl font-black text-gray-200">
 		יוצאים לחירות מונה
 		<span
@@ -455,7 +455,8 @@
 							class="group overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
 							       transition-all hover:border-purple-500/50 hover:bg-white/10
 							       {site.mobileHide ? 'hidden md:block' : 'block'}
-							       {site.comingSoon ? 'opacity-60' : 'hover:scale-[1.02]'}"
+							       {site.comingSoon && !site.image ? 'opacity-60' : ''}
+						       {site.comingSoon ? '' : 'hover:scale-[1.02]'}"
 						>
 							<div class="h-40 w-full overflow-hidden bg-slate-800">
 								{#if site.image}
@@ -550,8 +551,7 @@
 		position: relative;
 		isolation: isolate;
 		overflow: hidden;
-		border-radius: 1.5rem;
-		margin: 1.25rem 0.75rem;
+		margin: 0;
 	}
 
 	.demo-content {
