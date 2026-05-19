@@ -24,15 +24,13 @@
 					title: 'בתי דין ופיוס',
 					description: 'מתנדבים לתת לך עזרה מלאה בדין / פיוס בכל סיכסוך.',
 					href: 'https://chachmei-haeda.vercel.app/',
-					image: '/images/bati-hapius.png',
-					mobileHide: true
+					image: '/images/bati-hapius.png'
 				},
 				{
 					title: 'הגמ"ח הארצי',
 					description: 'כל הגמחים תחת קורת גג אחת.',
 					href: 'https://national-gemach.vercel.app/',
-					image: '/images/gemach-harzi.png',
-					mobileHide: true
+					image: '/images/gemach-harzi.png'
 				}
 			]
 		},
@@ -222,6 +220,49 @@
 		raf = requestAnimationFrame(tick);
 		return () => cancelAnimationFrame(raf);
 	});
+
+	// ===== חבילת עמודות (deck) — תצוגת נייד בלבד =====
+	// שלושת העמודים נערמים זה מאחורי זה באותו מקום; הפעיל לפנים,
+	// האחרים מוקטנים, חשוכים ושקופים, וכותרותיהם מציצות מעליו.
+	// החלקה אופקית או הקשה על כותרת אחורית מגלגלות את העמוד הנבחר קדימה.
+	let track: HTMLElement;
+	let activeCol = $state(1);
+
+	// היסט עמודה ביחס לפעיל (-2..+2 בעבור 3 עמודות): קובע מאיזה צד הקלף יושב
+	const offsetFor = (i: number) => i - activeCol;
+
+	function onSlideClick(e: MouseEvent, i: number) {
+		if (window.innerWidth >= 768) return;
+		if (activeCol !== i) {
+			e.preventDefault();
+			e.stopPropagation();
+			activeCol = i;
+		}
+	}
+
+	let dragStartX = 0;
+	let dragStartY = 0;
+	let dragging = false;
+	const SWIPE_THRESHOLD = 45;
+
+	function onPointerDown(e: PointerEvent) {
+		if (window.innerWidth >= 768) return;
+		if (e.pointerType === 'mouse' && e.button !== 0) return;
+		dragging = true;
+		dragStartX = e.clientX;
+		dragStartY = e.clientY;
+	}
+
+	function onPointerUp(e: PointerEvent) {
+		if (!dragging) return;
+		dragging = false;
+		const dx = e.clientX - dragStartX;
+		const dy = e.clientY - dragStartY;
+		// מתעלמים מתנועה שאינה אופקית מובהקת (כדי לא להפריע לגלילה אנכית)
+		if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
+		if (dx < 0) activeCol = Math.min(columns.length - 1, activeCol + 1);
+		else activeCol = Math.max(0, activeCol - 1);
+	}
 </script>
 
 <section class="flex items-center justify-center pt-0 pb-4 md:pb-6">
@@ -338,7 +379,13 @@
 			{/each}
 		{/if}
 	</div>
-	<div class="flex flex-col md:flex-row md:items-stretch gap-8 md:gap-12">
+	<div
+		class="cols-container md:items-stretch md:gap-12"
+		bind:this={track}
+		onpointerdown={onPointerDown}
+		onpointerup={onPointerUp}
+		onpointercancel={onPointerUp}
+	>
 		{#each columns as column, i (column.heading)}
 			{#if i > 0}
 				<div
@@ -347,9 +394,13 @@
 				></div>
 			{/if}
 			<div
-				class="flex flex-1 flex-col {i === 1 ? 'order-first md:order-none md:-mt-12' : ''}"
+				class="col-slide {i === 1 ? 'md:-mt-12' : ''}"
+				class:is-active={activeCol === i}
+				data-offset={offsetFor(i)}
+				onclickcapture={(e) => onSlideClick(e, i)}
 				style="--reveal-delay:{i === 1 ? '1.7s' : '2.3s'}"
 			>
+				<div class="col-slide-inner flex flex-1 flex-col">
 				<div class="mb-12 flex flex-col items-center">
 					<h3
 						class="col-heading bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
@@ -424,12 +475,13 @@
 									</p>
 								</div>
 							</div>
-							<div class="px-10 py-3">
+							<div class="px-10 py-3 bg-black">
 								<p class="text-center text-base font-black leading-tight text-white">{site.title}</p>
 							</div>
 						</svelte:element>
 						</div>
 					{/each}
+				</div>
 				</div>
 			</div>
 		{/each}
@@ -829,6 +881,97 @@
 
 		.bar-spark {
 			display: none;
+		}
+	}
+
+	/* ===== חבילת עמודות (deck) — תצוגת נייד בלבד ===== */
+	/* שלושת העמודים נערמים באותו תא רשת. הפעיל בקדמה, האחרים מאחוריו
+	   מוקטנים, חשוכים ושקופים יותר, ומורמים כלפי מעלה כדי שכותרותיהם
+	   תציצנה מעל הפעיל ותרמוזנה למשתמש שאפשר לדפדף אליהם. */
+	.cols-container {
+		display: grid;
+		grid-template-columns: 1fr;
+		align-items: start;
+		justify-items: stretch;
+		position: relative;
+		padding-top: 5rem;
+		overflow: visible;
+		touch-action: pan-y;
+		-webkit-user-select: none;
+		user-select: none;
+	}
+
+	.col-slide {
+		grid-column: 1;
+		grid-row: 1;
+		display: flex;
+		transform-origin: top center;
+		transition:
+			transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 0.4s ease,
+			filter 0.4s ease;
+		will-change: transform, opacity, filter;
+	}
+
+	.col-slide[data-level='0'] {
+		transform: none;
+		opacity: 1;
+		filter: none;
+		z-index: 30;
+	}
+	.col-slide[data-level='1'] {
+		transform: scale(0.84) translateY(-2.8rem);
+		opacity: 0.55;
+		filter: brightness(0.5) saturate(0.85);
+		z-index: 20;
+	}
+	.col-slide[data-level='2'] {
+		transform: scale(0.7) translateY(-4.6rem);
+		opacity: 0.35;
+		filter: brightness(0.32) saturate(0.75);
+		z-index: 10;
+	}
+
+	/* בעמודים שמאחור מאפשרים אינטראקציה רק על הכותרת המציצה למעלה.
+	   שאר התוכן חבוי מתחת לפעיל ולכן לא צריך אינטראקציה (ובכך גם הקליק
+	   על הכותרת האחורית מובא לטיפול ב-onSlideClick במקום על קישור פנימי). */
+	.col-slide:not([data-level='0']) {
+		pointer-events: none;
+	}
+	.col-slide:not([data-level='0']) > .col-slide-inner > div:first-child {
+		pointer-events: auto;
+		cursor: pointer;
+	}
+
+	/* מדסקטופ ומעלה — חוזרים לפריסת שלוש עמודות רגילה זו לצד זו */
+	@media (min-width: 768px) {
+		.cols-container {
+			display: flex;
+			flex-direction: row;
+			align-items: stretch;
+			padding-top: 0;
+			touch-action: auto;
+			user-select: auto;
+			-webkit-user-select: auto;
+		}
+		.col-slide,
+		.col-slide[data-level='0'],
+		.col-slide[data-level='1'],
+		.col-slide[data-level='2'] {
+			grid-column: auto;
+			grid-row: auto;
+			flex: 1 1 0%;
+			transform: none;
+			opacity: 1;
+			filter: none;
+			z-index: auto;
+			pointer-events: auto;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.col-slide {
+			transition: none;
 		}
 	}
 </style>
