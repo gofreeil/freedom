@@ -228,6 +228,20 @@
 	let track: HTMLElement;
 	let activeCol = $state(1);
 
+	// בכל החלפת עמודה — מריצים מחדש את אנימציית הקו (glow-bar) של העמודה הפעילה.
+	// משיגים זאת ע"י remount של אלמנט ה-glow-bar באמצעות {#key replayKey},
+	// והעברת --reveal-delay=0 כדי שהאנימציה תרוץ מיד ולא תחכה לתזמון המקורי.
+	let replayKey = $state(0);
+	let activeColInited = false;
+	$effect(() => {
+		activeCol; // tracked
+		if (!activeColInited) {
+			activeColInited = true;
+			return;
+		}
+		replayKey++;
+	});
+
 	// היסט עמודה ביחס לפעיל (-2..+2 בעבור 3 עמודות): קובע מאיזה צד הקלף יושב
 	const offsetFor = (i: number) => i - activeCol;
 
@@ -297,7 +311,7 @@
 					io.disconnect();
 				}
 			},
-			{ threshold: 0.55, rootMargin: '-25% 0px -10% 0px' }
+			{ threshold: 0.15, rootMargin: '-20% 0px 0px 0px' }
 		);
 		io.observe(track);
 		return () => {
@@ -445,7 +459,7 @@
 				class:is-active={activeCol === i}
 				data-offset={offsetFor(i)}
 				onclickcapture={(e) => onSlideClick(e, i)}
-				style="--reveal-delay:{i === 1 ? '1.7s' : '2.3s'}"
+				style="--reveal-delay:{replayKey > 0 ? '0s' : i === 1 ? '1.7s' : '2.3s'}"
 			>
 				<div class="col-slide-inner flex flex-1 flex-col">
 				<div class="mb-12 flex flex-col items-center">
@@ -455,19 +469,21 @@
 					>
 						{column.heading}
 					</h3>
-					<span class="glow-bar">
-						<span class="glow-bar-line glow-bar-line-start"></span>
-						<span class="glow-bar-gem"></span>
-						<span class="glow-bar-line glow-bar-line-end"></span>
-						{#each barSparks as sp, si (si)}
-							<span
-								class="bar-spark"
-								style="left:{sp.left}%; width:{sp.size}px; height:{sp.size}px;
-								       animation-delay:calc(var(--reveal-delay) + {sp.delay}s);
-								       animation-duration:{sp.duration}s;"
-							></span>
-						{/each}
-					</span>
+					{#key replayKey}
+						<span class="glow-bar">
+							<span class="glow-bar-line glow-bar-line-start"></span>
+							<span class="glow-bar-gem"></span>
+							<span class="glow-bar-line glow-bar-line-end"></span>
+							{#each barSparks as sp, si (si)}
+								<span
+									class="bar-spark"
+									style="left:{sp.left}%; width:{sp.size}px; height:{sp.size}px;
+									       animation-delay:calc(var(--reveal-delay) + {sp.delay}s);
+									       animation-duration:{sp.duration}s;"
+								></span>
+							{/each}
+						</span>
+					{/key}
 				</div>
 				<div class="flex flex-col {i === 0 ? 'gap-10' : 'gap-4'}">
 					{#each column.sites as site, si (site.title)}
