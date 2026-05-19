@@ -95,6 +95,7 @@
 				{
 					title: 'חנות החירות',
 					description: 'בקרוב.',
+					image: '/images/freedom-store.png',
 					comingSoon: true
 				}
 			]
@@ -414,7 +415,7 @@
 									</div>
 								{/if}
 							</div>
-							<div class="relative z-20 p-3">
+							<div class="relative z-20 bg-[#1b2335] p-3 transition-colors group-hover:bg-[#222c40]">
 								<p class="mb-0.5 text-base font-black text-white">{site.title}</p>
 								<p class="text-xs leading-snug text-gray-400">{site.description}</p>
 							</div>
