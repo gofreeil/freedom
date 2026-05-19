@@ -12,6 +12,31 @@
 
 	const columns: { heading: string; sites: Site[] }[] = [
 		{
+			heading: 'קהילה',
+			sites: [
+				{
+					title: 'קהילה בשכונה',
+					description: 'הקהילה החברתית של יוצאים לחירות בשכונה שלך.',
+					href: 'https://community-blush.vercel.app/',
+					image: '/images/community-neighborhood.png'
+				},
+				{
+					title: 'בתי דין ופיוס',
+					description: 'מתנדבים לתת לך עזרה מלאה בדין / פיוס בכל סיכסוך.',
+					href: 'https://chachmei-haeda.vercel.app/',
+					image: '/images/bati-hapius.png',
+					mobileHide: true
+				},
+				{
+					title: 'הגמ"ח הארצי',
+					description: 'כל הגמחים תחת קורת גג אחת.',
+					href: 'https://national-gemach.vercel.app/',
+					image: '/images/gemach-harzi.png',
+					mobileHide: true
+				}
+			]
+		},
+		{
 			heading: 'משילות',
 			sites: [
 				{
@@ -47,31 +72,6 @@
 			]
 		},
 		{
-			heading: 'קהילה',
-			sites: [
-				{
-					title: 'קהילה בשכונה',
-					description: 'הקהילה החברתית של יוצאים לחירות בשכונה שלך.',
-					href: 'https://community-blush.vercel.app/',
-					image: '/images/community-neighborhood.png'
-				},
-				{
-					title: 'בתי דין ופיוס',
-					description: 'מתנדבים לתת לך עזרה מלאה בדין / פיוס בכל סיכסוך.',
-					href: 'https://chachmei-haeda.vercel.app/',
-					image: '/images/bati-hapius.png',
-					mobileHide: true
-				},
-				{
-					title: 'הגמ"ח הארצי',
-					description: 'כל הגמחים תחת קורת גג אחת.',
-					href: 'https://national-gemach.vercel.app/',
-					image: '/images/gemach-harzi.png',
-					mobileHide: true
-				}
-			]
-		},
-		{
 			heading: 'כלכלה',
 			sites: [
 				{
@@ -100,9 +100,6 @@
 			]
 		}
 	];
-
-	// נקודות הפיתול של חבל החיבור — צפוף ודק לקבלת מראה סיבי חבל אמיתי
-	const ropeCoils = Array.from({ length: 21 }, (_, k) => 6 + k * 2.6);
 
 	// רשתות חברתיות — קישורים זמניים (mockup)
 	const socials: { name: string; href: string; path: string }[] = [
@@ -339,45 +336,6 @@
 			{/each}
 		{/if}
 	</div>
-	<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-		<defs>
-			<linearGradient id="ropeTube" gradientUnits="userSpaceOnUse" x1="11" y1="0" x2="31" y2="0">
-				<stop offset="0" stop-color="#6b3008" />
-				<stop offset="0.2" stop-color="#bf5712" />
-				<stop offset="0.44" stop-color="#f3933a" />
-				<stop offset="0.58" stop-color="#ffc488" />
-				<stop offset="0.78" stop-color="#e3741d" />
-				<stop offset="1" stop-color="#763608" />
-			</linearGradient>
-		</defs>
-	</svg>
-
-	{#snippet ropeStrand(flip: boolean)}
-		<svg
-			class="rope {flip ? 'rope-flip' : ''}"
-			viewBox="0 0 42 64"
-			width="42"
-			height="64"
-			xmlns="http://www.w3.org/2000/svg"
-			aria-hidden="true"
-		>
-			<line class="rope-edge" x1="21" y1="8" x2="21" y2="56" />
-			<line class="rope-body" x1="21" y1="8" x2="21" y2="56" />
-			{#each ropeCoils as cy}
-				<line class="rope-groove" x1="12.5" y1={cy + 4} x2="29.5" y2={cy - 4} />
-			{/each}
-			{#each ropeCoils as cy}
-				<line class="rope-ridge" x1="13.5" y1={cy + 1.5} x2="28" y2={cy - 5.5} />
-			{/each}
-			<circle class="rope-edge-k" cx="21" cy="8" r="8" />
-			<circle class="rope-knot" cx="21" cy="8" r="5.4" />
-			<circle class="rope-knot-h" cx="18.8" cy="6" r="1.9" />
-			<circle class="rope-edge-k" cx="21" cy="56" r="8" />
-			<circle class="rope-knot" cx="21" cy="56" r="5.4" />
-			<circle class="rope-knot-h" cx="18.8" cy="54" r="1.9" />
-		</svg>
-	{/snippet}
-
 	<div class="flex flex-col md:flex-row md:items-stretch gap-8 md:gap-12">
 		{#each columns as column, i (column.heading)}
 			{#if i > 0}
@@ -407,13 +365,21 @@
 						{/each}
 					</span>
 				</div>
-				<div class="flex flex-col gap-6">
+				<div class="flex flex-col {i === 0 ? 'gap-10' : 'gap-4'}">
 					{#each column.sites as site, si (site.title)}
 						<div class="relative {site.mobileHide ? 'hidden md:block' : 'block'}">
 						{#if si > 0}
-							<div class="rope-connector" aria-hidden="true">
-								{@render ropeStrand(false)}
-								{@render ropeStrand(true)}
+							<div class="rope-connector {i === 0 ? 'rope-connector-wide' : ''}" aria-hidden="true">
+								<span class="rope-unit">
+									<span class="rope-hole rope-hole-top"></span>
+									<span class="rope-hole rope-hole-bot"></span>
+									<img class="rope-img" src="/images/rope.png" alt="" />
+								</span>
+								<span class="rope-unit rope-unit-flip">
+									<span class="rope-hole rope-hole-top"></span>
+									<span class="rope-hole rope-hole-bot"></span>
+									<img class="rope-img" src="/images/rope.png" alt="" />
+								</span>
 							</div>
 						{/if}
 						<svelte:element
@@ -426,12 +392,12 @@
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}
 						       {site.comingSoon ? '' : 'hover:scale-[1.02]'}"
 						>
-							<div class="h-40 w-full overflow-hidden bg-slate-800">
+							<div class="{i === 0 ? 'h-auto' : i === 2 ? (si === 0 ? 'h-32' : si === 3 ? 'h-52' : 'h-40') : 'h-28'} w-full overflow-hidden bg-slate-800">
 								{#if site.image}
 									<img
 										src={site.image}
 										alt={site.title}
-										class="h-full w-full object-cover transition-transform group-hover:scale-105"
+										class="{i === 0 ? 'h-auto' : 'h-full'} w-full object-cover transition-transform group-hover:scale-105"
 										decoding="async"
 										loading="lazy"
 									/>
@@ -444,9 +410,9 @@
 									</div>
 								{/if}
 							</div>
-							<div class="p-4">
-								<p class="mb-1 text-lg font-black text-white">{site.title}</p>
-								<p class="text-sm leading-snug text-gray-400">{site.description}</p>
+							<div class="p-3">
+								<p class="mb-0.5 text-base font-black text-white">{site.title}</p>
+								<p class="text-xs leading-snug text-gray-400">{site.description}</p>
 							</div>
 						</svelte:element>
 						</div>
@@ -517,45 +483,48 @@
 		pointer-events: none;
 		z-index: 10;
 	}
-	.rope {
-		display: block;
-		filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.55));
+	.rope-connector-wide {
+		height: 88px;
 	}
-	.rope-flip {
+	.rope-unit {
+		position: relative;
+		width: 15px;
+		height: 100%;
+	}
+	.rope-unit-flip {
 		transform: scaleX(-1);
 	}
-	.rope-edge,
-	.rope-body,
-	.rope-groove,
-	.rope-ridge {
-		stroke-linecap: round;
+	.rope-img {
+		position: relative;
+		z-index: 2;
+		width: 100%;
+		height: 100%;
+		display: block;
+		filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.55));
 	}
-	.rope-edge {
-		stroke: #6b3008;
-		stroke-width: 21;
+	.rope-hole {
+		position: absolute;
+		left: 50%;
+		width: 26px;
+		height: 12px;
+		transform: translateX(-50%);
+		border-radius: 50%;
+		background: radial-gradient(
+			ellipse at center,
+			#000 35%,
+			#05060a 68%,
+			rgba(5, 6, 10, 0) 100%
+		);
+		box-shadow:
+			inset 0 2px 3px rgba(0, 0, 0, 0.95),
+			0 1px 1px rgba(255, 255, 255, 0.06);
+		z-index: 1;
 	}
-	.rope-body {
-		stroke: url(#ropeTube);
-		stroke-width: 17;
+	.rope-hole-top {
+		top: -3px;
 	}
-	.rope-groove {
-		stroke: #5e2706;
-		stroke-width: 1.9;
-		opacity: 0.85;
-	}
-	.rope-ridge {
-		stroke: #ffd6a0;
-		stroke-width: 1.2;
-		opacity: 0.8;
-	}
-	.rope-edge-k {
-		fill: #6b3008;
-	}
-	.rope-knot {
-		fill: url(#ropeTube);
-	}
-	.rope-knot-h {
-		fill: #ffd6a0;
+	.rope-hole-bot {
+		bottom: -3px;
 	}
 
 	.intro-p {
