@@ -213,7 +213,7 @@
 </section>
 
 <section class="max-w-5xl mx-auto px-6 pb-6 text-center" dir="rtl">
-	<p class="intro-p text-lg md:text-xl text-gray-300 leading-snug">
+	<p class="intro-p text-base md:text-xl text-gray-300 leading-snug">
 		<span
 			class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400
 			       bg-clip-text text-transparent"
@@ -224,12 +224,12 @@
 		אחראית, סולידרית וחופשיה. התנועה עוסקת לשחרר את התושבים מריכוזי הכח הנמצאים היום
 		אצל קומץ השולטים בבנקים, בתקשורת, בכלכלה, בפוליטיקה וברשויות המדינה.
 	</p>
-	<p class="intro-p text-lg md:text-xl text-gray-300 leading-snug mt-3">
+	<p class="intro-p text-base md:text-xl text-gray-300 leading-snug mt-3">
 		<span class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent">החזון —</span>
 		התאחדות התושבים, ביזור הכח הריכוזי שבמוסדות המדינה, פיקוח, ביקורת, ומעורבות של העם
 		בקבלת ההחלטות.
 	</p>
-	<p class="intro-p text-lg md:text-xl text-gray-300 leading-snug mt-3">
+	<p class="intro-p text-base md:text-xl text-gray-300 leading-snug mt-3">
 		<span class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent">הפעילות —</span>
 		יוצאים לחירות פיתחה אפליקציות המקדמות את המשילות, הקימה רכזים חברתיים בשכונות ברחבי
 		הארץ, וקהילה גדולה המקדמת את ערכי החופש, האחווה, והמשילות של העם על מוסדותיו!
