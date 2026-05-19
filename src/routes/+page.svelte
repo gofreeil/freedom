@@ -273,27 +273,37 @@
 	let demoPlayed = false;
 
 	function runSwipeDemo() {
+		// היד נכנסת מצד ימין, "תופסת" את העמודה הימנית (קהילה)
+		// וגוררת אותה למרכז. לא מחזירים את העמוד האמצעי — נשארים על העמוד החדש.
 		demoFingerActive = true;
-		setTimeout(() => (activeCol = 0), 280);
-		setTimeout(() => (activeCol = 1), 720);
+		setTimeout(() => (activeCol = 0), 350);
 		setTimeout(() => (demoFingerActive = false), 1050);
 	}
 
 	onMount(() => {
 		if (typeof window === 'undefined') return;
 		if (!window.matchMedia('(max-width: 767px)').matches) return;
+		let timer: ReturnType<typeof setTimeout>;
+		// דורש שהמשתמש יגלול עמוק יותר לתוך הקרוסלה לפני שהיד מופיעה —
+		// rootMargin שלילי בחלק העליון של ה-viewport דוחה את הטריגר עד שהקלפים
+		// אכן ממוקמים גבוה במסך, ולא רק "מציצים" מלמטה.
 		const io = new IntersectionObserver(
 			(entries) => {
 				if (entries[0].isIntersecting && !demoPlayed) {
 					demoPlayed = true;
-					setTimeout(runSwipeDemo, 200);
+					// משהים את ההדגמה כדי שתופיע הרבה אחרי אבקת הקסם והארת הכותרות
+					// (dust ~3.6s + heading illuminate שמתחיל ב-1.7s/2.3s ונמשך 1.7s ⇒ עד ~4s).
+					timer = setTimeout(runSwipeDemo, 4800);
 					io.disconnect();
 				}
 			},
-			{ threshold: 0.4 }
+			{ threshold: 0.55, rootMargin: '-25% 0px -10% 0px' }
 		);
 		io.observe(track);
-		return () => io.disconnect();
+		return () => {
+			io.disconnect();
+			clearTimeout(timer);
+		};
 	});
 </script>
 
@@ -1061,23 +1071,43 @@
 		/* סיבוב קל פנימה לכיוון הניגוב — לא מתערב באנימציה של .finger-demo */
 		transform: rotate(-18deg);
 		transform-origin: 60% 30%;
+		animation: finger-tilt 1.05s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 	}
+	@keyframes finger-tilt {
+		0% { transform: rotate(-18deg); }
+		22% { transform: rotate(-18deg); }
+		32% { transform: rotate(-26deg); }
+		50% { transform: rotate(-28deg); }
+		72% { transform: rotate(-22deg); }
+		100% { transform: rotate(-18deg); }
+	}
+	/* היד נכנסת מצד ימין (מחוץ למסך), מבצעת את תנועת הניגוב שמאלה,
+	   וחוזרת אל מחוץ לפריים בצד ימין — ללא fade. בשלב הניגוב התנועה
+	   מואצת כדי שתיראה כמו תנועת אצבע אמיתית, לא החלקה איטית. */
 	@keyframes finger-swipe {
 		0% {
-			transform: translateX(0) scale(0.9);
-			opacity: 0;
-		}
-		18% {
-			transform: translateX(-1vw) scale(1);
+			transform: translateX(45vw) scale(1);
 			opacity: 1;
 		}
-		82% {
-			transform: translateX(-17vw) scale(1);
+		22% {
+			transform: translateX(0) scale(1);
+			opacity: 1;
+		}
+		32% {
+			transform: translateX(-4vw) scale(1);
+			opacity: 1;
+		}
+		50% {
+			transform: translateX(-20vw) scale(1);
+			opacity: 1;
+		}
+		72% {
+			transform: translateX(-22vw) scale(1);
 			opacity: 1;
 		}
 		100% {
-			transform: translateX(-20vw) scale(0.9);
-			opacity: 0;
+			transform: translateX(45vw) scale(1);
+			opacity: 1;
 		}
 	}
 	@media (min-width: 768px) {
