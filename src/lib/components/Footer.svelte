@@ -23,17 +23,17 @@
                 <img
                     src="/images/yotzim-lecherut.png"
                     alt="יוצאים לחירות"
-                    class="h-28 w-28 md:h-32 md:w-32 object-contain rounded-lg hover:scale-105 transition-transform flex-shrink-0"
+                    class="h-16 w-16 md:h-20 md:w-20 object-contain rounded-lg hover:scale-105 transition-transform flex-shrink-0"
                 />
 
                 <!-- Mobile: horizontal layout -->
                 <div
                     class="flex md:hidden flex-col text-right leading-tight text-sm"
                 >
-                    <p class="text-yellow-400 font-black text-sm">
+                    <p class="text-yellow-400 font-black text-xs">
                         יוצאים לחירות
                     </p>
-                    <p class="text-gray-300 font-normal text-xs">
+                    <p class="text-gray-300 font-normal text-[10px]">
                         לכלל פעילות התנועה החברתית
                     </p>
                 </div>
@@ -43,12 +43,12 @@
                     class="hidden md:flex md:flex-col text-right leading-tight gap-1"
                 >
                     <p
-                        class="text-base md:text-lg text-gray-300 font-normal"
+                        class="text-xs md:text-sm text-gray-300 font-normal"
                     >
                         לכלל פעילות התנועה החברתית
                     </p>
                     <p
-                        class="text-lg md:text-xl font-black flex items-center gap-2 justify-end text-yellow-500"
+                        class="text-sm md:text-base font-black flex items-center gap-2 justify-end text-yellow-500"
                     >
                         <span>👉</span> יוצאים לחירות
                     </p>
@@ -58,22 +58,17 @@
             <!-- Center: Links -->
             <nav
                 aria-label="ניווט תחתון"
-                class="flex items-center gap-4 text-base md:text-lg text-gray-300 font-bold flex-wrap justify-center"
+                class="flex items-center gap-3 md:gap-4 text-xs md:text-base text-gray-300 font-bold flex-wrap justify-center"
             >
-                <a href="/about/legal" class="hover:text-white transition-colors">
-                    <span class="md:hidden block">תנאי שימוש<br />הצהרת נגישות וכו'</span>
-                    <span class="hidden md:inline-block whitespace-nowrap">תנאי שימוש, הצהרת נגישות וכו'</span>
-                </a>
+                <a href="/about/legal" class="hover:text-white transition-colors text-center leading-tight">תנאי שימוש<br />הצהרת נגישות וכו'</a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
-                <a href="mailto:freedomhasbegun@gmail.com" class="hover:text-white transition-colors" aria-label="צור קשר – שלח אימייל">{tFn("contact_us")}</a>
+                <a href="mailto:freedomhasbegun@gmail.com" class="hover:text-white transition-colors whitespace-nowrap" aria-label="צור קשר – שלח אימייל">{tFn("contact_us")}</a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
-                <a href="/about/advertise" class="hover:text-white transition-colors text-center leading-tight">
-                    הצטרפו אלינו<br />אנו מחפשים מנהיגים
-                </a>
+                <a href="/about/advertise" class="hover:text-white transition-colors text-center leading-tight">הצטרפו אלינו<br />אנו מחפשים מנהיגים</a>
             </nav>
 
             <!-- Left: Copyright -->
-            <p class="text-gray-400 font-bold text-[10px] md:text-lg text-center md:text-right pb-4 md:pb-0">
+            <p class="text-gray-400 font-bold text-[10px] md:text-xs text-center md:text-right pb-4 md:pb-0">
                 &copy; {new Date().getFullYear()} {tFn("all_rights_reserved")}
             </p>
         </div>
