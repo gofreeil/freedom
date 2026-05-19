@@ -182,6 +182,9 @@
 		};
 	});
 
+	// הסרטון נטען רק בלחיצה — מאיץ משמעותית את טעינת הדף
+	let videoPlaying = $state(false);
+
 	// מונה חברים — ספירה מהירה מ-1,000 עד 10,000
 	const memberFrom = 1000;
 	const memberTo = 10000;
@@ -238,15 +241,47 @@
 
 <section class="max-w-4xl mx-auto px-6 pb-16">
 	<div class="relative w-full overflow-hidden rounded-2xl shadow-2xl" style="padding-top:56.25%">
-		<iframe
-			class="absolute inset-0 h-full w-full"
-			src="https://www.youtube-nocookie.com/embed/CjBbU2ZOsa8?start=2"
-			title="יוצאים לחירות"
-			frameborder="0"
-			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-			referrerpolicy="strict-origin-when-cross-origin"
-			allowfullscreen
-		></iframe>
+		{#if videoPlaying}
+			<iframe
+				class="absolute inset-0 h-full w-full"
+				src="https://www.youtube-nocookie.com/embed/CjBbU2ZOsa8?start=2&autoplay=1"
+				title="יוצאים לחירות"
+				frameborder="0"
+				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+				referrerpolicy="strict-origin-when-cross-origin"
+				allowfullscreen
+			></iframe>
+		{:else}
+			<button
+				type="button"
+				class="group absolute inset-0 h-full w-full cursor-pointer border-0 p-0"
+				onclick={() => (videoPlaying = true)}
+				aria-label="נגן את הסרטון יוצאים לחירות"
+			>
+				<img
+					src="https://i.ytimg.com/vi/CjBbU2ZOsa8/sddefault.jpg"
+					alt="יוצאים לחירות"
+					class="h-full w-full object-cover"
+					loading="lazy"
+				/>
+				<span
+					class="absolute inset-0 flex items-center justify-center bg-black/25
+					       transition-colors group-hover:bg-black/10"
+				>
+					<svg
+						class="h-14 w-20 drop-shadow-lg transition-transform group-hover:scale-110 md:h-16 md:w-24"
+						viewBox="0 0 68 48"
+						aria-hidden="true"
+					>
+						<path
+							d="M66.5 7.5c-.8-3-3-5.2-6-6C55 0 34 0 34 0S13 0 7.5 1.5c-3 .8-5.2 3-6 6C0 13 0 24 0 24s0 11 1.5 16.5c.8 3 3 5.2 6 6C13 48 34 48 34 48s21 0 26.5-1.5c3-.8 5.2-3 6-6C68 35 68 24 68 24s0-11-1.5-16.5z"
+							fill="#f00"
+						/>
+						<path d="M27 34l18-10-18-10z" fill="#fff" />
+					</svg>
+				</span>
+			</button>
+		{/if}
 	</div>
 </section>
 
