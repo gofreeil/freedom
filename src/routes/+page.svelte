@@ -161,15 +161,15 @@
 		};
 	});
 
-	// אבקת קסם קטנה על שלשלת הכותרות (glow-bar) — מתחילה כשנייה אחרי תחילת האנימציה
+	// אבקת קסם קטנה על שלשלת הכותרות (glow-bar) — מתחילה כשפירורי הקסם מגיעים לכותרות הקטנות
 	const barSparks = Array.from({ length: 7 }, (_, i) => {
 		const r1 = seeded(i + 31.3);
 		const r2 = seeded(i + 41.9);
 		const r3 = seeded(i + 53.1);
 		return {
 			left: (8 + r1 * 84).toFixed(1),
-			delay: (1 + r2 * 1.6).toFixed(2),
-			duration: (1.8 + r3 * 1.2).toFixed(2),
+			delay: (3.5 + r2 * 1.8).toFixed(2),
+			duration: (1.2 + r3 * 0.8).toFixed(2),
 			size: (2 + r1 * 2.4).toFixed(1)
 		};
 	});
@@ -185,7 +185,7 @@
 				if (entries[0].isIntersecting) {
 					revealed = true;
 					dustActive = true;
-					timer = setTimeout(() => (dustActive = false), 8500);
+					timer = setTimeout(() => (dustActive = false), 9800);
 					observer.disconnect();
 				}
 			},
@@ -347,7 +347,7 @@
 			<div class="flex flex-1 flex-col {i === 1 ? 'order-first md:order-none md:-mt-12' : ''}">
 				<div class="mb-12 flex flex-col items-center">
 					<h3
-						class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
+						class="col-heading bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
 						       text-4xl md:text-6xl font-black text-center"
 					>
 						{column.heading}
@@ -387,7 +387,7 @@
 							href={site.href}
 							target={site.href ? '_blank' : undefined}
 							rel={site.href ? 'noopener noreferrer' : undefined}
-							class="group relative z-0 block overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
+							class="group relative block overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
 							       transition-all hover:border-purple-500/50 hover:bg-white/10
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}
 						       {site.comingSoon ? '' : 'hover:scale-[1.02]'}"
@@ -558,8 +558,36 @@
 	.revealed .glow-bar,
 	.revealed .glow-bar-line,
 	.revealed .glow-bar-gem,
+	.revealed .col-heading,
 	.revealed .bar-spark {
 		animation-play-state: running;
+	}
+
+	/* הכותרות הקטנות מתחילות להאיר כשפירורי הקסם מגיעים אליהן (~3.4s) */
+	.col-heading {
+		animation: heading-illuminate 3.4s ease-out 3.4s both;
+		animation-play-state: paused;
+	}
+
+	@keyframes heading-illuminate {
+		0% {
+			filter: brightness(1);
+		}
+		18% {
+			filter: brightness(1.7) drop-shadow(0 0 14px rgba(186, 230, 253, 0.85));
+		}
+		36% {
+			filter: brightness(1.18) drop-shadow(0 0 6px rgba(186, 230, 253, 0.4));
+		}
+		58% {
+			filter: brightness(1.7) drop-shadow(0 0 16px rgba(216, 180, 254, 0.8));
+		}
+		78% {
+			filter: brightness(1.22) drop-shadow(0 0 7px rgba(186, 230, 253, 0.45));
+		}
+		100% {
+			filter: brightness(1.12) drop-shadow(0 0 8px rgba(186, 230, 253, 0.45));
+		}
 	}
 
 	@keyframes dust-fade {
@@ -629,7 +657,7 @@
 		gap: 6px;
 		width: 150px;
 		margin-top: 0.55rem;
-		animation: bar-charge 1.4s ease-out 6.3s both;
+		animation: bar-charge 1.4s ease-out 4.6s both;
 		animation-play-state: paused;
 	}
 
@@ -683,7 +711,7 @@
 		box-shadow:
 			0 0 8px rgba(241, 245, 249, 0.85),
 			0 0 18px rgba(203, 213, 225, 0.5);
-		animation: line-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+		animation: line-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 3.5s both;
 		animation-play-state: paused;
 	}
 
@@ -719,7 +747,7 @@
 		box-shadow:
 			0 0 8px rgba(241, 245, 249, 0.95),
 			0 0 18px rgba(203, 213, 225, 0.6);
-		animation: gem-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+		animation: gem-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 3.3s both;
 		animation-play-state: paused;
 	}
 
@@ -758,7 +786,8 @@
 	@media (prefers-reduced-motion: reduce) {
 		.glow-bar,
 		.glow-bar-line,
-		.glow-bar-gem {
+		.glow-bar-gem,
+		.col-heading {
 			animation: none;
 		}
 
