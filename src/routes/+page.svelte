@@ -101,6 +101,21 @@
 		}
 	];
 
+	// אינטראקציית ריחוף לכל באנר — כל באנר מקבל תנועה שונה של שלט עץ תלוי
+	const hoverEffects = [
+		'fx-sway',
+		'fx-swing',
+		'fx-bob',
+		'fx-tilt',
+		'fx-rock',
+		'fx-jiggle',
+		'fx-lift',
+		'fx-pendulum'
+	];
+	const colOffsets = columns.map((_, idx) =>
+		columns.slice(0, idx).reduce((sum, c) => sum + c.sites.length, 0)
+	);
+
 	// רשתות חברתיות — קישורים זמניים (mockup)
 	const socials: { name: string; href: string; path: string }[] = [
 		{
@@ -161,15 +176,16 @@
 		};
 	});
 
-	// אבקת קסם קטנה על שלשלת הכותרות (glow-bar) — מתחילה כשפירורי הקסם מגיעים לכותרות הקטנות
+	// אבקת קסם קטנה על שלשלת הכותרות (glow-bar) — ה-delay יחסי ל---reveal-delay של העמודה,
+	// כלומר הניצנוץ מתחיל רק כשפירורי הקסם נוגעים בכותרת הקטנה
 	const barSparks = Array.from({ length: 7 }, (_, i) => {
 		const r1 = seeded(i + 31.3);
 		const r2 = seeded(i + 41.9);
 		const r3 = seeded(i + 53.1);
 		return {
 			left: (8 + r1 * 84).toFixed(1),
-			delay: (3.5 + r2 * 1.8).toFixed(2),
-			duration: (1.2 + r3 * 0.8).toFixed(2),
+			delay: (r2 * 1.6).toFixed(2),
+			duration: (1.1 + r3 * 0.7).toFixed(2),
 			size: (2 + r1 * 2.4).toFixed(1)
 		};
 	});
@@ -344,7 +360,10 @@
 					       bg-gradient-to-b from-transparent via-slate-400/40 to-transparent"
 				></div>
 			{/if}
-			<div class="flex flex-1 flex-col {i === 1 ? 'order-first md:order-none md:-mt-12' : ''}">
+			<div
+				class="flex flex-1 flex-col {i === 1 ? 'order-first md:order-none md:-mt-12' : ''}"
+				style="--reveal-delay:{i === 1 ? '3.8s' : '4.8s'}"
+			>
 				<div class="mb-12 flex flex-col items-center">
 					<h3
 						class="col-heading bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
@@ -360,14 +379,16 @@
 							<span
 								class="bar-spark"
 								style="left:{sp.left}%; width:{sp.size}px; height:{sp.size}px;
-								       animation-delay:{sp.delay}s; animation-duration:{sp.duration}s;"
+								       animation-delay:calc(var(--reveal-delay) + {sp.delay}s);
+								       animation-duration:{sp.duration}s;"
 							></span>
 						{/each}
 					</span>
 				</div>
 				<div class="flex flex-col {i === 0 ? 'gap-10' : 'gap-4'}">
 					{#each column.sites as site, si (site.title)}
-						<div class="relative {site.mobileHide ? 'hidden md:block' : 'block'}">
+						{@const fx = hoverEffects[(colOffsets[i] + si) % hoverEffects.length]}
+						<div class="fx-banner {fx} relative {site.mobileHide ? 'hidden md:block' : 'block'}">
 						{#if si > 0}
 							<div class="rope-connector {i === 0 ? 'rope-connector-wide' : ''}" aria-hidden="true">
 								<span class="rope-unit">
@@ -388,9 +409,8 @@
 							target={site.href ? '_blank' : undefined}
 							rel={site.href ? 'noopener noreferrer' : undefined}
 							class="group relative block overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
-							       transition-all hover:border-purple-500/50 hover:bg-white/10
-							       {site.comingSoon && !site.image ? 'opacity-60' : ''}
-						       {site.comingSoon ? '' : 'hover:scale-[1.02]'}"
+							       transition-colors hover:border-purple-500/50 hover:bg-white/10
+							       {site.comingSoon && !site.image ? 'opacity-60' : ''}"
 						>
 							<div class="{i === 0 ? 'h-auto' : i === 2 ? (si === 0 ? 'h-32' : si === 3 ? 'h-52' : 'h-40') : 'h-28'} w-full overflow-hidden bg-slate-800">
 								{#if site.image}
@@ -480,6 +500,92 @@
 </section>
 
 <style>
+	/* ---- אינטראקציות ריחוף לבאנרים (שלט עץ תלוי על חבלים) ---- */
+	.fx-banner {
+		transition: transform 0.5s cubic-bezier(0.34, 1.3, 0.64, 1);
+		transform-origin: top center;
+		will-change: transform;
+	}
+
+	/* 1 — נדנוד עדין מצד לצד (מתמשך) */
+	.fx-sway:hover {
+		animation: fx-sway 2.6s ease-in-out infinite;
+	}
+	@keyframes fx-sway {
+		0%, 100% { transform: rotate(0deg); }
+		25% { transform: rotate(1.6deg); }
+		75% { transform: rotate(-1.6deg); }
+	}
+
+	/* 2 — התנדנדות שנרגעת (חד-פעמית) */
+	.fx-swing:hover {
+		animation: fx-swing 1.5s cubic-bezier(0.36, 0, 0.4, 1) 1;
+	}
+	@keyframes fx-swing {
+		0% { transform: rotate(0deg); }
+		18% { transform: rotate(3.8deg); }
+		42% { transform: rotate(-2.5deg); }
+		64% { transform: rotate(1.5deg); }
+		82% { transform: rotate(-0.7deg); }
+		100% { transform: rotate(0deg); }
+	}
+
+	/* 3 — ניתור אנכי רך על החבלים (מתמשך) */
+	.fx-bob:hover {
+		animation: fx-bob 1.5s ease-in-out infinite;
+	}
+	@keyframes fx-bob {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(4px); }
+	}
+
+	/* 4 — הטיה קלה ונחה (החזקה) */
+	.fx-tilt:hover {
+		transform: rotate(2.2deg);
+	}
+
+	/* 5 — נדנוד איטי וכבד (מתמשך) */
+	.fx-rock:hover {
+		animation: fx-rock 3.4s ease-in-out infinite;
+	}
+	@keyframes fx-rock {
+		0%, 100% { transform: rotate(0deg); }
+		25% { transform: rotate(2.6deg); }
+		75% { transform: rotate(-2.6deg); }
+	}
+
+	/* 6 — רעד מהיר (חד-פעמי) */
+	.fx-jiggle:hover {
+		animation: fx-jiggle 0.45s ease-in-out 3;
+	}
+	@keyframes fx-jiggle {
+		0%, 100% { transform: rotate(0deg); }
+		25% { transform: rotate(-2deg); }
+		75% { transform: rotate(2deg); }
+	}
+
+	/* 7 — הרמה קלה כלפי מעלה (החזקה) */
+	.fx-lift:hover {
+		transform: translateY(-6px) rotate(-0.6deg);
+	}
+
+	/* 8 — מטוטלת רחבה (מתמשך) */
+	.fx-pendulum:hover {
+		animation: fx-pendulum 2.8s ease-in-out infinite;
+	}
+	@keyframes fx-pendulum {
+		0%, 100% { transform: rotate(0deg); }
+		25% { transform: rotate(3deg); }
+		75% { transform: rotate(-3deg); }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.fx-banner:hover {
+			animation: none !important;
+			transform: none !important;
+		}
+	}
+
 	/* ---- חבלי חיבור בין הבאנרים (שרשרת תלויה) ---- */
 	.rope-connector {
 		position: absolute;
@@ -563,9 +669,10 @@
 		animation-play-state: running;
 	}
 
-	/* הכותרות הקטנות מתחילות להאיר כשפירורי הקסם מגיעים אליהן (~3.4s) */
+	/* הכותרות הקטנות מתחילות להאיר רק כשפירורי הקסם נוגעים בהן —
+	   ה-delay נקבע פר-עמודה דרך --reveal-delay (העמודה האמצעית מורמת ולכן מוקדמת יותר) */
 	.col-heading {
-		animation: heading-illuminate 3.4s ease-out 3.4s both;
+		animation: heading-illuminate 3.2s ease-out var(--reveal-delay, 4.8s) both;
 		animation-play-state: paused;
 	}
 
@@ -657,7 +764,7 @@
 		gap: 6px;
 		width: 150px;
 		margin-top: 0.55rem;
-		animation: bar-charge 1.4s ease-out 4.6s both;
+		animation: bar-charge 1.4s ease-out calc(var(--reveal-delay, 4.8s) + 1.5s) both;
 		animation-play-state: paused;
 	}
 
@@ -711,7 +818,8 @@
 		box-shadow:
 			0 0 8px rgba(241, 245, 249, 0.85),
 			0 0 18px rgba(203, 213, 225, 0.5);
-		animation: line-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 3.5s both;
+		animation: line-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1)
+			calc(var(--reveal-delay, 4.8s) + 0.35s) both;
 		animation-play-state: paused;
 	}
 
@@ -747,7 +855,8 @@
 		box-shadow:
 			0 0 8px rgba(241, 245, 249, 0.95),
 			0 0 18px rgba(203, 213, 225, 0.6);
-		animation: gem-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 3.3s both;
+		animation: gem-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)
+			calc(var(--reveal-delay, 4.8s) + 0.15s) both;
 		animation-play-state: paused;
 	}
 
