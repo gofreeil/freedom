@@ -67,7 +67,9 @@
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
                 <a href="mailto:freedomhasbegun@gmail.com" class="hover:text-white transition-colors" aria-label="צור קשר – שלח אימייל">{tFn("contact_us")}</a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
-                <a href="/about/advertise" class="hover:text-white transition-colors">פרסם אצלנו</a>
+                <a href="/about/advertise" class="hover:text-white transition-colors text-center leading-tight">
+                    הצטרפו אלינו<br />אנו מחפשים מנהיגים
+                </a>
             </nav>
 
             <!-- Left: Copyright -->
