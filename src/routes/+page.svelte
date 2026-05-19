@@ -7,6 +7,7 @@
 		href?: string;
 		image?: string;
 		comingSoon?: boolean;
+		mobileHide?: boolean;
 	}
 
 	const columns: { heading: string; sites: Site[] }[] = [
@@ -58,13 +59,15 @@
 					title: 'בתי דין ופיוס',
 					description: 'מתנדבים לתת לך עזרה מלאה בדין / פיוס בכל סיכסוך.',
 					href: 'https://chachmei-haeda.vercel.app/',
-					image: '/images/bati-hapius.png'
+					image: '/images/bati-hapius.png',
+					mobileHide: true
 				},
 				{
 					title: 'הגמ"ח הארצי',
 					description: 'כל הגמחים תחת קורת גג אחת.',
 					href: 'https://national-gemach.vercel.app/',
-					image: '/images/gemach-harzi.png'
+					image: '/images/gemach-harzi.png',
+					mobileHide: true
 				}
 			]
 		},
@@ -198,6 +201,66 @@
 	// הסרטון נטען רק בלחיצה — מאיץ משמעותית את טעינת הדף
 	let videoPlaying = $state(false);
 
+	// ===== דוגמה 2: Parallax — מעקב גלילה =====
+	let demo2El: HTMLElement;
+	let parallax = $state(0);
+	onMount(() => {
+		const onScroll = () => {
+			if (!demo2El) return;
+			parallax = -demo2El.getBoundingClientRect().top;
+		};
+		window.addEventListener('scroll', onScroll, { passive: true });
+		onScroll();
+		return () => window.removeEventListener('scroll', onScroll);
+	});
+
+	// ===== דוגמה 3: אנימציית מים ב-Canvas =====
+	let waterCanvas: HTMLCanvasElement;
+	onMount(() => {
+		const ctx = waterCanvas.getContext('2d');
+		if (!ctx) return;
+		let raf = 0;
+		let t = 0;
+		const resize = () => {
+			waterCanvas.width = waterCanvas.offsetWidth;
+			waterCanvas.height = waterCanvas.offsetHeight;
+		};
+		resize();
+		window.addEventListener('resize', resize);
+		const draw = () => {
+			t += 0.004;
+			const w = waterCanvas.width;
+			const h = waterCanvas.height;
+			const g = ctx.createLinearGradient(0, 0, 0, h);
+			g.addColorStop(0, '#0a4a68');
+			g.addColorStop(1, '#0d6488');
+			ctx.fillStyle = g;
+			ctx.fillRect(0, 0, w, h);
+			const rows = 18;
+			for (let i = 0; i < rows; i++) {
+				const baseY = ((h / rows) * i + ((t * 26) % (h / rows)) + Math.sin(t + i) * 10) % (h + 40);
+				ctx.beginPath();
+				for (let x = 0; x <= w; x += 14) {
+					const yy =
+						baseY +
+						Math.sin(x * 0.012 + t * 2 + i) * 8 +
+						Math.sin(x * 0.032 - t * 1.4 + i) * 4;
+					if (x === 0) ctx.moveTo(x, yy);
+					else ctx.lineTo(x, yy);
+				}
+				ctx.strokeStyle = `rgba(214,242,255,${0.28 + 0.2 * Math.sin(t * 1.5 + i)})`;
+				ctx.lineWidth = 2.5;
+				ctx.stroke();
+			}
+			raf = requestAnimationFrame(draw);
+		};
+		draw();
+		return () => {
+			cancelAnimationFrame(raf);
+			window.removeEventListener('resize', resize);
+		};
+	});
+
 	// מונה חברים — ספירה מהירה מ-1,000 עד 10,000
 	const memberFrom = 1000;
 	const memberTo = 10000;
@@ -218,6 +281,17 @@
 		return () => cancelAnimationFrame(raf);
 	});
 </script>
+
+<div class="demo demo1">
+	<div class="demo-label">דוגמה 1 · וידאו רקע — נחל זורם איטי (סימולציית CSS)</div>
+	<div class="d1-bg" aria-hidden="true">
+		<div class="d1-water"></div>
+		<div class="d1-water d1-water2"></div>
+		<span class="d1-glow d1-glow-a"></span>
+		<span class="d1-glow d1-glow-b"></span>
+	</div>
+	<div class="demo-overlay"></div>
+	<div class="demo-content">
 
 <section class="flex items-center justify-center pt-0 pb-4 md:pb-6">
 	<h1
@@ -252,7 +326,7 @@
 	</p>
 </section>
 
-<section class="max-w-4xl mx-auto px-6 pb-4">
+<section class="max-w-4xl mx-auto px-6 pb-0">
 	<div class="relative w-full overflow-hidden rounded-2xl shadow-2xl" style="padding-top:56.25%">
 		{#if videoPlaying}
 			<iframe
@@ -309,7 +383,20 @@
 	</p>
 </section>
 
+	</div>
+</div>
+
 <section class="max-w-6xl mx-auto px-6 pb-20" dir="rtl" class:revealed>
+	<div class="demo demo2" bind:this={demo2El}>
+		<div class="demo-label">דוגמה 2 · Parallax — שכבות נעות בגלילה</div>
+		<div class="d2-bg" aria-hidden="true">
+			<div class="d2-layer d2-mist" style="transform:translateY({parallax * 0.04}px)"></div>
+			<div class="d2-layer d2-ripple" style="transform:translateY({parallax * 0.12}px)"></div>
+			<div class="d2-layer d2-front" style="transform:translateY({parallax * 0.24}px)"></div>
+		</div>
+		<div class="demo-overlay"></div>
+		<div class="demo-content">
+
 	<h2
 		class="mx-auto mb-3 max-w-6xl text-center text-2xl md:text-4xl font-black leading-snug
 		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
@@ -365,8 +452,9 @@
 							href={site.href}
 							target={site.href ? '_blank' : undefined}
 							rel={site.href ? 'noopener noreferrer' : undefined}
-							class="group block overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
+							class="group overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
 							       transition-all hover:border-purple-500/50 hover:bg-white/10
+							       {site.mobileHide ? 'hidden md:block' : 'block'}
 							       {site.comingSoon ? 'opacity-60' : 'hover:scale-[1.02]'}"
 						>
 							<div class="h-40 w-full overflow-hidden bg-slate-800">
@@ -397,6 +485,15 @@
 			</div>
 		{/each}
 	</div>
+
+		</div>
+	</div>
+
+	<div class="demo demo3">
+		<div class="demo-label">דוגמה 3 · אנימציית מים — Canvas (ללא קובץ)</div>
+		<canvas class="d3-bg" bind:this={waterCanvas} aria-hidden="true"></canvas>
+		<div class="demo-overlay"></div>
+		<div class="demo-content">
 
 	<div
 		class="mx-auto mt-20 h-px max-w-3xl
@@ -434,9 +531,181 @@
 			</a>
 		{/each}
 	</div>
+
+		</div>
+	</div>
 </section>
 
 <style>
+	/* ===== תשתית משותפת לשלוש הדוגמאות ===== */
+	.demo {
+		position: relative;
+		isolation: isolate;
+		overflow: hidden;
+		border-radius: 1.5rem;
+		margin: 1.25rem 0.75rem;
+	}
+
+	.demo-content {
+		position: relative;
+		z-index: 3;
+	}
+
+	.demo-overlay {
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+		pointer-events: none;
+		background: rgba(7, 11, 20, 0.4);
+	}
+
+	.demo-label {
+		position: absolute;
+		top: 10px;
+		inset-inline-end: 12px;
+		z-index: 4;
+		padding: 4px 12px;
+		border-radius: 999px;
+		font-size: 0.72rem;
+		font-weight: 700;
+		color: #e0f2fe;
+		background: rgba(7, 11, 20, 0.7);
+		border: 1px solid rgba(125, 211, 252, 0.35);
+		backdrop-filter: blur(4px);
+	}
+
+	/* ===== דוגמה 1: וידאו רקע — נחל זורם (CSS) ===== */
+	.d1-bg {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		background: linear-gradient(165deg, #0b5475 0%, #0f7ba3 48%, #0a4763 100%);
+	}
+
+	.d1-water {
+		position: absolute;
+		inset: -25% -12%;
+		background-image: repeating-linear-gradient(
+			97deg,
+			transparent 0 54px,
+			rgba(186, 230, 253, 0.32) 54px 64px,
+			transparent 64px 130px
+		);
+		background-size: 100% 540px;
+		animation: d1-flow 30s linear infinite;
+	}
+
+	.d1-water2 {
+		background-image: repeating-linear-gradient(
+			84deg,
+			transparent 0 86px,
+			rgba(125, 211, 252, 0.26) 86px 100px,
+			transparent 100px 200px
+		);
+		background-size: 100% 760px;
+		animation-duration: 48s;
+		opacity: 0.85;
+	}
+
+	@keyframes d1-flow {
+		to {
+			background-position: 0 540px;
+		}
+	}
+
+	.d1-glow {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(46px);
+		background: radial-gradient(circle, rgba(186, 230, 253, 0.75), transparent 70%);
+	}
+
+	.d1-glow-a {
+		width: 360px;
+		height: 360px;
+		inset-inline-start: 8%;
+		animation: d1-rise 34s linear infinite;
+	}
+
+	.d1-glow-b {
+		width: 270px;
+		height: 270px;
+		inset-inline-end: 12%;
+		animation: d1-rise 44s linear infinite 8s;
+	}
+
+	@keyframes d1-rise {
+		0% {
+			top: -45%;
+			opacity: 0;
+		}
+		18%,
+		82% {
+			opacity: 0.5;
+		}
+		100% {
+			top: 115%;
+			opacity: 0;
+		}
+	}
+
+	/* ===== דוגמה 2: Parallax — שכבות ===== */
+	.d2-bg {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		background: linear-gradient(180deg, #1f7fa3 0%, #0e5573 45%, #072c40 100%);
+	}
+
+	.d2-layer {
+		position: absolute;
+		inset: -65% -8%;
+		will-change: transform;
+	}
+
+	.d2-mist {
+		background-image:
+			radial-gradient(ellipse 46% 26% at 20% 28%, rgba(224, 242, 254, 0.45), transparent 72%),
+			radial-gradient(ellipse 40% 22% at 76% 58%, rgba(186, 230, 253, 0.4), transparent 72%);
+	}
+
+	.d2-ripple {
+		background-image: repeating-linear-gradient(
+			2deg,
+			transparent 0 52px,
+			rgba(224, 242, 254, 0.36) 52px 64px,
+			transparent 64px 124px
+		);
+	}
+
+	.d2-front {
+		background-image: repeating-radial-gradient(
+			circle at 0 100%,
+			#04222f 0 44px,
+			transparent 44px 92px
+		);
+		background-size: 184px 184px;
+		background-repeat: repeat-x;
+		background-position: center bottom;
+	}
+
+	/* ===== דוגמה 3: Canvas ===== */
+	.d3-bg {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.d1-water,
+		.d1-glow {
+			animation: none;
+		}
+	}
+
 	.intro-p {
 		text-align: justify;
 		text-align-last: center;
