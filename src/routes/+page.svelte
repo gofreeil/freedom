@@ -182,22 +182,21 @@
 		};
 	});
 
-	// מונה חברים — ספירה מהירה מ-001 עד 1,000
-	let memberCount = $state(1);
-	const formatCount = (n: number) =>
-		n >= 1000 ? n.toLocaleString('en-US') : String(n).padStart(3, '0');
-	let memberDisplay = $derived(formatCount(memberCount));
+	// מונה חברים — ספירה מהירה מ-1,000 עד 10,000
+	const memberFrom = 1000;
+	const memberTo = 10000;
+	let memberCount = $state(memberFrom);
+	let memberDisplay = $derived(memberCount.toLocaleString('en-US'));
 	onMount(() => {
-		const target = 1000;
 		const duration = 1800;
 		const start = performance.now();
 		let raf: number;
 		const tick = (now: number) => {
 			const t = Math.min((now - start) / duration, 1);
 			const eased = 1 - Math.pow(1 - t, 3);
-			memberCount = Math.max(1, Math.round(eased * target));
+			memberCount = Math.round(memberFrom + eased * (memberTo - memberFrom));
 			if (t < 1) raf = requestAnimationFrame(tick);
-			else memberCount = target;
+			else memberCount = memberTo;
 		};
 		raf = requestAnimationFrame(tick);
 		return () => cancelAnimationFrame(raf);
