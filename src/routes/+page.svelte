@@ -688,12 +688,26 @@
 	}
 
 	.glow-bar-line-start {
-		background: linear-gradient(90deg, #ffffff 0%, rgba(203, 213, 225, 0.55) 65%, transparent 100%);
+		background: linear-gradient(
+			90deg,
+			#ffffff 0%,
+			rgba(203, 213, 225, 0.6) 55%,
+			rgba(241, 245, 249, 0.98) 93%,
+			rgba(241, 245, 249, 0.98) 97%,
+			transparent 100%
+		);
 		transform-origin: left;
 	}
 
 	.glow-bar-line-end {
-		background: linear-gradient(90deg, transparent 0%, rgba(203, 213, 225, 0.55) 35%, #ffffff 100%);
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			rgba(241, 245, 249, 0.98) 3%,
+			rgba(241, 245, 249, 0.98) 7%,
+			rgba(203, 213, 225, 0.6) 45%,
+			#ffffff 100%
+		);
 		transform-origin: right;
 	}
 
