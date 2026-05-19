@@ -326,7 +326,7 @@
 	</p>
 </section>
 
-<section class="max-w-4xl mx-auto px-6 pb-0">
+<section class="max-w-4xl mx-auto px-6 pb-8 md:pb-10">
 	<div class="relative w-full overflow-hidden rounded-2xl shadow-2xl" style="padding-top:56.25%">
 		{#if videoPlaying}
 			<iframe
@@ -372,7 +372,7 @@
 	</div>
 </section>
 
-<section class="max-w-4xl mx-auto px-6 pb-14 text-center" dir="rtl">
+<section class="max-w-4xl mx-auto px-6 pt-6 pb-14 text-center" dir="rtl">
 	<p class="text-xl md:text-2xl font-black text-gray-200">
 		יוצאים לחירות מונה
 		<span
@@ -506,6 +506,14 @@
 	>
 		הצטרפו כדי לתמוך מבפנים
 	</h2>
+
+	<img
+		src="/images/news.png"
+		alt="חדשות"
+		class="mx-auto mt-12 w-full max-w-3xl rounded-2xl"
+		loading="lazy"
+		decoding="async"
+	/>
 
 	<h2
 		class="mt-12 text-center text-2xl md:text-4xl font-black leading-snug
