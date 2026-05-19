@@ -155,8 +155,8 @@
 		return {
 			startLeft: dustStarts[stream] + (r1 * 6 - 3),
 			endLeft: dustStreams[stream] + (r1 * 18 - 9),
-			delay: (r3 * 2).toFixed(2),
-			duration: (2.2 + r4 * 1.4).toFixed(2),
+			delay: (r3 * 1).toFixed(2),
+			duration: (1.4 + r4 * 0.9).toFixed(2),
 			size: (2.5 + r1 * 3.8).toFixed(1)
 		};
 	});
@@ -169,8 +169,8 @@
 		const r3 = seeded(i + 53.1);
 		return {
 			left: (8 + r1 * 84).toFixed(1),
-			delay: (r2 * 1.1).toFixed(2),
-			duration: (0.8 + r3 * 0.5).toFixed(2),
+			delay: (r2 * 0.6).toFixed(2),
+			duration: (0.45 + r3 * 0.3).toFixed(2),
 			size: (2 + r1 * 2.4).toFixed(1)
 		};
 	});
@@ -186,7 +186,7 @@
 				if (entries[0].isIntersecting) {
 					revealed = true;
 					dustActive = true;
-					timer = setTimeout(() => (dustActive = false), 7000);
+					timer = setTimeout(() => (dustActive = false), 4500);
 					observer.disconnect();
 				}
 			},
@@ -347,7 +347,7 @@
 			{/if}
 			<div
 				class="flex flex-1 flex-col {i === 1 ? 'order-first md:order-none md:-mt-12' : ''}"
-				style="--reveal-delay:{i === 1 ? '2.6s' : '3.4s'}"
+				style="--reveal-delay:{i === 1 ? '1.7s' : '2.3s'}"
 			>
 				<div class="mb-12 flex flex-col items-center">
 					<h3
@@ -439,7 +439,7 @@
 	</h2>
 
 	<p class="mx-auto mt-12 max-w-3xl text-center text-lg md:text-2xl font-bold text-gray-100">
-		התקשורת שלנו עצמאית - מסקרים את אירועי המדינה מזווית התושבים!
+		התקשורת שלנו עצמאית - מסקרים את אירועי המדינה מזווית זכות התושב!
 	</p>
 
 	<a
@@ -486,9 +486,11 @@
 <style>
 	/* ---- אינטראקציות ריחוף לבאנרים (שלט עץ תלוי על חבלים) ---- */
 	.fx-banner {
-		transition: transform 0.5s cubic-bezier(0.34, 1.3, 0.64, 1);
+		transition:
+			transform 0.5s cubic-bezier(0.34, 1.3, 0.64, 1),
+			border-color 0.25s ease,
+			background-color 0.25s ease;
 		transform-origin: top center;
-		will-change: transform;
 	}
 
 	/* הרמה קלה כלפי מעלה בריחוף */
@@ -573,7 +575,7 @@
 		margin-bottom: 0.5rem;
 		pointer-events: none;
 		overflow: visible;
-		animation: dust-fade 5.4s linear forwards;
+		animation: dust-fade 3.6s linear forwards;
 		animation-play-state: paused;
 	}
 
@@ -589,7 +591,7 @@
 	/* הכותרות הקטנות מתחילות להאיר רק כשפירורי הקסם נוגעים בהן —
 	   ה-delay נקבע פר-עמודה דרך --reveal-delay (העמודה האמצעית מורמת ולכן מוקדמת יותר) */
 	.col-heading {
-		animation: heading-illuminate 2.3s ease-out var(--reveal-delay, 3.4s) both;
+		animation: heading-illuminate 1.7s ease-out var(--reveal-delay, 2.3s) both;
 		animation-play-state: paused;
 	}
 
@@ -681,7 +683,7 @@
 		gap: 6px;
 		width: 150px;
 		margin-top: 0.55rem;
-		animation: bar-charge 1.1s ease-out calc(var(--reveal-delay, 3.4s) + 1s) both;
+		animation: bar-charge 0.7s ease-out calc(var(--reveal-delay, 2.3s) + 0.6s) both;
 		animation-play-state: paused;
 	}
 
@@ -735,8 +737,8 @@
 		box-shadow:
 			0 0 8px rgba(241, 245, 249, 0.85),
 			0 0 18px rgba(203, 213, 225, 0.5);
-		animation: line-reveal 0.7s cubic-bezier(0.22, 1, 0.36, 1)
-			calc(var(--reveal-delay, 3.4s) + 0.25s) both;
+		animation: line-reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1)
+			calc(var(--reveal-delay, 2.3s) + 0.2s) both;
 		animation-play-state: paused;
 	}
 
@@ -772,8 +774,8 @@
 		box-shadow:
 			0 0 8px rgba(241, 245, 249, 0.95),
 			0 0 18px rgba(203, 213, 225, 0.6);
-		animation: gem-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)
-			calc(var(--reveal-delay, 3.4s) + 0.1s) both;
+		animation: gem-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)
+			calc(var(--reveal-delay, 2.3s) + 0.08s) both;
 		animation-play-state: paused;
 	}
 
