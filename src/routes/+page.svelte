@@ -394,7 +394,7 @@
 							target={site.href ? '_blank' : undefined}
 							rel={site.href ? 'noopener noreferrer' : undefined}
 							class="fx-banner fx-lift group relative block overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
-							       hover:z-30 hover:border-purple-500/50 hover:bg-white/10
+							       transition-colors hover:border-purple-500/50 hover:bg-white/10
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}"
 						>
 							<div class="relative {i === 0 ? 'h-auto' : i === 2 ? (si === 0 ? 'h-32' : si === 3 ? 'h-52' : 'h-40') : 'h-28'} w-full overflow-hidden bg-slate-800">
@@ -424,8 +424,8 @@
 									</p>
 								</div>
 							</div>
-							<div class="relative z-20 bg-[#1b2335] p-3 transition-colors group-hover:bg-[#222c40]">
-								<p class="text-center text-base font-black text-white">{site.title}</p>
+							<div class="px-10 py-3">
+								<p class="text-center text-base font-black leading-tight text-white">{site.title}</p>
 							</div>
 						</svelte:element>
 						</div>
@@ -735,7 +735,7 @@
 
 	.glow-bar-line {
 		flex: 1;
-		height: 3px;
+		height: 2px;
 		box-shadow:
 			0 0 8px rgba(241, 245, 249, 0.85),
 			0 0 18px rgba(203, 213, 225, 0.5);
