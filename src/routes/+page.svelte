@@ -397,7 +397,7 @@
 							       hover:z-30 hover:border-purple-500/50 hover:bg-white/10
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}"
 						>
-							<div class="{i === 0 ? 'h-auto' : i === 2 ? (si === 0 ? 'h-32' : si === 3 ? 'h-52' : 'h-40') : 'h-28'} w-full overflow-hidden bg-slate-800">
+							<div class="relative {i === 0 ? 'h-auto' : i === 2 ? (si === 0 ? 'h-32' : si === 3 ? 'h-52' : 'h-40') : 'h-28'} w-full overflow-hidden bg-slate-800">
 								{#if site.image}
 									<img
 										src={site.image}
@@ -414,10 +414,18 @@
 										<span class="text-2xl font-black text-purple-300/70">{site.title}</span>
 									</div>
 								{/if}
+								<div
+									class="absolute inset-0 flex items-center justify-center px-4
+									       bg-slate-950/85 opacity-0 transition-opacity duration-300
+									       group-hover:opacity-100"
+								>
+									<p class="text-center text-sm font-semibold leading-snug text-gray-100">
+										{site.description}
+									</p>
+								</div>
 							</div>
 							<div class="relative z-20 bg-[#1b2335] p-3 transition-colors group-hover:bg-[#222c40]">
-								<p class="mb-0.5 text-base font-black text-white">{site.title}</p>
-								<p class="text-xs leading-snug text-gray-400">{site.description}</p>
+								<p class="text-center text-base font-black text-white">{site.title}</p>
 							</div>
 						</svelte:element>
 						</div>
