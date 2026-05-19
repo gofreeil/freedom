@@ -34,9 +34,9 @@
 				},
 				{
 					title: 'המומחים',
-					description: 'בקרוב.',
-					image: '/images/the-experts.png',
-					comingSoon: true
+					description: 'פועלים יחד לפתרון בעיות ארציות.',
+					href: 'https://the-experts-rouge.vercel.app/',
+					image: '/images/the-experts.png'
 				},
 				{
 					title: 'משאלי העם',
@@ -100,6 +100,9 @@
 			]
 		}
 	];
+
+	// נקודות הפיתול של חבל החיבור — צפוף ודק לקבלת מראה סיבי חבל אמיתי
+	const ropeCoils = Array.from({ length: 21 }, (_, k) => 6 + k * 2.6);
 
 	// רשתות חברתיות — קישורים זמניים (mockup)
 	const socials: { name: string; href: string; path: string }[] = [
@@ -336,6 +339,45 @@
 			{/each}
 		{/if}
 	</div>
+	<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+		<defs>
+			<linearGradient id="ropeTube" gradientUnits="userSpaceOnUse" x1="11" y1="0" x2="31" y2="0">
+				<stop offset="0" stop-color="#6b3008" />
+				<stop offset="0.2" stop-color="#bf5712" />
+				<stop offset="0.44" stop-color="#f3933a" />
+				<stop offset="0.58" stop-color="#ffc488" />
+				<stop offset="0.78" stop-color="#e3741d" />
+				<stop offset="1" stop-color="#763608" />
+			</linearGradient>
+		</defs>
+	</svg>
+
+	{#snippet ropeStrand(flip: boolean)}
+		<svg
+			class="rope {flip ? 'rope-flip' : ''}"
+			viewBox="0 0 42 64"
+			width="42"
+			height="64"
+			xmlns="http://www.w3.org/2000/svg"
+			aria-hidden="true"
+		>
+			<line class="rope-edge" x1="21" y1="8" x2="21" y2="56" />
+			<line class="rope-body" x1="21" y1="8" x2="21" y2="56" />
+			{#each ropeCoils as cy}
+				<line class="rope-groove" x1="12.5" y1={cy + 4} x2="29.5" y2={cy - 4} />
+			{/each}
+			{#each ropeCoils as cy}
+				<line class="rope-ridge" x1="13.5" y1={cy + 1.5} x2="28" y2={cy - 5.5} />
+			{/each}
+			<circle class="rope-edge-k" cx="21" cy="8" r="8" />
+			<circle class="rope-knot" cx="21" cy="8" r="5.4" />
+			<circle class="rope-knot-h" cx="18.8" cy="6" r="1.9" />
+			<circle class="rope-edge-k" cx="21" cy="56" r="8" />
+			<circle class="rope-knot" cx="21" cy="56" r="5.4" />
+			<circle class="rope-knot-h" cx="18.8" cy="54" r="1.9" />
+		</svg>
+	{/snippet}
+
 	<div class="flex flex-col md:flex-row md:items-stretch gap-8 md:gap-12">
 		{#each columns as column, i (column.heading)}
 			{#if i > 0}
@@ -366,15 +408,21 @@
 					</span>
 				</div>
 				<div class="flex flex-col gap-6">
-					{#each column.sites as site (site.title)}
+					{#each column.sites as site, si (site.title)}
+						<div class="relative {site.mobileHide ? 'hidden md:block' : 'block'}">
+						{#if si > 0}
+							<div class="rope-connector" aria-hidden="true">
+								{@render ropeStrand(false)}
+								{@render ropeStrand(true)}
+							</div>
+						{/if}
 						<svelte:element
 							this={site.href ? 'a' : 'div'}
 							href={site.href}
 							target={site.href ? '_blank' : undefined}
 							rel={site.href ? 'noopener noreferrer' : undefined}
-							class="group overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
+							class="group relative z-0 block overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
 							       transition-all hover:border-purple-500/50 hover:bg-white/10
-							       {site.mobileHide ? 'hidden md:block' : 'block'}
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}
 						       {site.comingSoon ? '' : 'hover:scale-[1.02]'}"
 						>
@@ -401,6 +449,7 @@
 								<p class="text-sm leading-snug text-gray-400">{site.description}</p>
 							</div>
 						</svelte:element>
+						</div>
 					{/each}
 				</div>
 			</div>
@@ -454,6 +503,61 @@
 </section>
 
 <style>
+	/* ---- חבלי חיבור בין הבאנרים (שרשרת תלויה) ---- */
+	.rope-connector {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 100%;
+		height: 64px;
+		margin-bottom: -24px;
+		display: flex;
+		justify-content: space-between;
+		padding: 0 4%;
+		pointer-events: none;
+		z-index: 10;
+	}
+	.rope {
+		display: block;
+		filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.55));
+	}
+	.rope-flip {
+		transform: scaleX(-1);
+	}
+	.rope-edge,
+	.rope-body,
+	.rope-groove,
+	.rope-ridge {
+		stroke-linecap: round;
+	}
+	.rope-edge {
+		stroke: #6b3008;
+		stroke-width: 21;
+	}
+	.rope-body {
+		stroke: url(#ropeTube);
+		stroke-width: 17;
+	}
+	.rope-groove {
+		stroke: #5e2706;
+		stroke-width: 1.9;
+		opacity: 0.85;
+	}
+	.rope-ridge {
+		stroke: #ffd6a0;
+		stroke-width: 1.2;
+		opacity: 0.8;
+	}
+	.rope-edge-k {
+		fill: #6b3008;
+	}
+	.rope-knot {
+		fill: url(#ropeTube);
+	}
+	.rope-knot-h {
+		fill: #ffd6a0;
+	}
+
 	.intro-p {
 		text-align: justify;
 		text-align-last: center;
