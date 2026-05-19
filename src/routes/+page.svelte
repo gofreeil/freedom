@@ -410,7 +410,7 @@
 									</div>
 								{/if}
 							</div>
-							<div class="p-3">
+							<div class="relative z-20 p-3">
 								<p class="mb-0.5 text-base font-black text-white">{site.title}</p>
 								<p class="text-xs leading-snug text-gray-400">{site.description}</p>
 							</div>
@@ -434,13 +434,24 @@
 		הצטרפו כדי לתמוך מבפנים
 	</h2>
 
-	<img
-		src="/images/news.png"
-		alt="חדשות"
-		class="mx-auto mt-12 w-full max-w-3xl rounded-2xl"
-		loading="lazy"
-		decoding="async"
-	/>
+	<p class="mx-auto mt-12 max-w-3xl text-center text-lg md:text-2xl font-bold text-gray-100">
+		התקשורת שלנו עצמאית - מסקרים את אירועי המדינה מזווית התושבים!
+	</p>
+
+	<a
+		href="https://chat.whatsapp.com/Bek6Bh0fJMJ63ozhIjlgCz"
+		target="_blank"
+		rel="noopener noreferrer"
+		class="mx-auto mt-6 block w-full max-w-3xl transition-transform hover:scale-[1.02]"
+	>
+		<img
+			src="/images/news.png"
+			alt="חדשות"
+			class="w-full rounded-2xl"
+			loading="lazy"
+			decoding="async"
+		/>
+	</a>
 
 	<h2
 		class="mt-12 text-center text-2xl md:text-4xl font-black leading-snug
