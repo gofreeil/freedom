@@ -101,21 +101,6 @@
 		}
 	];
 
-	// אינטראקציית ריחוף לכל באנר — כל באנר מקבל תנועה שונה של שלט עץ תלוי
-	const hoverEffects = [
-		'fx-sway',
-		'fx-swing',
-		'fx-bob',
-		'fx-tilt',
-		'fx-rock',
-		'fx-jiggle',
-		'fx-lift',
-		'fx-pendulum'
-	];
-	const colOffsets = columns.map((_, idx) =>
-		columns.slice(0, idx).reduce((sum, c) => sum + c.sites.length, 0)
-	);
-
 	// רשתות חברתיות — קישורים זמניים (mockup)
 	const socials: { name: string; href: string; path: string }[] = [
 		{
@@ -170,8 +155,8 @@
 		return {
 			startLeft: dustStarts[stream] + (r1 * 6 - 3),
 			endLeft: dustStreams[stream] + (r1 * 18 - 9),
-			delay: (r3 * 3).toFixed(2),
-			duration: (3.2 + r4 * 2).toFixed(2),
+			delay: (r3 * 2).toFixed(2),
+			duration: (2.2 + r4 * 1.4).toFixed(2),
 			size: (2.5 + r1 * 3.8).toFixed(1)
 		};
 	});
@@ -184,8 +169,8 @@
 		const r3 = seeded(i + 53.1);
 		return {
 			left: (8 + r1 * 84).toFixed(1),
-			delay: (r2 * 1.6).toFixed(2),
-			duration: (1.1 + r3 * 0.7).toFixed(2),
+			delay: (r2 * 1.1).toFixed(2),
+			duration: (0.8 + r3 * 0.5).toFixed(2),
 			size: (2 + r1 * 2.4).toFixed(1)
 		};
 	});
@@ -201,7 +186,7 @@
 				if (entries[0].isIntersecting) {
 					revealed = true;
 					dustActive = true;
-					timer = setTimeout(() => (dustActive = false), 9800);
+					timer = setTimeout(() => (dustActive = false), 7000);
 					observer.disconnect();
 				}
 			},
@@ -362,7 +347,7 @@
 			{/if}
 			<div
 				class="flex flex-1 flex-col {i === 1 ? 'order-first md:order-none md:-mt-12' : ''}"
-				style="--reveal-delay:{i === 1 ? '3.8s' : '4.8s'}"
+				style="--reveal-delay:{i === 1 ? '2.6s' : '3.4s'}"
 			>
 				<div class="mb-12 flex flex-col items-center">
 					<h3
@@ -387,8 +372,7 @@
 				</div>
 				<div class="flex flex-col {i === 0 ? 'gap-10' : 'gap-4'}">
 					{#each column.sites as site, si (site.title)}
-						{@const fx = hoverEffects[(colOffsets[i] + si) % hoverEffects.length]}
-						<div class="fx-banner {fx} relative {site.mobileHide ? 'hidden md:block' : 'block'}">
+						<div class="relative {site.mobileHide ? 'hidden md:block' : 'block'}">
 						{#if si > 0}
 							<div class="rope-connector {i === 0 ? 'rope-connector-wide' : ''}" aria-hidden="true">
 								<span class="rope-unit">
@@ -408,8 +392,8 @@
 							href={site.href}
 							target={site.href ? '_blank' : undefined}
 							rel={site.href ? 'noopener noreferrer' : undefined}
-							class="group relative block overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
-							       transition-colors hover:border-purple-500/50 hover:bg-white/10
+							class="fx-banner fx-lift group relative block overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
+							       hover:z-30 hover:border-purple-500/50 hover:bg-white/10
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}"
 						>
 							<div class="{i === 0 ? 'h-auto' : i === 2 ? (si === 0 ? 'h-32' : si === 3 ? 'h-52' : 'h-40') : 'h-28'} w-full overflow-hidden bg-slate-800">
@@ -507,76 +491,9 @@
 		will-change: transform;
 	}
 
-	/* 1 — נדנוד עדין מצד לצד (מתמשך) */
-	.fx-sway:hover {
-		animation: fx-sway 2.6s ease-in-out infinite;
-	}
-	@keyframes fx-sway {
-		0%, 100% { transform: rotate(0deg); }
-		25% { transform: rotate(1.6deg); }
-		75% { transform: rotate(-1.6deg); }
-	}
-
-	/* 2 — התנדנדות שנרגעת (חד-פעמית) */
-	.fx-swing:hover {
-		animation: fx-swing 1.5s cubic-bezier(0.36, 0, 0.4, 1) 1;
-	}
-	@keyframes fx-swing {
-		0% { transform: rotate(0deg); }
-		18% { transform: rotate(3.8deg); }
-		42% { transform: rotate(-2.5deg); }
-		64% { transform: rotate(1.5deg); }
-		82% { transform: rotate(-0.7deg); }
-		100% { transform: rotate(0deg); }
-	}
-
-	/* 3 — ניתור אנכי רך על החבלים (מתמשך) */
-	.fx-bob:hover {
-		animation: fx-bob 1.5s ease-in-out infinite;
-	}
-	@keyframes fx-bob {
-		0%, 100% { transform: translateY(0); }
-		50% { transform: translateY(4px); }
-	}
-
-	/* 4 — הטיה קלה ונחה (החזקה) */
-	.fx-tilt:hover {
-		transform: rotate(2.2deg);
-	}
-
-	/* 5 — נדנוד איטי וכבד (מתמשך) */
-	.fx-rock:hover {
-		animation: fx-rock 3.4s ease-in-out infinite;
-	}
-	@keyframes fx-rock {
-		0%, 100% { transform: rotate(0deg); }
-		25% { transform: rotate(2.6deg); }
-		75% { transform: rotate(-2.6deg); }
-	}
-
-	/* 6 — רעד מהיר (חד-פעמי) */
-	.fx-jiggle:hover {
-		animation: fx-jiggle 0.45s ease-in-out 3;
-	}
-	@keyframes fx-jiggle {
-		0%, 100% { transform: rotate(0deg); }
-		25% { transform: rotate(-2deg); }
-		75% { transform: rotate(2deg); }
-	}
-
-	/* 7 — הרמה קלה כלפי מעלה (החזקה) */
+	/* הרמה קלה כלפי מעלה בריחוף */
 	.fx-lift:hover {
 		transform: translateY(-6px) rotate(-0.6deg);
-	}
-
-	/* 8 — מטוטלת רחבה (מתמשך) */
-	.fx-pendulum:hover {
-		animation: fx-pendulum 2.8s ease-in-out infinite;
-	}
-	@keyframes fx-pendulum {
-		0%, 100% { transform: rotate(0deg); }
-		25% { transform: rotate(3deg); }
-		75% { transform: rotate(-3deg); }
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -656,7 +573,7 @@
 		margin-bottom: 0.5rem;
 		pointer-events: none;
 		overflow: visible;
-		animation: dust-fade 7.8s linear forwards;
+		animation: dust-fade 5.4s linear forwards;
 		animation-play-state: paused;
 	}
 
@@ -672,7 +589,7 @@
 	/* הכותרות הקטנות מתחילות להאיר רק כשפירורי הקסם נוגעים בהן —
 	   ה-delay נקבע פר-עמודה דרך --reveal-delay (העמודה האמצעית מורמת ולכן מוקדמת יותר) */
 	.col-heading {
-		animation: heading-illuminate 3.2s ease-out var(--reveal-delay, 4.8s) both;
+		animation: heading-illuminate 2.3s ease-out var(--reveal-delay, 3.4s) both;
 		animation-play-state: paused;
 	}
 
@@ -764,7 +681,7 @@
 		gap: 6px;
 		width: 150px;
 		margin-top: 0.55rem;
-		animation: bar-charge 1.4s ease-out calc(var(--reveal-delay, 4.8s) + 1.5s) both;
+		animation: bar-charge 1.1s ease-out calc(var(--reveal-delay, 3.4s) + 1s) both;
 		animation-play-state: paused;
 	}
 
@@ -818,8 +735,8 @@
 		box-shadow:
 			0 0 8px rgba(241, 245, 249, 0.85),
 			0 0 18px rgba(203, 213, 225, 0.5);
-		animation: line-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1)
-			calc(var(--reveal-delay, 4.8s) + 0.35s) both;
+		animation: line-reveal 0.7s cubic-bezier(0.22, 1, 0.36, 1)
+			calc(var(--reveal-delay, 3.4s) + 0.25s) both;
 		animation-play-state: paused;
 	}
 
@@ -855,8 +772,8 @@
 		box-shadow:
 			0 0 8px rgba(241, 245, 249, 0.95),
 			0 0 18px rgba(203, 213, 225, 0.6);
-		animation: gem-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)
-			calc(var(--reveal-delay, 4.8s) + 0.15s) both;
+		animation: gem-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)
+			calc(var(--reveal-delay, 3.4s) + 0.1s) both;
 		animation-play-state: paused;
 	}
 
