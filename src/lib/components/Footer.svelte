@@ -68,7 +68,7 @@
             </nav>
 
             <!-- Left: Copyright -->
-            <p class="text-gray-400 font-bold text-[10px] md:text-xs text-center md:text-right pb-4 md:pb-0">
+            <p class="text-gray-400 font-bold text-[10px] md:text-xs text-center md:text-right py-1 md:py-0 pb-4 md:pb-2">
                 &copy; {new Date().getFullYear()} {tFn("all_rights_reserved")}
             </p>
         </div>
