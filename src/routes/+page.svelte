@@ -158,6 +158,19 @@
 		};
 	});
 
+	// אבקת קסם קטנה על שלשלת הכותרות (glow-bar) — מתחילה כשנייה אחרי תחילת האנימציה
+	const barSparks = Array.from({ length: 7 }, (_, i) => {
+		const r1 = seeded(i + 31.3);
+		const r2 = seeded(i + 41.9);
+		const r3 = seeded(i + 53.1);
+		return {
+			left: (8 + r1 * 84).toFixed(1),
+			delay: (1 + r2 * 1.6).toFixed(2),
+			duration: (1.8 + r3 * 1.2).toFixed(2),
+			size: (2 + r1 * 2.4).toFixed(1)
+		};
+	});
+
 	// האנימציות מתחילות רק כשהמשתמש גולל וחושף את הסקציה
 	let revealed = $state(false);
 	let dustActive = $state(false);
@@ -239,7 +252,7 @@
 	</p>
 </section>
 
-<section class="max-w-4xl mx-auto px-6 pb-16">
+<section class="max-w-4xl mx-auto px-6 pb-4">
 	<div class="relative w-full overflow-hidden rounded-2xl shadow-2xl" style="padding-top:56.25%">
 		{#if videoPlaying}
 			<iframe
@@ -336,6 +349,13 @@
 						<span class="glow-bar-line glow-bar-line-start"></span>
 						<span class="glow-bar-gem"></span>
 						<span class="glow-bar-line glow-bar-line-end"></span>
+						{#each barSparks as sp, si (si)}
+							<span
+								class="bar-spark"
+								style="left:{sp.left}%; width:{sp.size}px; height:{sp.size}px;
+								       animation-delay:{sp.delay}s; animation-duration:{sp.duration}s;"
+							></span>
+						{/each}
 					</span>
 				</div>
 				<div class="flex flex-col gap-6">
@@ -436,7 +456,8 @@
 	.revealed .magic-dust,
 	.revealed .glow-bar,
 	.revealed .glow-bar-line,
-	.revealed .glow-bar-gem {
+	.revealed .glow-bar-gem,
+	.revealed .bar-spark {
 		animation-play-state: running;
 	}
 
@@ -500,6 +521,7 @@
 	}
 
 	.glow-bar {
+		position: relative;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -508,6 +530,38 @@
 		margin-top: 0.55rem;
 		animation: bar-charge 1.4s ease-out 6.3s both;
 		animation-play-state: paused;
+	}
+
+	.bar-spark {
+		position: absolute;
+		top: 50%;
+		border-radius: 50%;
+		pointer-events: none;
+		background: radial-gradient(circle, #ffffff 0%, #bae6fd 55%, rgba(125, 211, 252, 0) 100%);
+		box-shadow:
+			0 0 5px rgba(241, 245, 249, 0.95),
+			0 0 11px rgba(125, 211, 252, 0.7);
+		opacity: 0;
+		animation-name: bar-sparkle;
+		animation-timing-function: ease-in-out;
+		animation-iteration-count: 2;
+		animation-fill-mode: both;
+		will-change: transform, opacity;
+	}
+
+	@keyframes bar-sparkle {
+		0% {
+			transform: translate(-50%, -50%) scale(0);
+			opacity: 0;
+		}
+		35% {
+			transform: translate(-50%, -180%) scale(1);
+			opacity: 1;
+		}
+		100% {
+			transform: translate(-50%, -340%) scale(0);
+			opacity: 0;
+		}
 	}
 
 	@keyframes bar-charge {
@@ -591,6 +645,10 @@
 		.glow-bar-line,
 		.glow-bar-gem {
 			animation: none;
+		}
+
+		.bar-spark {
+			display: none;
 		}
 	}
 </style>
