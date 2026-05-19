@@ -103,6 +103,7 @@
 		const x = Math.sin(n) * 10000;
 		return x - Math.floor(x);
 	};
+	const dustStarts = [35, 50, 65]; // שלוש נקודות מוצא מתחת לכותרת
 	const dustStreams = [17, 50, 83]; // מרכזי שלושת העמודים (% רוחב)
 	const magicDust = Array.from({ length: 36 }, (_, i) => {
 		const stream = i % 3;
@@ -110,19 +111,36 @@
 		const r3 = seeded(i + 13.7);
 		const r4 = seeded(i + 21.1);
 		return {
-			startLeft: 50,
+			startLeft: dustStarts[stream] + (r1 * 6 - 3),
 			endLeft: dustStreams[stream] + (r1 * 18 - 9),
-			delay: (r3 * 1.8).toFixed(2),
-			duration: (2.2 + r4 * 1.6).toFixed(2),
+			delay: (r3 * 3).toFixed(2),
+			duration: (3.2 + r4 * 2).toFixed(2),
 			size: (2.5 + r1 * 3.8).toFixed(1)
 		};
 	});
 
-	// אבקת הקסם רצה כמה שניות בלבד ואז מוסרת מה-DOM
-	let dustActive = $state(true);
+	// האנימציות מתחילות רק כשהמשתמש גולל וחושף את הסקציה
+	let revealed = $state(false);
+	let dustActive = $state(false);
+	let revealEl: HTMLElement;
 	onMount(() => {
-		const timer = setTimeout(() => (dustActive = false), 5000);
-		return () => clearTimeout(timer);
+		let timer: ReturnType<typeof setTimeout>;
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting) {
+					revealed = true;
+					dustActive = true;
+					timer = setTimeout(() => (dustActive = false), 8500);
+					observer.disconnect();
+				}
+			},
+			{ threshold: 0.4 }
+		);
+		observer.observe(revealEl);
+		return () => {
+			observer.disconnect();
+			clearTimeout(timer);
+		};
 	});
 </script>
 
@@ -173,15 +191,15 @@
 	</div>
 </section>
 
-<section class="max-w-6xl mx-auto px-6 pb-20" dir="rtl">
+<section class="max-w-6xl mx-auto px-6 pb-20" dir="rtl" class:revealed>
 	<h2
-		class="mx-auto mb-8 max-w-6xl text-center text-2xl md:text-4xl font-black leading-snug
+		class="mx-auto mb-3 max-w-6xl text-center text-2xl md:text-4xl font-black leading-snug
 		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
 	>
 		מודל המשילות של העם, מתפקד ומתקדם על ידי רשת של כלים&nbsp;ופלטפורמות חדשניות:
 	</h2>
 
-	<div class="magic-dust" aria-hidden="true">
+	<div class="magic-dust" aria-hidden="true" bind:this={revealEl}>
 		{#if dustActive}
 			{#each magicDust as p, i (i)}
 				<span
@@ -284,11 +302,19 @@
 	.magic-dust {
 		position: relative;
 		width: 100%;
-		height: 7rem;
-		margin-bottom: 1.5rem;
+		height: 4rem;
+		margin-bottom: 0.5rem;
 		pointer-events: none;
 		overflow: visible;
-		animation: dust-fade 4.6s linear forwards;
+		animation: dust-fade 7.8s linear forwards;
+		animation-play-state: paused;
+	}
+
+	.revealed .magic-dust,
+	.revealed .glow-bar,
+	.revealed .glow-bar-line,
+	.revealed .glow-bar-gem {
+		animation-play-state: running;
 	}
 
 	@keyframes dust-fade {
@@ -303,7 +329,7 @@
 
 	@media (min-width: 768px) {
 		.magic-dust {
-			height: 10rem;
+			height: 6rem;
 		}
 	}
 
@@ -357,7 +383,8 @@
 		gap: 6px;
 		width: 150px;
 		margin-top: 0.55rem;
-		animation: bar-charge 1.2s ease-out 3.7s both;
+		animation: bar-charge 1.4s ease-out 6.3s both;
+		animation-play-state: paused;
 	}
 
 	@keyframes bar-charge {
@@ -379,6 +406,7 @@
 			0 0 8px rgba(241, 245, 249, 0.85),
 			0 0 18px rgba(203, 213, 225, 0.5);
 		animation: line-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+		animation-play-state: paused;
 	}
 
 	.glow-bar-line-start {
@@ -400,6 +428,7 @@
 			0 0 8px rgba(241, 245, 249, 0.95),
 			0 0 18px rgba(203, 213, 225, 0.6);
 		animation: gem-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+		animation-play-state: paused;
 	}
 
 	@keyframes line-reveal {
