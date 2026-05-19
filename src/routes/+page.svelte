@@ -265,6 +265,36 @@
 		if (dx < 0) activeCol = Math.max(0, activeCol - 1);
 		else activeCol = Math.min(columns.length - 1, activeCol + 1);
 	}
+
+	// אנימציה חד-פעמית של "אצבע מנגבת את המסך" שמדגימה למשתמש
+	// שאפשר לדפדף בין הקלפים. רצה רק כשהקרוסלה נכנסת לתצוגה בנייד,
+	// פעם אחת בלבד לכל טעינת דף.
+	let demoFingerActive = $state(false);
+	let demoPlayed = false;
+
+	function runSwipeDemo() {
+		demoFingerActive = true;
+		setTimeout(() => (activeCol = 0), 280);
+		setTimeout(() => (activeCol = 1), 760);
+		setTimeout(() => (demoFingerActive = false), 1100);
+	}
+
+	onMount(() => {
+		if (typeof window === 'undefined') return;
+		if (!window.matchMedia('(max-width: 767px)').matches) return;
+		const io = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting && !demoPlayed) {
+					demoPlayed = true;
+					setTimeout(runSwipeDemo, 200);
+					io.disconnect();
+				}
+			},
+			{ threshold: 0.4 }
+		);
+		io.observe(track);
+		return () => io.disconnect();
+	});
 </script>
 
 <section class="flex items-center justify-center pt-0 pb-4 md:pb-6">
@@ -388,6 +418,21 @@
 		onpointerup={onPointerUp}
 		onpointercancel={onPointerUp}
 	>
+		{#if demoFingerActive}
+			<div class="finger-demo" aria-hidden="true">
+				<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+					<path
+						d="M30 22 V11 C30 8.8 28.2 7 26 7 C23.8 7 22 8.8 22 11 V25 L18 22.5
+						   C16.3 21.4 14 22.6 14 24.7 V28 C14 35 19 41 27 41 H31
+						   C36 41 39 38 39 33 V24 C39 22.3 37.7 21 36 21 H33 C32.3 21 31.6 21.3 31 21.7 Z"
+						fill="rgba(255,255,255,0.97)"
+						stroke="rgba(0,0,0,0.65)"
+						stroke-width="1.5"
+						stroke-linejoin="round"
+					/>
+				</svg>
+			</div>
+		{/if}
 		{#each columns as column, i (column.heading)}
 			{#if i > 0}
 				<div
@@ -1002,6 +1047,52 @@
 	@media (prefers-reduced-motion: reduce) {
 		.col-slide {
 			transition: none;
+		}
+	}
+
+	/* ===== אנימציית "אצבע מנגבת" — נייד בלבד, פעם אחת ===== */
+	.finger-demo {
+		position: absolute;
+		top: 7rem; /* מתחת לכותרות הקטנות של העמודות */
+		right: 8%;
+		width: 3.4rem;
+		height: 3.4rem;
+		pointer-events: none;
+		z-index: 50;
+		filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.6));
+		animation: finger-swipe 1.05s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+	}
+	.finger-demo svg {
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
+	@keyframes finger-swipe {
+		0% {
+			transform: translateX(0) scale(0.85);
+			opacity: 0;
+		}
+		16% {
+			transform: translateX(-4vw) scale(1);
+			opacity: 1;
+		}
+		82% {
+			transform: translateX(-72vw) scale(1);
+			opacity: 1;
+		}
+		100% {
+			transform: translateX(-82vw) scale(0.85);
+			opacity: 0;
+		}
+	}
+	@media (min-width: 768px) {
+		.finger-demo {
+			display: none !important;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.finger-demo {
+			display: none !important;
 		}
 	}
 </style>
