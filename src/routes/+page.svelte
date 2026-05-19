@@ -247,6 +247,14 @@
 
 	function onSlideClick(e: MouseEvent, i: number) {
 		if (window.innerWidth >= 768) return;
+		// אם רגע לפני הקליק הסתיים סוויפ — לבלוע את הקליק כדי שלא ירוץ
+		// במקביל לסוויפ ויגרום למעבר כפול/הפוך.
+		if (didSwipe) {
+			didSwipe = false;
+			e.preventDefault();
+			e.stopPropagation();
+			return;
+		}
 		if (activeCol !== i) {
 			e.preventDefault();
 			e.stopPropagation();
@@ -257,14 +265,20 @@
 	let dragStartX = 0;
 	let dragStartY = 0;
 	let dragging = false;
-	const SWIPE_THRESHOLD = 45;
+	let didSwipe = false;
+	const SWIPE_THRESHOLD = 28;
 
 	function onPointerDown(e: PointerEvent) {
 		if (window.innerWidth >= 768) return;
 		if (e.pointerType === 'mouse' && e.button !== 0) return;
 		dragging = true;
+		didSwipe = false;
 		dragStartX = e.clientX;
 		dragStartY = e.clientY;
+		// תופסים את המצביע כדי שתנועה מחוץ לאלמנט עדיין תפיק pointerup כאן
+		try {
+			(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+		} catch {}
 	}
 
 	function onPointerUp(e: PointerEvent) {
@@ -274,10 +288,18 @@
 		const dy = e.clientY - dragStartY;
 		// מתעלמים מתנועה שאינה אופקית מובהקת (כדי לא להפריע לגלילה אנכית)
 		if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
+		didSwipe = true;
 		// התוכן זז עם האצבע: גרירה שמאלה -> הקלף הימני (offset שלילי) מגיע למרכז,
 		// כלומר activeCol יורד; גרירה ימינה -> activeCol עולה.
 		if (dx < 0) activeCol = Math.max(0, activeCol - 1);
 		else activeCol = Math.min(columns.length - 1, activeCol + 1);
+	}
+
+	function onPointerCancel() {
+		// pointercancel נורה כשהדפדפן "חוטף" את האירוע (למשל לגלילה אנכית).
+		// במצב כזה אין כוונת סוויפ — פשוט מאפסים מצב, בלי לחשב dx.
+		dragging = false;
+		didSwipe = false;
 	}
 
 	// אנימציה חד-פעמית של "אצבע מנגבת את המסך" שמדגימה למשתמש
@@ -298,25 +320,30 @@
 		if (typeof window === 'undefined') return;
 		if (!window.matchMedia('(max-width: 767px)').matches) return;
 		let timer: ReturnType<typeof setTimeout>;
-		// דורש שהמשתמש יגלול עמוק יותר לתוך הקרוסלה לפני שהיד מופיעה —
-		// rootMargin שלילי בחלק העליון של ה-viewport דוחה את הטריגר עד שהקלפים
-		// אכן ממוקמים גבוה במסך, ולא רק "מציצים" מלמטה.
+		const triggerDemo = () => {
+			if (demoPlayed) return;
+			demoPlayed = true;
+			// משהים את ההדגמה כדי שתופיע הרבה אחרי אבקת הקסם והארת הכותרות
+			// (dust ~3.6s + heading illuminate שמסתיים ~4s).
+			timer = setTimeout(runSwipeDemo, 4800);
+		};
 		const io = new IntersectionObserver(
 			(entries) => {
-				if (entries[0].isIntersecting && !demoPlayed) {
-					demoPlayed = true;
-					// משהים את ההדגמה כדי שתופיע הרבה אחרי אבקת הקסם והארת הכותרות
-					// (dust ~3.6s + heading illuminate שמתחיל ב-1.7s/2.3s ונמשך 1.7s ⇒ עד ~4s).
-					timer = setTimeout(runSwipeDemo, 4800);
+				if (entries[0].isIntersecting) {
+					triggerDemo();
 					io.disconnect();
 				}
 			},
-			{ threshold: 0.15, rootMargin: '-20% 0px 0px 0px' }
+			{ threshold: 0 }
 		);
 		io.observe(track);
+		// Fallback: אם משום מה ה-IO לא יורה (Safari iOS, layout מוזר וכו') —
+		// מפעילים בכל מקרה אחרי 6 שניות מטעינת הדף.
+		const fallback = setTimeout(triggerDemo, 6000);
 		return () => {
 			io.disconnect();
 			clearTimeout(timer);
+			clearTimeout(fallback);
 		};
 	});
 </script>
@@ -440,7 +467,7 @@
 		bind:this={track}
 		onpointerdown={onPointerDown}
 		onpointerup={onPointerUp}
-		onpointercancel={onPointerUp}
+		onpointercancel={onPointerCancel}
 	>
 		{#if demoFingerActive}
 			<div class="finger-demo" aria-hidden="true">
