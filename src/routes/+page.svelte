@@ -327,7 +327,10 @@
 </section>
 
 <section class="max-w-4xl mx-auto px-6 pb-0">
-	<div class="relative w-full overflow-hidden rounded-2xl shadow-2xl" style="padding-top:56.25%">
+	<div
+		class="relative w-full overflow-hidden rounded-2xl shadow-2xl"
+		style="padding-top:{videoPlaying ? '56.25%' : '46.875%'}"
+	>
 		{#if videoPlaying}
 			<iframe
 				class="absolute inset-0 h-full w-full"
@@ -349,6 +352,7 @@
 					src="https://i.ytimg.com/vi/CjBbU2ZOsa8/sddefault.jpg"
 					alt="יוצאים לחירות"
 					class="h-full w-full object-cover"
+					style="object-position:50% 33%"
 					loading="lazy"
 				/>
 				<span
