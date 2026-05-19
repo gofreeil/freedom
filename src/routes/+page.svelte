@@ -431,13 +431,6 @@
 		       bg-gradient-to-r from-transparent via-slate-400/40 to-transparent"
 	></div>
 
-	<h2
-		class="mt-12 text-center text-2xl md:text-4xl font-black leading-snug
-		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
-	>
-		הצטרפו כדי לתמוך מבפנים
-	</h2>
-
 	<p class="mx-auto mt-12 max-w-3xl text-center text-lg md:text-2xl font-bold text-gray-100">
 		התקשורת שלנו עצמאית - מסקרים את אירועי המדינה מזווית זכות התושב!
 	</p>
@@ -752,6 +745,7 @@
 			transparent 100%
 		);
 		transform-origin: left;
+		clip-path: polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%);
 	}
 
 	.glow-bar-line-end {
@@ -764,6 +758,7 @@
 			#ffffff 100%
 		);
 		transform-origin: right;
+		clip-path: polygon(12% 0, 100% 0, 100% 100%, 12% 100%, 0 50%);
 	}
 
 	.glow-bar-gem {
