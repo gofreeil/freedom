@@ -4,7 +4,6 @@
 	import "$lib/i18n";
 	import Header from "$lib/components/Header.svelte";
 	import Footer from "$lib/components/Footer.svelte";
-	import MobileAdsDrawer from "$lib/components/MobileAdsDrawer.svelte";
 
 	let { children } = $props();
 </script>
@@ -16,7 +15,6 @@
 </svelte:head>
 
 <a href="#main-content" class="skip-link">דלג לתוכן הראשי</a>
-<MobileAdsDrawer />
 <div class="min-h-screen flex flex-col bg-[#0f172a]">
 	<Header />
 

@@ -289,7 +289,7 @@
 					       bg-gradient-to-b from-transparent via-slate-400/40 to-transparent"
 				></div>
 			{/if}
-			<div class="flex flex-1 flex-col {i === 1 ? 'md:-mt-12' : ''}">
+			<div class="flex flex-1 flex-col {i === 1 ? 'order-first md:order-none md:-mt-12' : ''}">
 				<div class="mb-12 flex flex-col items-center">
 					<h3
 						class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
