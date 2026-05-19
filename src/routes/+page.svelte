@@ -260,8 +260,10 @@
 		const dy = e.clientY - dragStartY;
 		// מתעלמים מתנועה שאינה אופקית מובהקת (כדי לא להפריע לגלילה אנכית)
 		if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
-		if (dx < 0) activeCol = Math.min(columns.length - 1, activeCol + 1);
-		else activeCol = Math.max(0, activeCol - 1);
+		// התוכן זז עם האצבע: גרירה שמאלה -> הקלף הימני (offset שלילי) מגיע למרכז,
+		// כלומר activeCol יורד; גרירה ימינה -> activeCol עולה.
+		if (dx < 0) activeCol = Math.max(0, activeCol - 1);
+		else activeCol = Math.min(columns.length - 1, activeCol + 1);
 	}
 </script>
 
@@ -894,7 +896,7 @@
 		align-items: start;
 		justify-items: stretch;
 		position: relative;
-		padding-top: 5rem;
+		perspective: 1400px;
 		overflow: visible;
 		touch-action: pan-y;
 		-webkit-user-select: none;
@@ -906,39 +908,64 @@
 		grid-row: 1;
 		display: flex;
 		transform-origin: top center;
+		transform-style: preserve-3d;
 		transition:
-			transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+			transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
 			opacity 0.4s ease,
 			filter 0.4s ease;
 		will-change: transform, opacity, filter;
 	}
 
-	.col-slide[data-level='0'] {
-		transform: none;
+	/* ההיסט נמדד ביחס לפעיל. בעיתוי RTL: עמודות שבהמשך ה-DOM (offset>0)
+	   יושבות מצד שמאל פיזית, ועמודות שלפניו (offset<0) מצד ימין —
+	   המעבר נראה ככיוון ה"ניגוב" של המשתמש. */
+	.col-slide[data-offset='0'] {
+		transform: translateX(0) scale(1) rotateY(0);
 		opacity: 1;
 		filter: none;
 		z-index: 30;
 	}
-	.col-slide[data-level='1'] {
-		transform: scale(0.84) translateY(-2.8rem);
-		opacity: 0.55;
-		filter: brightness(0.5) saturate(0.85);
+	.col-slide[data-offset='1'] {
+		transform: translateX(-34%) scale(0.62) rotateY(22deg);
+		opacity: 0.8;
+		filter: none;
 		z-index: 20;
 	}
-	.col-slide[data-level='2'] {
-		transform: scale(0.7) translateY(-4.6rem);
-		opacity: 0.35;
-		filter: brightness(0.32) saturate(0.75);
+	.col-slide[data-offset='-1'] {
+		transform: translateX(34%) scale(0.62) rotateY(-22deg);
+		opacity: 0.8;
+		filter: none;
+		z-index: 20;
+	}
+	.col-slide[data-offset='2'] {
+		transform: translateX(-56%) scale(0.48) rotateY(32deg);
+		opacity: 0.5;
+		filter: none;
+		z-index: 10;
+	}
+	.col-slide[data-offset='-2'] {
+		transform: translateX(56%) scale(0.48) rotateY(-32deg);
+		opacity: 0.5;
+		filter: none;
 		z-index: 10;
 	}
 
-	/* בעמודים שמאחור מאפשרים אינטראקציה רק על הכותרת המציצה למעלה.
-	   שאר התוכן חבוי מתחת לפעיל ולכן לא צריך אינטראקציה (ובכך גם הקליק
-	   על הכותרת האחורית מובא לטיפול ב-onSlideClick במקום על קישור פנימי). */
-	.col-slide:not([data-level='0']) {
+	/* בקלפים שמאחור — רק הכותרת רואים; שאר התוכן (פס הזוהר, רשימת האתרים)
+	   חבוי לחלוטין כדי שהקלף ייראה ככותרת קטנה ושקופה בלבד */
+	.col-slide:not([data-offset='0']) .glow-bar,
+	.col-slide:not([data-offset='0']) .col-slide-inner > div:last-child {
+		display: none;
+	}
+	.col-slide:not([data-offset='0']) .col-slide-inner > div:first-child {
+		margin-bottom: 0;
+	}
+
+	/* רק הפעיל מקבל קליקים מלאים; לקלפים שמאחור — הכותרת בלבד לחיצה,
+	   כדי שלחיצה תגלגל את הקלף קדימה במקום לעקוב אחר קישור פנימי */
+	.col-slide:not([data-offset='0']) {
 		pointer-events: none;
 	}
-	.col-slide:not([data-level='0']) > .col-slide-inner > div:first-child {
+	.col-slide:not([data-offset='0']) > .col-slide-inner > div:first-child {
 		pointer-events: auto;
 		cursor: pointer;
 	}
@@ -949,15 +976,17 @@
 			display: flex;
 			flex-direction: row;
 			align-items: stretch;
-			padding-top: 0;
+			perspective: none;
 			touch-action: auto;
 			user-select: auto;
 			-webkit-user-select: auto;
 		}
 		.col-slide,
-		.col-slide[data-level='0'],
-		.col-slide[data-level='1'],
-		.col-slide[data-level='2'] {
+		.col-slide[data-offset='0'],
+		.col-slide[data-offset='1'],
+		.col-slide[data-offset='-1'],
+		.col-slide[data-offset='2'],
+		.col-slide[data-offset='-2'] {
 			grid-column: auto;
 			grid-row: auto;
 			flex: 1 1 0%;
@@ -966,6 +995,7 @@
 			filter: none;
 			z-index: auto;
 			pointer-events: auto;
+			transform-style: flat;
 		}
 	}
 
