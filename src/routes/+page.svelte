@@ -255,7 +255,7 @@
 	</p>
 </section>
 
-<section class="max-w-4xl mx-auto px-6 pb-0">
+<section class="max-w-2xl mx-auto px-6 pb-0">
 	<div
 		class="relative w-full overflow-hidden rounded-2xl shadow-2xl"
 		style="padding-top:{videoPlaying ? '56.25%' : '46.875%'}"
