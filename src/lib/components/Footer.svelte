@@ -6,51 +6,36 @@
     const tFn = (k: string) => { void _loc; return get(t)(k); };
 </script>
 
-<footer class="bg-[#0d1117] border-t border-white/10 py-0 md:py-2 mt-1 md:mt-0">
+<footer class="bg-[#0d1117] border-t border-white/10 pt-4 md:pt-10 pb-0 md:pb-2 mt-1 md:mt-0">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div
-            class="flex flex-col md:flex-row items-center justify-between gap-0 md:gap-6"
+        <!-- Desktop: title centered above -->
+        <a
+            href="https://freedom-gamma-five.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="יוצאים לחירות (נפתח בחלון חדש)"
+            class="hidden md:flex justify-center pt-5 pb-4 hover:opacity-80 transition-opacity"
         >
-            <!-- Right: Brand image + text (ימין) -->
+            <p class="text-lg md:text-xl font-black text-yellow-500">
+                יוצאים לחירות
+            </p>
+        </a>
+
+        <div
+            class="flex flex-col md:flex-row items-center justify-center gap-0 md:gap-6"
+        >
+            <!-- Mobile only: Brand text (ימין) -->
             <a
                 href="https://freedom-gamma-five.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="יוצאים לחירות – לכלל פעילות התנועה החברתית (נפתח בחלון חדש)"
+                aria-label="יוצאים לחירות (נפתח בחלון חדש)"
                 style="cursor: pointer;"
-                class="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                class="flex md:hidden items-center gap-3 hover:opacity-80 transition-opacity"
             >
-                <img
-                    src="/images/yotzim-lecherut.png"
-                    alt="יוצאים לחירות"
-                    class="h-16 w-16 md:h-20 md:w-20 object-contain rounded-lg hover:scale-105 transition-transform flex-shrink-0"
-                />
-
-                <!-- Mobile: horizontal layout -->
-                <div
-                    class="flex md:hidden flex-col text-right leading-tight text-sm"
-                >
-                    <p class="text-yellow-400 font-black text-xs">
+                <div class="flex flex-col text-right leading-tight">
+                    <p class="text-yellow-400 font-black text-base">
                         יוצאים לחירות
-                    </p>
-                    <p class="text-gray-300 font-normal text-[10px]">
-                        לכלל פעילות התנועה החברתית
-                    </p>
-                </div>
-
-                <!-- Desktop: original layout -->
-                <div
-                    class="hidden md:flex md:flex-col text-right leading-tight gap-1"
-                >
-                    <p
-                        class="text-xs md:text-sm text-gray-300 font-normal"
-                    >
-                        לכלל פעילות התנועה החברתית
-                    </p>
-                    <p
-                        class="text-sm md:text-base font-black flex items-center gap-2 justify-end text-yellow-500"
-                    >
-                        <span>👉</span> יוצאים לחירות
                     </p>
                 </div>
             </a>
@@ -58,17 +43,17 @@
             <!-- Center: Links -->
             <nav
                 aria-label="ניווט תחתון"
-                class="flex items-center gap-3 md:gap-4 text-xs md:text-base text-gray-300 font-bold flex-wrap justify-center"
+                class="flex items-center gap-2 md:gap-3 text-sm md:text-base text-gray-300 font-bold flex-nowrap justify-center whitespace-nowrap"
             >
                 <a href="/about/legal" class="hover:text-white transition-colors text-center leading-tight">תנאי שימוש<br />הצהרת נגישות וכו'</a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
                 <a href="mailto:freedomhasbegun@gmail.com" class="hover:text-white transition-colors whitespace-nowrap" aria-label="צור קשר – שלח אימייל">{tFn("contact_us")}</a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
-                <a href="/about/advertise" class="hover:text-white transition-colors text-center leading-tight">הצטרפו אלינו<br />אנו מחפשים מנהיגים</a>
+                <a href="/about/advertise" class="hover:text-white transition-colors text-center leading-tight">דרושים מנהיגים<br />ומתנדבים</a>
             </nav>
 
             <!-- Left: Copyright -->
-            <p class="text-gray-400 font-bold text-[10px] md:text-xs text-center md:text-right py-1 md:py-0 pb-4 md:pb-2">
+            <p class="text-gray-400 font-bold text-xs md:text-sm text-center pt-3 md:pt-4 pb-4 md:pb-2">
                 &copy; {new Date().getFullYear()} {tFn("all_rights_reserved")}
             </p>
         </div>
