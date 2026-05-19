@@ -397,7 +397,7 @@
 							       transition-colors hover:border-purple-500/50 hover:bg-white/10
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}"
 						>
-							<div class="relative {i === 0 ? 'h-auto' : i === 2 ? (si === 0 ? 'h-32' : si === 3 ? 'h-52' : 'h-40') : 'h-28'} w-full overflow-hidden bg-slate-800">
+							<div class="relative {i === 0 ? 'h-auto' : i === 1 ? (si === 2 ? 'h-44' : si === 3 ? 'h-[137px]' : si === 4 ? 'h-[138px]' : 'h-28') : i === 2 ? (si === 0 ? 'h-36' : si === 1 ? 'h-44' : si === 3 ? 'h-52' : 'h-40') : 'h-28'} w-full overflow-hidden bg-slate-800">
 								{#if site.image}
 									<img
 										src={site.image}
@@ -440,7 +440,11 @@
 		       bg-gradient-to-r from-transparent via-slate-400/40 to-transparent"
 	></div>
 
-	<p class="mx-auto mt-12 max-w-3xl text-center text-lg md:text-2xl font-bold text-gray-100">
+	<p
+		class="mx-auto mt-12 max-w-3xl text-center text-lg md:text-2xl font-black
+		       bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400
+		       bg-clip-text text-transparent"
+	>
 		התקשורת שלנו עצמאית - מסקרים את אירועי המדינה מזווית זכות התושב!
 	</p>
 
