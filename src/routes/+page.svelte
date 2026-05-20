@@ -275,10 +275,8 @@
 		didSwipe = false;
 		dragStartX = e.clientX;
 		dragStartY = e.clientY;
-		// תופסים את המצביע כדי שתנועה מחוץ לאלמנט עדיין תפיק pointerup כאן
-		try {
-			(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-		} catch {}
+		// לא לקרוא ל-setPointerCapture: על iOS Safari הוא חוטף את המגע
+		// וחוסם את ההחלטה הנייטיבית של הדפדפן בין סוויפ אופקי לגלילה אנכית.
 	}
 
 	function onPointerUp(e: PointerEvent) {
@@ -984,7 +982,9 @@
 		align-items: start;
 		justify-items: stretch;
 		position: relative;
-		perspective: 1400px;
+		/* פרספקטיבה רחבה -> עיוות עדין יותר, פחות "מתעקם" כשעוברים לצד */
+		perspective: 2200px;
+		perspective-origin: 50% 30%;
 		overflow: visible;
 		touch-action: pan-y;
 		-webkit-user-select: none;
@@ -995,7 +995,9 @@
 		grid-column: 1;
 		grid-row: 1;
 		display: flex;
-		transform-origin: top center;
+		/* origin קרוב לכותרת -> סיבוב סובב סביב הכותרת ושומר עליה ישרה יותר,
+		   כמו ב-iOS app switcher / Apple Music coverflow */
+		transform-origin: 50% 30%;
 		transform-style: preserve-3d;
 		/* מעבר חלק ועקבי — קל בכניסה, רגוע ביציאה — שמאפשר למשתמש
 		   לעקוב אחר תנועת הקלף בצורה ברורה ולא קופצנית */
@@ -1006,9 +1008,9 @@
 		will-change: transform, opacity, filter;
 	}
 
-	/* ההיסט נמדד ביחס לפעיל. בעיתוי RTL: עמודות שבהמשך ה-DOM (offset>0)
-	   יושבות מצד שמאל פיזית, ועמודות שלפניו (offset<0) מצד ימין —
-	   המעבר נראה ככיוון ה"ניגוב" של המשתמש. */
+	/* ההיסט נמדד ביחס לפעיל. זוויות עדינות (~12°/18°) ו-translateX
+	   צנוע יותר כדי שהכותרת לא תיראה "מתעקמת" — מתבסס על תחושת
+	   coverflow של אפליקציות אפל (Music, Photos) שמשתמשות בהטיה מתונה. */
 	.col-slide[data-offset='0'] {
 		transform: translateX(0) scale(1) rotateY(0);
 		opacity: 1;
@@ -1016,25 +1018,25 @@
 		z-index: 30;
 	}
 	.col-slide[data-offset='1'] {
-		transform: translateX(-34%) scale(0.62) rotateY(22deg);
-		opacity: 0.8;
+		transform: translateX(-28%) scale(0.74) rotateY(12deg);
+		opacity: 0.85;
 		filter: none;
 		z-index: 20;
 	}
 	.col-slide[data-offset='-1'] {
-		transform: translateX(34%) scale(0.62) rotateY(-22deg);
-		opacity: 0.8;
+		transform: translateX(28%) scale(0.74) rotateY(-12deg);
+		opacity: 0.85;
 		filter: none;
 		z-index: 20;
 	}
 	.col-slide[data-offset='2'] {
-		transform: translateX(-56%) scale(0.48) rotateY(32deg);
+		transform: translateX(-48%) scale(0.56) rotateY(18deg);
 		opacity: 0.5;
 		filter: none;
 		z-index: 10;
 	}
 	.col-slide[data-offset='-2'] {
-		transform: translateX(56%) scale(0.48) rotateY(-32deg);
+		transform: translateX(48%) scale(0.56) rotateY(-18deg);
 		opacity: 0.5;
 		filter: none;
 		z-index: 10;
