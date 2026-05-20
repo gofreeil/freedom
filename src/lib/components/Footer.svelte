@@ -22,7 +22,7 @@
         </a>
 
         <div
-            class="flex flex-col md:flex-row items-center justify-center gap-0 md:gap-6"
+            class="flex flex-col items-center justify-center gap-0 md:gap-2"
         >
             <!-- Mobile only: Brand text (ימין) -->
             <a
@@ -45,11 +45,11 @@
                 aria-label="ניווט תחתון"
                 class="flex items-center gap-2 md:gap-3 text-sm md:text-base text-gray-300 font-bold flex-nowrap justify-center whitespace-nowrap"
             >
-                <a href="/about/legal" class="hover:text-white transition-colors text-center leading-tight">תנאי שימוש<br />הצהרת נגישות וכו'</a>
+                <a href="/about/legal" class="hover:text-white transition-colors text-center leading-tight">תנאי שימוש<br class="md:hidden" /><span class="hidden md:inline">,&nbsp;</span>הצהרת נגישות וכו'</a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
                 <a href="mailto:freedomhasbegun@gmail.com" class="hover:text-white transition-colors whitespace-nowrap" aria-label="צור קשר – שלח אימייל">{tFn("contact_us")}</a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
-                <a href="/about/advertise" class="hover:text-white transition-colors text-center leading-tight">דרושים מנהיגים<br />ומתנדבים</a>
+                <a href="/about/advertise" class="hover:text-white transition-colors text-center leading-tight">דרושים מנהיגים<br class="md:hidden" /><span class="hidden md:inline">&nbsp;</span>ומתנדבים</a>
             </nav>
 
             <!-- Left: Copyright -->
