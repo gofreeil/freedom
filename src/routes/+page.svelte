@@ -507,8 +507,8 @@
 		ontouchcancel={onTouchCancel}
 	>
 		{#if demoFingerActive}
+			<span class="finger-smudge" aria-hidden="true"></span>
 			<div class="finger-demo" aria-hidden="true">
-				<span class="finger-smudge"></span>
 				<img src="/images/finger.png" alt="" />
 			</div>
 		{/if}
@@ -1012,20 +1012,17 @@
 		}
 	}
 
-	/* ===== חבילת עמודות (deck) — תצוגת נייד בלבד ===== */
-	/* שלושת העמודים נערמים באותו תא רשת. הפעיל בקדמה, האחרים מאחוריו
-	   מוקטנים, חשוכים ושקופים יותר, ומורמים כלפי מעלה כדי שכותרותיהם
-	   תציצנה מעל הפעיל ותרמוזנה למשתמש שאפשר לדפדף אליהם. */
+	/* ===== קרוסלת עמודות אופקית — תצוגת נייד בלבד ===== */
+	/* שלושת העמודים נערמים באותו תא רשת. הפעיל במרכז, האחרים מסביב
+	   במיקומים אופקיים בלבד (±100%, ±200% מעצמם) — נכנסים ויוצאים מהצד
+	   ברצף אחד, ללא scale, ללא סיבוב 3D, ללא תנועה אנכית. */
 	.cols-container {
 		display: grid;
 		grid-template-columns: 1fr;
 		align-items: start;
 		justify-items: stretch;
 		position: relative;
-		/* פרספקטיבה רחבה -> עיוות עדין יותר, פחות "מתעקם" כשעוברים לצד */
-		perspective: 2200px;
-		perspective-origin: 50% 30%;
-		overflow: visible;
+		overflow: hidden; /* חותכים את הקלפים מחוץ למסך */
 		touch-action: pan-y;
 		-webkit-user-select: none;
 		user-select: none;
@@ -1043,81 +1040,36 @@
 		grid-column: 1;
 		grid-row: 1;
 		display: flex;
-		/* origin קרוב לכותרת -> סיבוב סובב סביב הכותרת ושומר עליה ישרה יותר,
-		   כמו ב-iOS app switcher / Apple Music coverflow */
-		transform-origin: 50% 30%;
-		transform-style: preserve-3d;
-		/* מעבר חלק ועקבי — קל בכניסה, רגוע ביציאה — שמאפשר למשתמש
-		   לעקוב אחר תנועת הקלף בצורה ברורה ולא קופצנית */
-		transition:
-			transform 0.95s cubic-bezier(0.25, 0.46, 0.2, 1),
-			opacity 0.85s cubic-bezier(0.25, 0.46, 0.2, 1),
-			filter 0.85s cubic-bezier(0.25, 0.46, 0.2, 1);
-		will-change: transform, opacity, filter;
+		/* מעבר חלק — תנועה אופקית בלבד */
+		transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.2, 1);
+		will-change: transform;
 	}
 
 	.col-slide[data-offset='0'] {
-		transform: translateX(0) scale(1) rotateY(0);
-		opacity: 1;
-		filter: none;
+		transform: translateX(0);
 		z-index: 30;
 	}
-
-	/* מצב "מרכז": activeCol=1, כל הקלפים סימטריים סביב הפעיל.
-	   הזוויות החדות יותר (כמו במקור) יוצרות תחושת coverflow ברורה,
-	   והכותרות הצדדיות בולטות מאחורי הקלף הפעיל. */
-	.cols-container.center-active .col-slide[data-offset='1'] {
-		transform: translateX(-34%) scale(0.62) rotateY(22deg);
-		opacity: 0.8;
+	.col-slide[data-offset='1'] {
+		transform: translateX(-100%);
 		z-index: 20;
 	}
-	.cols-container.center-active .col-slide[data-offset='-1'] {
-		transform: translateX(34%) scale(0.62) rotateY(-22deg);
-		opacity: 0.8;
+	.col-slide[data-offset='-1'] {
+		transform: translateX(100%);
 		z-index: 20;
 	}
-
-	/* מצב "צד": activeCol=0 או 2, כל הקלפים האחרים נצברים בצד אחד.
-	   כדי שלא ייצמדו זה על זה ויפריעו לכותרת הפעילה — קטנים יותר,
-	   מרוחקים יותר זה מזה, וחצי-שקופים. */
-	.cols-container.side-active .col-slide[data-offset='1'] {
-		transform: translateX(-42%) scale(0.5) rotateY(16deg);
-		opacity: 0.45;
-		z-index: 20;
-	}
-	.cols-container.side-active .col-slide[data-offset='-1'] {
-		transform: translateX(42%) scale(0.5) rotateY(-16deg);
-		opacity: 0.45;
-		z-index: 20;
-	}
-	.cols-container.side-active .col-slide[data-offset='2'] {
-		transform: translateX(-66%) scale(0.36) rotateY(22deg);
-		opacity: 0.3;
+	.col-slide[data-offset='2'] {
+		transform: translateX(-200%);
 		z-index: 10;
 	}
-	.cols-container.side-active .col-slide[data-offset='-2'] {
-		transform: translateX(66%) scale(0.36) rotateY(-22deg);
-		opacity: 0.3;
+	.col-slide[data-offset='-2'] {
+		transform: translateX(200%);
 		z-index: 10;
 	}
 
-	/* הכללים שמסתירים תוכן ומבטלים אינטראקציה בקלפים האחוריים שייכים
-	   אך ורק לקרוסלה בנייד — בדסקטופ שלוש העמודות מוצגות במלואן זו לצד זו
-	   ולכן אין לגעת בהן. */
+	/* קלפים שאינם פעילים — מחוץ למסך — לא יקבלו קליקים */
 	@media (max-width: 767px) {
-		.col-slide:not([data-offset='0']) .glow-bar,
-		.col-slide:not([data-offset='0']) .col-slide-inner > div:last-child {
-			display: none;
-		}
-		.col-slide:not([data-offset='0']) .col-slide-inner > div:first-child {
-			margin-bottom: 0;
-		}
 		.col-slide:not([data-offset='0']) {
 			pointer-events: none;
-		}
-		.col-slide:not([data-offset='0']) > .col-slide-inner > div:first-child {
-			pointer-events: auto;
-			cursor: pointer;
 		}
 	}
 
@@ -1127,7 +1079,7 @@
 			display: flex;
 			flex-direction: row;
 			align-items: stretch;
-			perspective: none;
+			overflow: visible;
 			touch-action: auto;
 			user-select: auto;
 			-webkit-user-select: auto;
@@ -1139,13 +1091,7 @@
 		.cols-container .col-slide[data-offset='1'],
 		.cols-container .col-slide[data-offset='-1'],
 		.cols-container .col-slide[data-offset='2'],
-		.cols-container .col-slide[data-offset='-2'],
-		.cols-container.center-active .col-slide[data-offset='1'],
-		.cols-container.center-active .col-slide[data-offset='-1'],
-		.cols-container.side-active .col-slide[data-offset='1'],
-		.cols-container.side-active .col-slide[data-offset='-1'],
-		.cols-container.side-active .col-slide[data-offset='2'],
-		.cols-container.side-active .col-slide[data-offset='-2'] {
+		.cols-container .col-slide[data-offset='-2'] {
 			grid-column: auto;
 			grid-row: auto;
 			flex: 1 1 0%;
@@ -1154,7 +1100,6 @@
 			filter: none;
 			z-index: auto;
 			pointer-events: auto;
-			transform-style: flat;
 		}
 	}
 
@@ -1178,32 +1123,35 @@
 	}
 	.finger-smudge {
 		position: absolute;
-		/* ממוקם מתחת לקצה האצבע (פינה שמאלית-תחתונה של תמונת היד המסובבת) */
-		top: 6.2rem;
-		left: -0.6rem;
-		width: 3.2rem;
-		height: 1.6rem;
+		/* נשאר במקום קבוע על המסך — היכן שהאצבע ניגבה (לא זז עם היד) */
+		top: 5.6rem;
+		right: 24%;
+		width: 3.6rem;
+		height: 0.7rem;
 		border-radius: 50%;
 		background: radial-gradient(
 			ellipse at center,
-			rgba(255, 255, 255, 0.55) 0%,
-			rgba(255, 255, 255, 0.28) 45%,
-			rgba(255, 255, 255, 0) 75%
+			rgba(255, 255, 255, 0.95) 0%,
+			rgba(255, 255, 255, 0.55) 40%,
+			rgba(255, 255, 255, 0.15) 70%,
+			rgba(255, 255, 255, 0) 90%
 		);
-		filter: blur(2px);
-		transform: rotate(-12deg) scaleX(1);
+		filter: blur(1.5px);
+		transform: rotate(0deg);
 		transform-origin: center;
 		opacity: 0;
 		pointer-events: none;
+		z-index: 49;
 		animation: finger-smudge 1s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		mix-blend-mode: screen;
 	}
 	@keyframes finger-smudge {
-		0%   { opacity: 0; transform: rotate(-12deg) scaleX(0.6); }
-		22%  { opacity: 0; transform: rotate(-12deg) scaleX(0.7); }
-		30%  { opacity: 0.85; transform: rotate(-12deg) scaleX(1); }
-		50%  { opacity: 0.75; transform: rotate(-12deg) scaleX(1.25); }
-		70%  { opacity: 0; transform: rotate(-12deg) scaleX(1.35); }
-		100% { opacity: 0; transform: rotate(-12deg) scaleX(1.35); }
+		0%   { opacity: 0; }
+		20%  { opacity: 0; }
+		25%  { opacity: 0.95; }
+		70%  { opacity: 0.95; }
+		90%  { opacity: 0; }
+		100% { opacity: 0; }
 	}
 	.finger-demo img {
 		width: 100%;
