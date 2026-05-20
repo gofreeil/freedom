@@ -233,13 +233,17 @@
 	// והעברת --reveal-delay=0 כדי שהאנימציה תרוץ מיד ולא תחכה לתזמון המקורי.
 	let replayKey = $state(0);
 	let activeColInited = false;
+	let replayCounter = 0;
 	$effect(() => {
 		activeCol; // tracked
 		if (!activeColInited) {
 			activeColInited = true;
 			return;
 		}
-		replayKey++;
+		// חשוב: לא להשתמש ב-replayKey++ — זה קורא וכותב את אותו $state ויוצר לולאה.
+		// במקום זה, סופרים ב-let רגיל ומשמשים את ה-state רק לכתיבה.
+		replayCounter++;
+		replayKey = replayCounter;
 	});
 
 	// היסט עמודה ביחס לפעיל (-2..+2 בעבור 3 עמודות): קובע מאיזה צד הקלף יושב
