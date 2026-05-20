@@ -361,10 +361,10 @@
 		// המצב הראשוני עומד על משילות (activeCol=1) — שם רצה אנימציית הכותרת.
 		// היד נכנסת רק כמחצית לתוך המסך, מבצעת ניגוב קצר ויוצאת חזרה ימינה.
 		demoFingerActive = true;
-		// activeCol מתחלף כשהיד מבצעת את תנועת הניגוב (~38% מהאנימציה של 1s).
-		setTimeout(() => (activeCol = 0), 380);
+		// activeCol מתחלף כשהיד מבצעת את תנועת הניגוב (~38% מהאנימציה של 1.3s).
+		setTimeout(() => (activeCol = 0), 494);
 		// בסיום — היד יצאה מהפריים בצד ימין, מבטלים את הקיום.
-		setTimeout(() => (demoFingerActive = false), 1000);
+		setTimeout(() => (demoFingerActive = false), 1300);
 	}
 
 	// מפעילים את הדמו ברגע שאבקת הקסם נכנסה לתצוגה (revealed=true).
@@ -1112,19 +1112,20 @@
 	/* ===== אנימציית "אצבע מנגבת" — נייד בלבד, פעם אחת ===== */
 	.finger-demo {
 		position: absolute;
-		top: 5rem; /* מתחת לכותרות הקטנות של העמודות */
+		/* ממוקם בחלל שמעל הכותרות הקטנות של העמודות (בין הכותרת הראשית לבאנר) */
+		top: -2.5rem;
 		right: 6%;
 		width: 9rem; /* יד פורטרט גבוהה — רוחב מתון, גובה מתאים */
 		height: auto;
 		pointer-events: none;
 		z-index: 50;
 		filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
-		animation: finger-swipe 1s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-swipe 1.3s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 	}
 	.finger-smudge {
 		position: absolute;
 		/* נשאר במקום קבוע על המסך — היכן שהאצבע ניגבה (לא זז עם היד) */
-		top: 5.6rem;
+		top: -0.1rem;
 		right: 24%;
 		width: 3.6rem;
 		height: 0.7rem;
@@ -1142,7 +1143,7 @@
 		opacity: 0;
 		pointer-events: none;
 		z-index: 49;
-		animation: finger-smudge 1s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-smudge 1.3s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 		mix-blend-mode: screen;
 	}
 	@keyframes finger-smudge {
@@ -1160,7 +1161,7 @@
 		/* סיבוב קל פנימה לכיוון הניגוב — לא מתערב באנימציה של .finger-demo */
 		transform: rotate(-18deg);
 		transform-origin: 60% 30%;
-		animation: finger-tilt 1s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-tilt 1.3s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 	}
 	@keyframes finger-tilt {
 		0% { transform: rotate(-18deg); }
