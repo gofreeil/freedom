@@ -531,8 +531,12 @@
 					<h3
 						class="col-heading bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
 						       text-4xl md:text-6xl font-black text-center"
+						style="--char-count:{[...column.heading].length}"
 					>
-						{column.heading}
+						{#each [...column.heading] as ch, ci (ci)}<span
+							class="col-heading-char"
+							style="--ci:{ci}"
+						>{ch}</span>{/each}
 					</h3>
 					{#key replayKey}
 						<span class="glow-bar">
@@ -576,7 +580,7 @@
 							       transition-colors hover:border-purple-500/50 hover:bg-white/10
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}"
 						>
-							<div class="relative {i === 0 ? 'h-auto' : i === 1 ? (si === 2 ? 'h-44' : si === 3 ? 'h-[137px]' : si === 4 ? 'h-[138px]' : 'h-28') : i === 2 ? (si === 0 ? 'h-36' : si === 1 ? 'h-44' : si === 3 ? 'h-52' : 'h-40') : 'h-28'} w-full overflow-hidden bg-slate-800">
+							<div class="relative {i === 0 ? 'h-auto' : i === 1 ? (si === 2 ? 'h-60 md:h-44' : si === 3 ? 'h-52 md:h-[137px]' : si === 4 ? 'h-52 md:h-[138px]' : 'h-44 md:h-28') : i === 2 ? (si === 0 ? 'h-36' : si === 1 ? 'h-44' : si === 3 ? 'h-52' : 'h-40') : 'h-28'} w-full overflow-hidden bg-slate-800">
 								{#if site.image}
 									<img
 										src={site.image}
@@ -1044,6 +1048,11 @@
 		grid-column: 1;
 		grid-row: 1;
 		display: flex;
+		/* שומר על קונטקסט 3D כדי שה-rotateY על הכותרת לא ישתטח */
+		transform-style: preserve-3d;
+	}
+	.col-slide-inner {
+		transform-style: preserve-3d;
 	}
 	.col-slide[data-offset='0'] { z-index: 30; }
 	.col-slide[data-offset='1'],
@@ -1060,26 +1069,53 @@
 			opacity 0.5s cubic-bezier(0.25, 0.46, 0.2, 1);
 		will-change: transform, opacity;
 	}
+
+	/* ---- אפקט עומק לפי אותיות בכותרות הצדדיות ---- */
+	/* כל אות בנפרד; ב-RTL ci=0 הוא האות הימנית ביותר, ci=N-1 השמאלית.
+	   ככל שהאות רחוקה יותר מהמרכז של הקרוסלה — היא מתכווצת בהדרגה. */
+	.col-heading-char {
+		display: inline-block;
+		transition: font-size 0.6s cubic-bezier(0.25, 0.46, 0.2, 1);
+	}
+	/* offset=+1 (כותרת משמאל לפעיל): צד ימין קרוב למרכז — גדול; שמאל רחוק — קטן */
+	.col-slide[data-offset='1'] .col-heading-char {
+		font-size: calc(1em - (var(--ci) / (var(--char-count) - 1)) * 0.2em);
+	}
+	/* offset=-1 (כותרת מימין לפעיל): צד שמאל קרוב למרכז — גדול; ימין רחוק — קטן */
+	.col-slide[data-offset='-1'] .col-heading-char {
+		font-size: calc(
+			1em - ((var(--char-count) - 1 - var(--ci)) / (var(--char-count) - 1)) * 0.2em
+		);
+	}
+	.col-slide[data-offset='2'] .col-heading-char {
+		font-size: calc(1em - (var(--ci) / (var(--char-count) - 1)) * 0.3em);
+	}
+	.col-slide[data-offset='-2'] .col-heading-char {
+		font-size: calc(
+			1em - ((var(--char-count) - 1 - var(--ci)) / (var(--char-count) - 1)) * 0.3em
+		);
+	}
 	.col-slide[data-offset='0'] .col-slide-inner > div:first-child {
 		transform: translateX(0) scale(1) rotateY(0);
 		opacity: 1;
 	}
 	/* offset חיובי = העמודה משמאל לפעיל; הקצה הרחוק (משמאל) צריך להיראות
-	   קטן יותר → rotateY חיובי (הקצה השמאלי נסוג לעומק). */
+	   קטן יותר → rotateY חיובי (הקצה השמאלי נסוג לעומק).
+	   rotateY מופיע לפני scale — כך הסיבוב חל על האלמנט במלוא גודלו והאפקט גלוי. */
 	.col-slide[data-offset='1'] .col-slide-inner > div:first-child {
-		transform: translateX(-34%) scale(0.62) rotateY(12deg);
+		transform: translateX(-34%) rotateY(22deg) scale(0.62);
 		opacity: 0.8;
 	}
 	.col-slide[data-offset='-1'] .col-slide-inner > div:first-child {
-		transform: translateX(34%) scale(0.62) rotateY(-12deg);
+		transform: translateX(34%) rotateY(-22deg) scale(0.62);
 		opacity: 0.8;
 	}
 	.col-slide[data-offset='2'] .col-slide-inner > div:first-child {
-		transform: translateX(-66%) scale(0.5) rotateY(16deg);
+		transform: translateX(-66%) rotateY(28deg) scale(0.5);
 		opacity: 0.55;
 	}
 	.col-slide[data-offset='-2'] .col-slide-inner > div:first-child {
-		transform: translateX(66%) scale(0.5) rotateY(-16deg);
+		transform: translateX(66%) rotateY(-28deg) scale(0.5);
 		opacity: 0.55;
 	}
 
@@ -1142,6 +1178,19 @@
 			filter: none;
 			z-index: auto;
 			pointer-events: auto;
+		}
+		/* איפוס מלא של הטרנספורמים הפנימיים שמשמשים רק לקרוסלה בנייד */
+		.cols-container .col-slide .col-slide-inner > div:first-child,
+		.cols-container .col-slide .col-slide-inner > div:last-child {
+			transform: none;
+			opacity: 1;
+			transition: none;
+		}
+		/* בדסקטופ — אותיות הכותרת באותו גודל, אין צמצום פר-אות.
+		   ספציפיות מועלית עם [data-offset] כדי לנצח את הכללים בנייד. */
+		.cols-container .col-slide[data-offset] .col-heading-char {
+			font-size: inherit;
+			transition: none;
 		}
 	}
 
