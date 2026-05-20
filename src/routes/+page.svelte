@@ -361,10 +361,10 @@
 		// המצב הראשוני עומד על משילות (activeCol=1) — שם רצה אנימציית הכותרת.
 		// היד נכנסת רק כמחצית לתוך המסך, מבצעת ניגוב קצר ויוצאת חזרה ימינה.
 		demoFingerActive = true;
-		// activeCol מתחלף כשהיד מבצעת את תנועת הניגוב (~38% מהאנימציה של 1.3s).
-		setTimeout(() => (activeCol = 0), 494);
+		// activeCol מתחלף כשהיד מבצעת את תנועת הניגוב (~38% מהאנימציה של 1.6s).
+		setTimeout(() => (activeCol = 0), 608);
 		// בסיום — היד יצאה מהפריים בצד ימין, מבטלים את הקיום.
-		setTimeout(() => (demoFingerActive = false), 1300);
+		setTimeout(() => (demoFingerActive = false), 1600);
 	}
 
 	// מפעילים את הדמו ברגע שאבקת הקסם נכנסה לתצוגה (revealed=true).
@@ -1023,6 +1023,10 @@
 		justify-items: stretch;
 		position: relative;
 		overflow: hidden; /* חותכים את הקלפים מחוץ למסך */
+		/* פרספקטיבה עדינה — נותנת לכותרות הצדדיות אפקט עומק (האותיות הרחוקות
+		   מהמרכז נראות מעט קטנות יותר). פרספקטיבה רחוקה => אפקט מתון. */
+		perspective: 1800px;
+		perspective-origin: 50% 50%;
 		touch-action: pan-y;
 		-webkit-user-select: none;
 		user-select: none;
@@ -1040,36 +1044,74 @@
 		grid-column: 1;
 		grid-row: 1;
 		display: flex;
-		/* מעבר חלק — תנועה אופקית בלבד */
+	}
+	.col-slide[data-offset='0'] { z-index: 30; }
+	.col-slide[data-offset='1'],
+	.col-slide[data-offset='-1'] { z-index: 20; }
+	.col-slide[data-offset='2'],
+	.col-slide[data-offset='-2'] { z-index: 10; }
+
+	/* ---- כותרת + glow-bar: שומרים על מראה ה-deck — קטנות ומציצות מהצדדים ---- */
+	.col-slide-inner > div:first-child {
+		transform-origin: 50% 50%;
+		transform-style: preserve-3d;
+		transition:
+			transform 0.7s cubic-bezier(0.25, 0.46, 0.2, 1),
+			opacity 0.5s cubic-bezier(0.25, 0.46, 0.2, 1);
+		will-change: transform, opacity;
+	}
+	.col-slide[data-offset='0'] .col-slide-inner > div:first-child {
+		transform: translateX(0) scale(1) rotateY(0);
+		opacity: 1;
+	}
+	/* offset חיובי = העמודה משמאל לפעיל; הקצה הרחוק (משמאל) צריך להיראות
+	   קטן יותר → rotateY חיובי (הקצה השמאלי נסוג לעומק). */
+	.col-slide[data-offset='1'] .col-slide-inner > div:first-child {
+		transform: translateX(-34%) scale(0.62) rotateY(12deg);
+		opacity: 0.8;
+	}
+	.col-slide[data-offset='-1'] .col-slide-inner > div:first-child {
+		transform: translateX(34%) scale(0.62) rotateY(-12deg);
+		opacity: 0.8;
+	}
+	.col-slide[data-offset='2'] .col-slide-inner > div:first-child {
+		transform: translateX(-66%) scale(0.5) rotateY(16deg);
+		opacity: 0.55;
+	}
+	.col-slide[data-offset='-2'] .col-slide-inner > div:first-child {
+		transform: translateX(66%) scale(0.5) rotateY(-16deg);
+		opacity: 0.55;
+	}
+
+	/* ---- באנרים: סליידר אופקי טהור — נכנסים ויוצאים מהצד, ללא scale ---- */
+	.col-slide-inner > div:last-child {
 		transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.2, 1);
 		will-change: transform;
 	}
-
-	.col-slide[data-offset='0'] {
+	.col-slide[data-offset='0'] .col-slide-inner > div:last-child {
 		transform: translateX(0);
-		z-index: 30;
 	}
-	.col-slide[data-offset='1'] {
-		transform: translateX(-100%);
-		z-index: 20;
+	.col-slide[data-offset='1'] .col-slide-inner > div:last-child {
+		transform: translateX(calc(-100% - 1.5rem));
 	}
-	.col-slide[data-offset='-1'] {
-		transform: translateX(100%);
-		z-index: 20;
+	.col-slide[data-offset='-1'] .col-slide-inner > div:last-child {
+		transform: translateX(calc(100% + 1.5rem));
 	}
-	.col-slide[data-offset='2'] {
-		transform: translateX(-200%);
-		z-index: 10;
+	.col-slide[data-offset='2'] .col-slide-inner > div:last-child {
+		transform: translateX(calc(-200% - 3rem));
 	}
-	.col-slide[data-offset='-2'] {
-		transform: translateX(200%);
-		z-index: 10;
+	.col-slide[data-offset='-2'] .col-slide-inner > div:last-child {
+		transform: translateX(calc(200% + 3rem));
 	}
 
-	/* קלפים שאינם פעילים — מחוץ למסך — לא יקבלו קליקים */
+	/* קלפים שאינם פעילים — מחוץ למסך — לא יקבלו קליקים.
+	   ה-glow-bar מוצג רק על העמודה הפעילה — בצדדים מציגים רק את הכותרת הקטנה. */
 	@media (max-width: 767px) {
 		.col-slide:not([data-offset='0']) {
 			pointer-events: none;
+		}
+		.col-slide:not([data-offset='0']) .glow-bar {
+			display: none;
 		}
 	}
 
@@ -1120,7 +1162,7 @@
 		pointer-events: none;
 		z-index: 50;
 		filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
-		animation: finger-swipe 1.3s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-swipe 1.6s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 	}
 	.finger-smudge {
 		position: absolute;
@@ -1143,7 +1185,7 @@
 		opacity: 0;
 		pointer-events: none;
 		z-index: 49;
-		animation: finger-smudge 1.3s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-smudge 1.6s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 		mix-blend-mode: screen;
 	}
 	@keyframes finger-smudge {
@@ -1161,7 +1203,7 @@
 		/* סיבוב קל פנימה לכיוון הניגוב — לא מתערב באנימציה של .finger-demo */
 		transform: rotate(-18deg);
 		transform-origin: 60% 30%;
-		animation: finger-tilt 1.3s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-tilt 1.6s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 	}
 	@keyframes finger-tilt {
 		0% { transform: rotate(-18deg); }
