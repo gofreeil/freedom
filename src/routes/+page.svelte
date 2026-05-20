@@ -264,27 +264,42 @@
 
 	let dragStartX = 0;
 	let dragStartY = 0;
+	let lastX = 0;
+	let lastY = 0;
 	let dragging = false;
 	let didSwipe = false;
+	let committedSwipe = false; // האם זיהינו תנועה אופקית מובהקת לפני שהדפדפן (אולי) חטף
 	const SWIPE_THRESHOLD = 28;
+	const COMMIT_THRESHOLD = 12;
 
 	function onPointerDown(e: PointerEvent) {
 		if (window.innerWidth >= 768) return;
 		if (e.pointerType === 'mouse' && e.button !== 0) return;
 		dragging = true;
 		didSwipe = false;
+		committedSwipe = false;
 		dragStartX = e.clientX;
 		dragStartY = e.clientY;
-		// לא לקרוא ל-setPointerCapture: על iOS Safari הוא חוטף את המגע
-		// וחוסם את ההחלטה הנייטיבית של הדפדפן בין סוויפ אופקי לגלילה אנכית.
+		lastX = e.clientX;
+		lastY = e.clientY;
 	}
 
-	function onPointerUp(e: PointerEvent) {
+	function onPointerMove(e: PointerEvent) {
 		if (!dragging) return;
-		dragging = false;
-		const dx = e.clientX - dragStartX;
-		const dy = e.clientY - dragStartY;
-		// מתעלמים מתנועה שאינה אופקית מובהקת (כדי לא להפריע לגלילה אנכית)
+		lastX = e.clientX;
+		lastY = e.clientY;
+		if (!committedSwipe) {
+			const dx = lastX - dragStartX;
+			const dy = lastY - dragStartY;
+			// ברגע שזיהינו תנועה אופקית קטנה אבל מובהקת — מסמנים את הכוונה.
+			// אם הדפדפן יפיק pointercancel אחרי שלב זה, נוכל עדיין לכבד את הסוויפ.
+			if (Math.abs(dx) >= COMMIT_THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
+				committedSwipe = true;
+			}
+		}
+	}
+
+	function executeSwipe(dx: number, dy: number) {
 		if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
 		didSwipe = true;
 		// התוכן זז עם האצבע: גרירה שמאלה -> הקלף הימני (offset שלילי) מגיע למרכז,
@@ -293,11 +308,21 @@
 		else activeCol = Math.min(columns.length - 1, activeCol + 1);
 	}
 
-	function onPointerCancel() {
-		// pointercancel נורה כשהדפדפן "חוטף" את האירוע (למשל לגלילה אנכית).
-		// במצב כזה אין כוונת סוויפ — פשוט מאפסים מצב, בלי לחשב dx.
+	function onPointerUp(e: PointerEvent) {
+		if (!dragging) return;
 		dragging = false;
-		didSwipe = false;
+		executeSwipe(e.clientX - dragStartX, e.clientY - dragStartY);
+	}
+
+	function onPointerCancel() {
+		// pointercancel נורה כשהדפדפן חוטף את האירוע (למשל מתחיל לגלול).
+		// אם זיהינו כוונה אופקית מובהקת לפני שזה קרה — מבצעים את הסוויפ
+		// לפי המיקום האחרון שעקבנו אחריו ב-pointermove.
+		if (!dragging) return;
+		dragging = false;
+		if (committedSwipe) {
+			executeSwipe(lastX - dragStartX, lastY - dragStartY);
+		}
 	}
 
 	// אנימציה חד-פעמית של "אצבע מנגבת את המסך" שמדגימה למשתמש
@@ -471,6 +496,7 @@
 		class:side-active={activeCol !== 1}
 		bind:this={track}
 		onpointerdown={onPointerDown}
+		onpointermove={onPointerMove}
 		onpointerup={onPointerUp}
 		onpointercancel={onPointerCancel}
 	>
