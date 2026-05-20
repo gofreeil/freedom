@@ -272,9 +272,13 @@
 	let dragStartY = 0;
 	let lastX = 0;
 	let lastY = 0;
-	let dragging = false;
+	let dragging = $state(false);
 	let didSwipe = false;
 	let committedSwipe = false;
+	// offset חי בפיקסלים — הקרוסלה זזה עם האצבע בזמן הגרירה.
+	// משתמשים בדיכוי 0.55 כדי שתחושת ה"גומי" תהיה עדינה ולא מעופפת.
+	let dragOffset = $state(0);
+	const DRAG_DAMP = 0.55;
 	const SWIPE_THRESHOLD = 20;
 	const COMMIT_THRESHOLD = 7;
 
@@ -308,18 +312,26 @@
 		if (!t) return;
 		lastX = t.clientX;
 		lastY = t.clientY;
+		const dx = lastX - dragStartX;
+		const dy = lastY - dragStartY;
 		if (!committedSwipe) {
-			const dx = lastX - dragStartX;
-			const dy = lastY - dragStartY;
 			if (Math.abs(dx) >= COMMIT_THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
 				committedSwipe = true;
 			}
+		}
+		if (committedSwipe) {
+			// בקצוות (activeCol 0 או הקיצוני) — דיכוי חזק יותר כדי לרמוז שאי-אפשר להמשיך.
+			const atEdgeStart = activeCol === 0 && dx > 0;
+			const atEdgeEnd = activeCol === columns.length - 1 && dx < 0;
+			const damp = atEdgeStart || atEdgeEnd ? DRAG_DAMP * 0.4 : DRAG_DAMP;
+			dragOffset = dx * damp;
 		}
 	}
 
 	function onTouchEnd(e: TouchEvent) {
 		if (!dragging) return;
 		dragging = false;
+		dragOffset = 0; // ה-transition של הקרוסלה דואג לחזרה חלקה
 		const t = e.changedTouches[0];
 		if (!t) return;
 		executeSwipe(t.clientX - dragStartX, t.clientY - dragStartY);
@@ -330,6 +342,7 @@
 		// אם זיהינו כוונה אופקית לפני זה — מכבדים אותה לפי המיקום האחרון.
 		if (!dragging) return;
 		dragging = false;
+		dragOffset = 0;
 		if (committedSwipe) {
 			executeSwipe(lastX - dragStartX, lastY - dragStartY);
 		}
@@ -348,10 +361,10 @@
 		// המצב הראשוני עומד על משילות (activeCol=1) — שם רצה אנימציית הכותרת.
 		// היד נכנסת רק כמחצית לתוך המסך, מבצעת ניגוב קצר ויוצאת חזרה ימינה.
 		demoFingerActive = true;
-		// activeCol מתחלף כשהיד מבצעת את תנועת הניגוב (~38% מהאנימציה של 0.8s).
-		setTimeout(() => (activeCol = 0), 300);
+		// activeCol מתחלף כשהיד מבצעת את תנועת הניגוב (~38% מהאנימציה של 1s).
+		setTimeout(() => (activeCol = 0), 380);
 		// בסיום — היד יצאה מהפריים בצד ימין, מבטלים את הקיום.
-		setTimeout(() => (demoFingerActive = false), 800);
+		setTimeout(() => (demoFingerActive = false), 1000);
 	}
 
 	// מפעילים את הדמו ברגע שאבקת הקסם נכנסה לתצוגה (revealed=true).
@@ -485,6 +498,8 @@
 		class="cols-container md:items-stretch md:gap-12"
 		class:center-active={activeCol === 1}
 		class:side-active={activeCol !== 1}
+		class:dragging
+		style="--drag-offset:{dragOffset}px"
 		bind:this={track}
 		ontouchstart={onTouchStart}
 		ontouchmove={onTouchMove}
@@ -493,6 +508,7 @@
 	>
 		{#if demoFingerActive}
 			<div class="finger-demo" aria-hidden="true">
+				<span class="finger-smudge"></span>
 				<img src="/images/finger.png" alt="" />
 			</div>
 		{/if}
@@ -1013,6 +1029,14 @@
 		touch-action: pan-y;
 		-webkit-user-select: none;
 		user-select: none;
+		/* גרירה חיה: כל הסצנה זזה לפי האצבע, ובשחרור חוזרת חלקות. */
+		transform: translate3d(var(--drag-offset, 0px), 0, 0);
+		transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+		will-change: transform;
+	}
+	/* בזמן גרירה אקטיבית אין transition — תנועה 1:1 עם האצבע */
+	.cols-container.dragging {
+		transition: none;
 	}
 
 	.col-slide {
@@ -1026,9 +1050,9 @@
 		/* מעבר חלק ועקבי — קל בכניסה, רגוע ביציאה — שמאפשר למשתמש
 		   לעקוב אחר תנועת הקלף בצורה ברורה ולא קופצנית */
 		transition:
-			transform 0.65s cubic-bezier(0.35, 0.05, 0.2, 1),
-			opacity 0.55s cubic-bezier(0.35, 0.05, 0.2, 1),
-			filter 0.55s cubic-bezier(0.35, 0.05, 0.2, 1);
+			transform 0.95s cubic-bezier(0.25, 0.46, 0.2, 1),
+			opacity 0.85s cubic-bezier(0.25, 0.46, 0.2, 1),
+			filter 0.85s cubic-bezier(0.25, 0.46, 0.2, 1);
 		will-change: transform, opacity, filter;
 	}
 
@@ -1107,6 +1131,8 @@
 			touch-action: auto;
 			user-select: auto;
 			-webkit-user-select: auto;
+			transform: none;
+			transition: none;
 		}
 		.cols-container .col-slide,
 		.cols-container .col-slide[data-offset='0'],
@@ -1148,7 +1174,36 @@
 		pointer-events: none;
 		z-index: 50;
 		filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
-		animation: finger-swipe 0.8s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-swipe 1s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+	}
+	.finger-smudge {
+		position: absolute;
+		/* ממוקם מתחת לקצה האצבע (פינה שמאלית-תחתונה של תמונת היד המסובבת) */
+		top: 6.2rem;
+		left: -0.6rem;
+		width: 3.2rem;
+		height: 1.6rem;
+		border-radius: 50%;
+		background: radial-gradient(
+			ellipse at center,
+			rgba(255, 255, 255, 0.55) 0%,
+			rgba(255, 255, 255, 0.28) 45%,
+			rgba(255, 255, 255, 0) 75%
+		);
+		filter: blur(2px);
+		transform: rotate(-12deg) scaleX(1);
+		transform-origin: center;
+		opacity: 0;
+		pointer-events: none;
+		animation: finger-smudge 1s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+	}
+	@keyframes finger-smudge {
+		0%   { opacity: 0; transform: rotate(-12deg) scaleX(0.6); }
+		22%  { opacity: 0; transform: rotate(-12deg) scaleX(0.7); }
+		30%  { opacity: 0.85; transform: rotate(-12deg) scaleX(1); }
+		50%  { opacity: 0.75; transform: rotate(-12deg) scaleX(1.25); }
+		70%  { opacity: 0; transform: rotate(-12deg) scaleX(1.35); }
+		100% { opacity: 0; transform: rotate(-12deg) scaleX(1.35); }
 	}
 	.finger-demo img {
 		width: 100%;
@@ -1157,32 +1212,29 @@
 		/* סיבוב קל פנימה לכיוון הניגוב — לא מתערב באנימציה של .finger-demo */
 		transform: rotate(-18deg);
 		transform-origin: 60% 30%;
-		animation: finger-tilt 0.8s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-tilt 1s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 	}
 	@keyframes finger-tilt {
 		0% { transform: rotate(-18deg); }
 		25% { transform: rotate(-22deg); }
-		50% { transform: rotate(-28deg); }
-		75% { transform: rotate(-22deg); }
+		45% { transform: rotate(-28deg); }
 		100% { transform: rotate(-18deg); }
 	}
 	/* היד נכנסת רק כמחצית לתוך המסך מצד ימין, מבצעת ניגוב קצר שמאלה,
-	   ויוצאת חזרה ימינה (לא חוצה את המסך). ללא fade. */
+	   ויוצאת חזרה ימינה (לא חוצה את המסך). ללא fade.
+	   ללא נקודת ביניים בחזרה — תנועה רציפה אחת מהשיא חזרה לימין כדי
+	   למנוע "גמגום" שנוצר משינוי כיוון מודגש באמצע. */
 	@keyframes finger-swipe {
 		0% {
 			transform: translateX(50vw) scale(1);
 			opacity: 1;
 		}
 		25% {
-			transform: translateX(22vw) scale(1);
+			transform: translateX(20vw) scale(1);
 			opacity: 1;
 		}
-		50% {
-			transform: translateX(8vw) scale(1);
-			opacity: 1;
-		}
-		75% {
-			transform: translateX(30vw) scale(1);
+		45% {
+			transform: translateX(10vw) scale(1);
 			opacity: 1;
 		}
 		100% {
