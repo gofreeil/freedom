@@ -307,11 +307,16 @@
 	let demoPlayed = false;
 
 	function runSwipeDemo() {
-		// היד נכנסת מצד ימין, "תופסת" את העמודה הימנית (קהילה)
-		// וגוררת אותה למרכז. לא מחזירים את העמוד האמצעי — נשארים על העמוד החדש.
-		demoFingerActive = true;
-		setTimeout(() => (activeCol = 0), 350);
-		setTimeout(() => (demoFingerActive = false), 1050);
+		// שלב 1: מעמידים את הטור הימני (קהילה) במרכז כמצב פתיחה של הדמו.
+		activeCol = 0;
+		// שלב 2: מחכים שהמעבר של הקרוסלה ייגמר (~0.9s) ואז מציגים את היד.
+		setTimeout(() => {
+			demoFingerActive = true;
+			// שלב 3: בשיא הניגוב (~50% מ-1.05s) מעבירים לטור האמצעי.
+			setTimeout(() => (activeCol = 1), 500);
+			// שלב 4: בסיום האנימציה — היד כבר מחוץ למסך משמאל, מבטלים את הקיום.
+			setTimeout(() => (demoFingerActive = false), 1050);
+		}, 950);
 	}
 
 	onMount(() => {
@@ -462,6 +467,8 @@
 	</div>
 	<div
 		class="cols-container md:items-stretch md:gap-12"
+		class:center-active={activeCol === 1}
+		class:side-active={activeCol !== 1}
 		bind:this={track}
 		onpointerdown={onPointerDown}
 		onpointerup={onPointerUp}
@@ -1008,37 +1015,48 @@
 		will-change: transform, opacity, filter;
 	}
 
-	/* ההיסט נמדד ביחס לפעיל. זוויות עדינות (~12°/18°) ו-translateX
-	   צנוע יותר כדי שהכותרת לא תיראה "מתעקמת" — מתבסס על תחושת
-	   coverflow של אפליקציות אפל (Music, Photos) שמשתמשות בהטיה מתונה. */
 	.col-slide[data-offset='0'] {
 		transform: translateX(0) scale(1) rotateY(0);
 		opacity: 1;
 		filter: none;
 		z-index: 30;
 	}
-	.col-slide[data-offset='1'] {
-		transform: translateX(-28%) scale(0.74) rotateY(12deg);
-		opacity: 0.85;
-		filter: none;
+
+	/* מצב "מרכז": activeCol=1, כל הקלפים סימטריים סביב הפעיל.
+	   הזוויות החדות יותר (כמו במקור) יוצרות תחושת coverflow ברורה,
+	   והכותרות הצדדיות בולטות מאחורי הקלף הפעיל. */
+	.cols-container.center-active .col-slide[data-offset='1'] {
+		transform: translateX(-34%) scale(0.62) rotateY(22deg);
+		opacity: 0.8;
 		z-index: 20;
 	}
-	.col-slide[data-offset='-1'] {
-		transform: translateX(28%) scale(0.74) rotateY(-12deg);
-		opacity: 0.85;
-		filter: none;
+	.cols-container.center-active .col-slide[data-offset='-1'] {
+		transform: translateX(34%) scale(0.62) rotateY(-22deg);
+		opacity: 0.8;
 		z-index: 20;
 	}
-	.col-slide[data-offset='2'] {
-		transform: translateX(-48%) scale(0.56) rotateY(18deg);
-		opacity: 0.5;
-		filter: none;
+
+	/* מצב "צד": activeCol=0 או 2, כל הקלפים האחרים נצברים בצד אחד.
+	   כדי שלא ייצמדו זה על זה ויפריעו לכותרת הפעילה — קטנים יותר,
+	   מרוחקים יותר זה מזה, וחצי-שקופים. */
+	.cols-container.side-active .col-slide[data-offset='1'] {
+		transform: translateX(-42%) scale(0.5) rotateY(16deg);
+		opacity: 0.45;
+		z-index: 20;
+	}
+	.cols-container.side-active .col-slide[data-offset='-1'] {
+		transform: translateX(42%) scale(0.5) rotateY(-16deg);
+		opacity: 0.45;
+		z-index: 20;
+	}
+	.cols-container.side-active .col-slide[data-offset='2'] {
+		transform: translateX(-66%) scale(0.36) rotateY(22deg);
+		opacity: 0.3;
 		z-index: 10;
 	}
-	.col-slide[data-offset='-2'] {
-		transform: translateX(48%) scale(0.56) rotateY(-18deg);
-		opacity: 0.5;
-		filter: none;
+	.cols-container.side-active .col-slide[data-offset='-2'] {
+		transform: translateX(66%) scale(0.36) rotateY(-22deg);
+		opacity: 0.3;
 		z-index: 10;
 	}
 
@@ -1073,12 +1091,18 @@
 			user-select: auto;
 			-webkit-user-select: auto;
 		}
-		.col-slide,
-		.col-slide[data-offset='0'],
-		.col-slide[data-offset='1'],
-		.col-slide[data-offset='-1'],
-		.col-slide[data-offset='2'],
-		.col-slide[data-offset='-2'] {
+		.cols-container .col-slide,
+		.cols-container .col-slide[data-offset='0'],
+		.cols-container .col-slide[data-offset='1'],
+		.cols-container .col-slide[data-offset='-1'],
+		.cols-container .col-slide[data-offset='2'],
+		.cols-container .col-slide[data-offset='-2'],
+		.cols-container.center-active .col-slide[data-offset='1'],
+		.cols-container.center-active .col-slide[data-offset='-1'],
+		.cols-container.side-active .col-slide[data-offset='1'],
+		.cols-container.side-active .col-slide[data-offset='-1'],
+		.cols-container.side-active .col-slide[data-offset='2'],
+		.cols-container.side-active .col-slide[data-offset='-2'] {
 			grid-column: auto;
 			grid-row: auto;
 			flex: 1 1 0%;
@@ -1121,14 +1145,12 @@
 	@keyframes finger-tilt {
 		0% { transform: rotate(-18deg); }
 		22% { transform: rotate(-18deg); }
-		32% { transform: rotate(-26deg); }
-		50% { transform: rotate(-28deg); }
-		72% { transform: rotate(-22deg); }
-		100% { transform: rotate(-18deg); }
+		32% { transform: rotate(-25deg); }
+		55% { transform: rotate(-30deg); }
+		100% { transform: rotate(-24deg); }
 	}
-	/* היד נכנסת מצד ימין (מחוץ למסך), מבצעת את תנועת הניגוב שמאלה,
-	   וחוזרת אל מחוץ לפריים בצד ימין — ללא fade. בשלב הניגוב התנועה
-	   מואצת כדי שתיראה כמו תנועת אצבע אמיתית, לא החלקה איטית. */
+	/* היד נכנסת מצד ימין (מחוץ למסך), מבצעת ניגוב מואץ שמאלה,
+	   וממשיכה החוצה מהפריים בצד שמאל — לא חוזרת ימינה. ללא fade. */
 	@keyframes finger-swipe {
 		0% {
 			transform: translateX(45vw) scale(1);
@@ -1139,19 +1161,15 @@
 			opacity: 1;
 		}
 		32% {
-			transform: translateX(-4vw) scale(1);
+			transform: translateX(-5vw) scale(1);
 			opacity: 1;
 		}
-		50% {
-			transform: translateX(-20vw) scale(1);
-			opacity: 1;
-		}
-		72% {
-			transform: translateX(-22vw) scale(1);
+		55% {
+			transform: translateX(-28vw) scale(1);
 			opacity: 1;
 		}
 		100% {
-			transform: translateX(45vw) scale(1);
+			transform: translateX(-70vw) scale(0.95);
 			opacity: 1;
 		}
 	}
