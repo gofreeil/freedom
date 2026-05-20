@@ -49,7 +49,7 @@
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
                 <a href="mailto:freedomhasbegun@gmail.com" class="hover:text-white transition-colors whitespace-nowrap" aria-label="צור קשר – שלח אימייל">{tFn("contact_us")}</a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
-                <a href="/about/advertise" class="hover:text-white transition-colors text-center leading-tight">דרושים מנהיגים<br class="md:hidden" /><span class="hidden md:inline">&nbsp;</span>ומתנדבים</a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSd54dS1D-MkSVY5PQST2pBm8cOMA5npTcA-xAgDSLQxD3OpUw/viewform?usp=header" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors text-center leading-tight">דרושים מנהיגים<br class="md:hidden" /><span class="hidden md:inline">&nbsp;</span>ומתנדבים</a>
             </nav>
 
             <!-- Left: Copyright -->
