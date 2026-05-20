@@ -268,36 +268,9 @@
 	let lastY = 0;
 	let dragging = false;
 	let didSwipe = false;
-	let committedSwipe = false; // האם זיהינו תנועה אופקית מובהקת לפני שהדפדפן (אולי) חטף
+	let committedSwipe = false;
 	const SWIPE_THRESHOLD = 28;
 	const COMMIT_THRESHOLD = 12;
-
-	function onPointerDown(e: PointerEvent) {
-		if (window.innerWidth >= 768) return;
-		if (e.pointerType === 'mouse' && e.button !== 0) return;
-		dragging = true;
-		didSwipe = false;
-		committedSwipe = false;
-		dragStartX = e.clientX;
-		dragStartY = e.clientY;
-		lastX = e.clientX;
-		lastY = e.clientY;
-	}
-
-	function onPointerMove(e: PointerEvent) {
-		if (!dragging) return;
-		lastX = e.clientX;
-		lastY = e.clientY;
-		if (!committedSwipe) {
-			const dx = lastX - dragStartX;
-			const dy = lastY - dragStartY;
-			// ברגע שזיהינו תנועה אופקית קטנה אבל מובהקת — מסמנים את הכוונה.
-			// אם הדפדפן יפיק pointercancel אחרי שלב זה, נוכל עדיין לכבד את הסוויפ.
-			if (Math.abs(dx) >= COMMIT_THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
-				committedSwipe = true;
-			}
-		}
-	}
 
 	function executeSwipe(dx: number, dy: number) {
 		if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
@@ -308,16 +281,47 @@
 		else activeCol = Math.min(columns.length - 1, activeCol + 1);
 	}
 
-	function onPointerUp(e: PointerEvent) {
-		if (!dragging) return;
-		dragging = false;
-		executeSwipe(e.clientX - dragStartX, e.clientY - dragStartY);
+	// משתמשים באירועי touch נייטיביים — הם הכי אמינים על iOS Safari,
+	// בעוד pointer events לפעמים לא יורים על כל המכשירים/דפדפנים.
+	function onTouchStart(e: TouchEvent) {
+		if (window.innerWidth >= 768) return;
+		const t = e.touches[0];
+		if (!t) return;
+		dragging = true;
+		didSwipe = false;
+		committedSwipe = false;
+		dragStartX = t.clientX;
+		dragStartY = t.clientY;
+		lastX = t.clientX;
+		lastY = t.clientY;
 	}
 
-	function onPointerCancel() {
-		// pointercancel נורה כשהדפדפן חוטף את האירוע (למשל מתחיל לגלול).
-		// אם זיהינו כוונה אופקית מובהקת לפני שזה קרה — מבצעים את הסוויפ
-		// לפי המיקום האחרון שעקבנו אחריו ב-pointermove.
+	function onTouchMove(e: TouchEvent) {
+		if (!dragging) return;
+		const t = e.touches[0];
+		if (!t) return;
+		lastX = t.clientX;
+		lastY = t.clientY;
+		if (!committedSwipe) {
+			const dx = lastX - dragStartX;
+			const dy = lastY - dragStartY;
+			if (Math.abs(dx) >= COMMIT_THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
+				committedSwipe = true;
+			}
+		}
+	}
+
+	function onTouchEnd(e: TouchEvent) {
+		if (!dragging) return;
+		dragging = false;
+		const t = e.changedTouches[0];
+		if (!t) return;
+		executeSwipe(t.clientX - dragStartX, t.clientY - dragStartY);
+	}
+
+	function onTouchCancel() {
+		// touchcancel נורה כשהמערכת חוטפת את המגע (למשל גלילה נייטיבית).
+		// אם זיהינו כוונה אופקית לפני זה — מכבדים אותה לפי המיקום האחרון.
 		if (!dragging) return;
 		dragging = false;
 		if (committedSwipe) {
@@ -344,35 +348,16 @@
 		}, 950);
 	}
 
-	onMount(() => {
+	// מפעילים את הדמו ברגע שאבקת הקסם נכנסה לתצוגה (revealed=true).
+	// משתמשים באותו טריגר של האבקה במקום IO נפרד שעלול לא לירות באייפון.
+	$effect(() => {
+		if (!revealed || demoPlayed) return;
 		if (typeof window === 'undefined') return;
 		if (!window.matchMedia('(max-width: 767px)').matches) return;
-		let timer: ReturnType<typeof setTimeout>;
-		const triggerDemo = () => {
-			if (demoPlayed) return;
-			demoPlayed = true;
-			// משהים את ההדגמה כדי שתופיע הרבה אחרי אבקת הקסם והארת הכותרות
-			// (dust ~3.6s + heading illuminate שמסתיים ~4s).
-			timer = setTimeout(runSwipeDemo, 4800);
-		};
-		const io = new IntersectionObserver(
-			(entries) => {
-				if (entries[0].isIntersecting) {
-					triggerDemo();
-					io.disconnect();
-				}
-			},
-			{ threshold: 0 }
-		);
-		io.observe(track);
-		// Fallback: אם משום מה ה-IO לא יורה (Safari iOS, layout מוזר וכו') —
-		// מפעילים בכל מקרה אחרי 6 שניות מטעינת הדף.
-		const fallback = setTimeout(triggerDemo, 6000);
-		return () => {
-			io.disconnect();
-			clearTimeout(timer);
-			clearTimeout(fallback);
-		};
+		demoPlayed = true;
+		// משהים את ההדגמה כדי שתופיע אחרי שאבקת הקסם והארת הכותרות הסתיימו (~4s).
+		const timer = setTimeout(runSwipeDemo, 4500);
+		return () => clearTimeout(timer);
 	});
 </script>
 
@@ -495,10 +480,10 @@
 		class:center-active={activeCol === 1}
 		class:side-active={activeCol !== 1}
 		bind:this={track}
-		onpointerdown={onPointerDown}
-		onpointermove={onPointerMove}
-		onpointerup={onPointerUp}
-		onpointercancel={onPointerCancel}
+		ontouchstart={onTouchStart}
+		ontouchmove={onTouchMove}
+		ontouchend={onTouchEnd}
+		ontouchcancel={onTouchCancel}
 	>
 		{#if demoFingerActive}
 			<div class="finger-demo" aria-hidden="true">
@@ -1200,11 +1185,6 @@
 		}
 	}
 	@media (min-width: 768px) {
-		.finger-demo {
-			display: none !important;
-		}
-	}
-	@media (prefers-reduced-motion: reduce) {
 		.finger-demo {
 			display: none !important;
 		}
