@@ -185,7 +185,7 @@
 				if (entries[0].isIntersecting) {
 					revealed = true;
 					dustActive = true;
-					timer = setTimeout(() => (dustActive = false), 4500);
+					timer = setTimeout(() => (dustActive = false), 2600);
 					observer.disconnect();
 				}
 			},
@@ -226,7 +226,9 @@
 	// האחרים מוקטנים, חשוכים ושקופים, וכותרותיהם מציצות מעליו.
 	// החלקה אופקית או הקשה על כותרת אחורית מגלגלות את העמוד הנבחר קדימה.
 	let track: HTMLElement;
-	let activeCol = $state(1);
+	// מצב פתיחה בנייד: כלכלה במרכז (activeCol=2). הדמו מתחיל מכאן ומבצע
+	// מעבר יחיד אל משילות (1) — בלי זיגזוג של 1→0→1 כמו בעבר.
+	let activeCol = $state(2);
 
 	// בכל החלפת עמודה — מריצים מחדש את אנימציית הקו (glow-bar) של העמודה הפעילה.
 	// משיגים זאת ע"י remount של אלמנט ה-glow-bar באמצעות {#key replayKey},
@@ -340,16 +342,14 @@
 	let demoPlayed = false;
 
 	function runSwipeDemo() {
-		// שלב 1: מעמידים את הטור הימני (קהילה) במרכז כמצב פתיחה של הדמו.
-		activeCol = 0;
-		// שלב 2: מחכים שהמעבר של הקרוסלה ייגמר (~0.9s) ואז מציגים את היד.
-		setTimeout(() => {
-			demoFingerActive = true;
-			// שלב 3: בשיא הניגוב (~50% מ-1.05s) מעבירים לטור האמצעי.
-			setTimeout(() => (activeCol = 1), 500);
-			// שלב 4: בסיום האנימציה — היד כבר מחוץ למסך משמאל, מבטלים את הקיום.
-			setTimeout(() => (demoFingerActive = false), 1050);
-		}, 950);
+		// המצב הראשוני כבר עומד על כלכלה (activeCol=2). מציגים את היד מיד,
+		// ובמהלך תנועת הניגוב היא "גוררת" את הקרוסלה אל משילות (activeCol=1).
+		demoFingerActive = true;
+		// activeCol מתחלף ברגע שהיד מתחילה להזיז את הקלף (~30% מהאנימציה).
+		// משם והלאה הקרוסלה והיד נעות יחד עד שהיד יוצאת מהפריים.
+		setTimeout(() => (activeCol = 1), 270);
+		// בסיום האנימציה — היד מחוץ למסך משמאל, מבטלים את הקיום.
+		setTimeout(() => (demoFingerActive = false), 950);
 	}
 
 	// מפעילים את הדמו ברגע שאבקת הקסם נכנסה לתצוגה (revealed=true).
@@ -359,8 +359,8 @@
 		if (typeof window === 'undefined') return;
 		if (!window.matchMedia('(max-width: 767px)').matches) return;
 		demoPlayed = true;
-		// משהים את ההדגמה כדי שתופיע אחרי שאבקת הקסם והארת הכותרות הסתיימו (~4s).
-		const timer = setTimeout(runSwipeDemo, 4500);
+		// משהים את ההדגמה כדי שתופיע מיד אחרי שאבקת הקסם והכותרת מואירות.
+		const timer = setTimeout(runSwipeDemo, 2400);
 		return () => clearTimeout(timer);
 	});
 </script>
@@ -506,7 +506,7 @@
 				class:is-active={activeCol === i}
 				data-offset={offsetFor(i)}
 				onclickcapture={(e) => onSlideClick(e, i)}
-				style="--reveal-delay:{replayKey > 0 ? '0s' : i === 1 ? '1.7s' : '2.3s'}"
+				style="--reveal-delay:{replayKey > 0 ? '0s' : i === 1 ? '0.9s' : '1.3s'}"
 			>
 				<div class="col-slide-inner flex flex-1 flex-col">
 				<div class="mb-12 flex flex-col items-center">
@@ -743,7 +743,7 @@
 		margin-bottom: 0.5rem;
 		pointer-events: none;
 		overflow: visible;
-		animation: dust-fade 3.6s linear forwards;
+		animation: dust-fade 2.2s linear forwards;
 		animation-play-state: paused;
 	}
 
@@ -759,7 +759,7 @@
 	/* הכותרות הקטנות מתחילות להאיר רק כשפירורי הקסם נוגעים בהן —
 	   ה-delay נקבע פר-עמודה דרך --reveal-delay (העמודה האמצעית מורמת ולכן מוקדמת יותר) */
 	.col-heading {
-		animation: heading-illuminate 1.7s ease-out var(--reveal-delay, 2.3s) both;
+		animation: heading-illuminate 1.1s ease-out var(--reveal-delay, 1.3s) both;
 		animation-play-state: paused;
 	}
 
@@ -851,7 +851,7 @@
 		gap: 6px;
 		width: 150px;
 		margin-top: 0.55rem;
-		animation: bar-charge 0.7s ease-out calc(var(--reveal-delay, 2.3s) + 0.6s) both;
+		animation: bar-charge 0.7s ease-out calc(var(--reveal-delay, 1.3s) + 0.4s) both;
 		animation-play-state: paused;
 	}
 
@@ -906,7 +906,7 @@
 			0 0 8px rgba(241, 245, 249, 0.85),
 			0 0 18px rgba(203, 213, 225, 0.5);
 		animation: line-reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1)
-			calc(var(--reveal-delay, 2.3s) + 0.2s) both;
+			calc(var(--reveal-delay, 1.3s) + 0.15s) both;
 		animation-play-state: paused;
 	}
 
@@ -945,7 +945,7 @@
 			0 0 8px rgba(241, 245, 249, 0.95),
 			0 0 18px rgba(203, 213, 225, 0.6);
 		animation: gem-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)
-			calc(var(--reveal-delay, 2.3s) + 0.08s) both;
+			calc(var(--reveal-delay, 1.3s) + 0.06s) both;
 		animation-play-state: paused;
 	}
 
@@ -1024,9 +1024,9 @@
 		/* מעבר חלק ועקבי — קל בכניסה, רגוע ביציאה — שמאפשר למשתמש
 		   לעקוב אחר תנועת הקלף בצורה ברורה ולא קופצנית */
 		transition:
-			transform 0.9s cubic-bezier(0.35, 0.05, 0.2, 1),
-			opacity 0.75s cubic-bezier(0.35, 0.05, 0.2, 1),
-			filter 0.75s cubic-bezier(0.35, 0.05, 0.2, 1);
+			transform 0.65s cubic-bezier(0.35, 0.05, 0.2, 1),
+			opacity 0.55s cubic-bezier(0.35, 0.05, 0.2, 1),
+			filter 0.55s cubic-bezier(0.35, 0.05, 0.2, 1);
 		will-change: transform, opacity, filter;
 	}
 
@@ -1146,7 +1146,7 @@
 		pointer-events: none;
 		z-index: 50;
 		filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
-		animation: finger-swipe 1.05s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-swipe 0.95s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 	}
 	.finger-demo img {
 		width: 100%;
@@ -1155,7 +1155,7 @@
 		/* סיבוב קל פנימה לכיוון הניגוב — לא מתערב באנימציה של .finger-demo */
 		transform: rotate(-18deg);
 		transform-origin: 60% 30%;
-		animation: finger-tilt 1.05s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-tilt 0.95s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 	}
 	@keyframes finger-tilt {
 		0% { transform: rotate(-18deg); }
