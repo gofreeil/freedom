@@ -226,9 +226,9 @@
 	// האחרים מוקטנים, חשוכים ושקופים, וכותרותיהם מציצות מעליו.
 	// החלקה אופקית או הקשה על כותרת אחורית מגלגלות את העמוד הנבחר קדימה.
 	let track: HTMLElement;
-	// מצב פתיחה בנייד: כלכלה במרכז (activeCol=2). הדמו מתחיל מכאן ומבצע
-	// מעבר יחיד אל משילות (1) — בלי זיגזוג של 1→0→1 כמו בעבר.
-	let activeCol = $state(2);
+	// מצב פתיחה בנייד: משילות במרכז (activeCol=1) — אבקת הקסם והארת הכותרת
+	// רצות על העמודה האמצעית כברירת מחדל. בהמשך היד מגיעה וגוללת אל קהילה (0).
+	let activeCol = $state(1);
 
 	// בכל החלפת עמודה — מריצים מחדש את אנימציית הקו (glow-bar) של העמודה הפעילה.
 	// משיגים זאת ע"י remount של אלמנט ה-glow-bar באמצעות {#key replayKey},
@@ -275,8 +275,8 @@
 	let dragging = false;
 	let didSwipe = false;
 	let committedSwipe = false;
-	const SWIPE_THRESHOLD = 28;
-	const COMMIT_THRESHOLD = 12;
+	const SWIPE_THRESHOLD = 20;
+	const COMMIT_THRESHOLD = 7;
 
 	function executeSwipe(dx: number, dy: number) {
 		if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
@@ -340,16 +340,18 @@
 	// פעם אחת בלבד לכל טעינת דף.
 	let demoFingerActive = $state(false);
 	let demoPlayed = false;
+	let demoStarted = false; // משמר חזק: מבטיח שהדמו ירוץ פעם אחת בלבד
 
 	function runSwipeDemo() {
-		// המצב הראשוני כבר עומד על כלכלה (activeCol=2). מציגים את היד מיד,
-		// ובמהלך תנועת הניגוב היא "גוררת" את הקרוסלה אל משילות (activeCol=1).
+		if (demoStarted) return;
+		demoStarted = true;
+		// המצב הראשוני עומד על משילות (activeCol=1) — שם רצה אנימציית הכותרת.
+		// היד נכנסת רק כמחצית לתוך המסך, מבצעת ניגוב קצר ויוצאת חזרה ימינה.
 		demoFingerActive = true;
-		// activeCol מתחלף ברגע שהיד מתחילה להזיז את הקלף (~30% מהאנימציה).
-		// משם והלאה הקרוסלה והיד נעות יחד עד שהיד יוצאת מהפריים.
-		setTimeout(() => (activeCol = 1), 270);
-		// בסיום האנימציה — היד מחוץ למסך משמאל, מבטלים את הקיום.
-		setTimeout(() => (demoFingerActive = false), 950);
+		// activeCol מתחלף כשהיד מבצעת את תנועת הניגוב (~38% מהאנימציה של 0.8s).
+		setTimeout(() => (activeCol = 0), 300);
+		// בסיום — היד יצאה מהפריים בצד ימין, מבטלים את הקיום.
+		setTimeout(() => (demoFingerActive = false), 800);
 	}
 
 	// מפעילים את הדמו ברגע שאבקת הקסם נכנסה לתצוגה (revealed=true).
@@ -360,7 +362,7 @@
 		if (!window.matchMedia('(max-width: 767px)').matches) return;
 		demoPlayed = true;
 		// משהים את ההדגמה כדי שתופיע מיד אחרי שאבקת הקסם והכותרת מואירות.
-		const timer = setTimeout(runSwipeDemo, 2400);
+		const timer = setTimeout(runSwipeDemo, 1800);
 		return () => clearTimeout(timer);
 	});
 </script>
@@ -1146,7 +1148,7 @@
 		pointer-events: none;
 		z-index: 50;
 		filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
-		animation: finger-swipe 0.95s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-swipe 0.8s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 	}
 	.finger-demo img {
 		width: 100%;
@@ -1155,36 +1157,36 @@
 		/* סיבוב קל פנימה לכיוון הניגוב — לא מתערב באנימציה של .finger-demo */
 		transform: rotate(-18deg);
 		transform-origin: 60% 30%;
-		animation: finger-tilt 0.95s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-tilt 0.8s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 	}
 	@keyframes finger-tilt {
 		0% { transform: rotate(-18deg); }
-		22% { transform: rotate(-18deg); }
-		32% { transform: rotate(-25deg); }
-		55% { transform: rotate(-30deg); }
-		100% { transform: rotate(-24deg); }
+		25% { transform: rotate(-22deg); }
+		50% { transform: rotate(-28deg); }
+		75% { transform: rotate(-22deg); }
+		100% { transform: rotate(-18deg); }
 	}
-	/* היד נכנסת מצד ימין (מחוץ למסך), מבצעת ניגוב מואץ שמאלה,
-	   וממשיכה החוצה מהפריים בצד שמאל — לא חוזרת ימינה. ללא fade. */
+	/* היד נכנסת רק כמחצית לתוך המסך מצד ימין, מבצעת ניגוב קצר שמאלה,
+	   ויוצאת חזרה ימינה (לא חוצה את המסך). ללא fade. */
 	@keyframes finger-swipe {
 		0% {
-			transform: translateX(45vw) scale(1);
+			transform: translateX(50vw) scale(1);
 			opacity: 1;
 		}
-		22% {
-			transform: translateX(0) scale(1);
+		25% {
+			transform: translateX(22vw) scale(1);
 			opacity: 1;
 		}
-		32% {
-			transform: translateX(-5vw) scale(1);
+		50% {
+			transform: translateX(8vw) scale(1);
 			opacity: 1;
 		}
-		55% {
-			transform: translateX(-28vw) scale(1);
+		75% {
+			transform: translateX(30vw) scale(1);
 			opacity: 1;
 		}
 		100% {
-			transform: translateX(-70vw) scale(0.95);
+			transform: translateX(55vw) scale(0.95);
 			opacity: 1;
 		}
 	}
