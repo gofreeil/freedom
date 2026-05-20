@@ -361,10 +361,10 @@
 		// המצב הראשוני עומד על משילות (activeCol=1) — שם רצה אנימציית הכותרת.
 		// היד נכנסת רק כמחצית לתוך המסך, מבצעת ניגוב קצר ויוצאת חזרה ימינה.
 		demoFingerActive = true;
-		// activeCol מתחלף כשהיד מבצעת את תנועת הניגוב (~38% מהאנימציה של 1.6s).
-		setTimeout(() => (activeCol = 0), 608);
+		// activeCol מתחלף כשהיד מבצעת את תנועת הניגוב (~38% מהאנימציה של 2s).
+		setTimeout(() => (activeCol = 0), 760);
 		// בסיום — היד יצאה מהפריים בצד ימין, מבטלים את הקיום.
-		setTimeout(() => (demoFingerActive = false), 1600);
+		setTimeout(() => (demoFingerActive = false), 2000);
 	}
 
 	// מפעילים את הדמו ברגע שאבקת הקסם נכנסה לתצוגה (revealed=true).
@@ -1211,7 +1211,7 @@
 		pointer-events: none;
 		z-index: 50;
 		filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
-		animation: finger-swipe 1.6s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-swipe 2s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 	}
 	.finger-smudge {
 		position: absolute;
@@ -1234,7 +1234,7 @@
 		opacity: 0;
 		pointer-events: none;
 		z-index: 49;
-		animation: finger-smudge 1.6s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-smudge 2s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 		mix-blend-mode: screen;
 	}
 	@keyframes finger-smudge {
@@ -1252,7 +1252,7 @@
 		/* סיבוב קל פנימה לכיוון הניגוב — לא מתערב באנימציה של .finger-demo */
 		transform: rotate(-18deg);
 		transform-origin: 60% 30%;
-		animation: finger-tilt 1.6s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation: finger-tilt 2s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
 	}
 	@keyframes finger-tilt {
 		0% { transform: rotate(-18deg); }
