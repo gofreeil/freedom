@@ -1145,6 +1145,12 @@
 	@media (max-width: 767px) {
 		.col-slide:not([data-offset='0']) {
 			pointer-events: none;
+			/* מוציאים מחישוב הגובה — הגובה של הקרוסלה ייקבע רק לפי
+			   העמודה הפעילה, כדי שלא ייווצר חלל ריק מתחת לעמודות קצרות. */
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
 		}
 		.col-slide:not([data-offset='0']) .glow-bar {
 			display: none;
