@@ -352,6 +352,7 @@
 	// שאפשר לדפדף בין הקלפים. רצה רק כשהקרוסלה נכנסת לתצוגה בנייד,
 	// פעם אחת בלבד לכל טעינת דף.
 	let demoFingerActive = $state(false);
+	let demoReverseActive = $state(false);
 	let demoPlayed = false;
 	let demoStarted = false; // משמר חזק: מבטיח שהדמו ירוץ פעם אחת בלבד
 
@@ -366,6 +367,52 @@
 		// בסיום — היד יצאה מהפריים בצד ימין, מבטלים את הקיום.
 		setTimeout(() => (demoFingerActive = false), 2000);
 	}
+
+	// אנימציה הפוכה: מתרחשת כשהמשתמש גולל מטה ואז חוזר מעלה אל הכותרת.
+	// היד והניגוב רצים בהילוך אחורי (animation-direction: reverse) ו-activeCol
+	// חוזר מ-0 אל 1 בתזמון תואם לנקודת השיא של הניגוב באנימציה המהופכת.
+	let reverseRunning = false;
+	function runReverseSwipeDemo() {
+		if (reverseRunning) return;
+		reverseRunning = true;
+		// מתחילים מאותו מצב סופי של הדמו הקדמי — activeCol=0
+		activeCol = 0;
+		demoReverseActive = true;
+		// בהילוך אחורי, נקודת השיא של הניגוב (45% במקור) מתרחשת ב-55% מהאנימציה ≈ 1100ms.
+		// מחליפים את activeCol קצת אחרי השיא כדי שהיד "תמשוך" את העמודה האמצעית פנימה.
+		setTimeout(() => (activeCol = 1), 1240);
+		setTimeout(() => {
+			demoReverseActive = false;
+			reverseRunning = false;
+		}, 2000);
+	}
+
+	// מעקב גלילה: כשגוללים מטה מעבר לאזור הקרוסלה ואז חוזרים מעלה אל הכותרת —
+	// מפעילים את הדמו ההפוך. נייד בלבד, ולאחר שהדמו הקדמי כבר הוצג.
+	$effect(() => {
+		if (typeof window === 'undefined') return;
+		if (!window.matchMedia('(max-width: 767px)').matches) return;
+
+		let lastY = window.scrollY;
+		let scrolledPast = false;
+
+		function onScroll() {
+			const y = window.scrollY;
+			const goingUp = y < lastY;
+			lastY = y;
+
+			// סף שמעבר אליו מניחים שהמשתמש חצה את אזור הקרוסלה
+			if (y > 600) scrolledPast = true;
+
+			if (goingUp && y < 80 && scrolledPast && demoStarted && !reverseRunning) {
+				scrolledPast = false; // איפוס: יופעל שוב רק אם המשתמש יחזור מטה ושוב למעלה
+				runReverseSwipeDemo();
+			}
+		}
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+		return () => window.removeEventListener('scroll', onScroll);
+	});
 
 	// מפעילים את הדמו ברגע שאבקת הקסם נכנסה לתצוגה (revealed=true).
 	// משתמשים באותו טריגר של האבקה במקום IO נפרד שעלול לא לירות באייפון.
@@ -509,6 +556,12 @@
 		{#if demoFingerActive}
 			<span class="finger-smudge" aria-hidden="true"></span>
 			<div class="finger-demo" aria-hidden="true">
+				<img src="/images/finger.png" alt="" />
+			</div>
+		{/if}
+		{#if demoReverseActive}
+			<span class="finger-smudge reverse" aria-hidden="true"></span>
+			<div class="finger-demo reverse" aria-hidden="true">
 				<img src="/images/finger.png" alt="" />
 			</div>
 		{/if}
@@ -1288,6 +1341,17 @@
 			opacity: 1;
 		}
 	}
+	/* גרסה הפוכה — הילוך אחורי לכל שלוש האנימציות (יד, ניגוב, הטיה) */
+	.finger-demo.reverse {
+		animation-direction: reverse;
+	}
+	.finger-demo.reverse img {
+		animation-direction: reverse;
+	}
+	.finger-smudge.reverse {
+		animation-direction: reverse;
+	}
+
 	@media (min-width: 768px) {
 		.finger-demo {
 			display: none !important;
