@@ -92,9 +92,9 @@
 				},
 				{
 					title: 'חנות החירות',
-					description: 'בקרוב.',
-					image: '/images/freedom-store.png',
-					comingSoon: true
+					description: 'מוצרים נבחרים לבריאות טבעית, חקלאות ביתית, טכנולוגיה ועוד.',
+					href: 'https://heirut-shop.vercel.app/',
+					image: '/images/freedom-store.png'
 				}
 			]
 		}
