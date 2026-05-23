@@ -367,8 +367,8 @@
 		// activeCol מתחלף בנקודת השיא של הניגוב (45% מ-2s = 900ms) כדי שהמעבר
 		// יראה כאילו היד "דוחפת" את העמודה ולא יקדים את תנועת הניגוב.
 		setTimeout(() => (activeCol = 0), 900);
-		// בסיום — היד יצאה מהפריים בצד ימין, מבטלים את הקיום.
-		setTimeout(() => (demoFingerActive = false), 2000);
+		// בסיום — היד יצאה מהפריים בצד ימין והסימן (עם עיכוב 0.5s) הספיק להתעמעם.
+		setTimeout(() => (demoFingerActive = false), 2500);
 	}
 
 	// אנימציה הפוכה: מתרחשת כשהמשתמש גולל מטה ואז חוזר מעלה אל הכותרת.
@@ -390,7 +390,7 @@
 		setTimeout(() => {
 			demoReverseActive = false;
 			reverseRunning = false;
-		}, 2000);
+		}, 2500);
 	}
 
 	// דמו שלישי: לאחר שהמשתמש הגיע לתחתית הדף וחזר למעלה אל הקרוסלה —
@@ -409,7 +409,7 @@
 			setTimeout(() => {
 				demoThirdActive = false;
 				thirdRunning = false;
-			}, 2000);
+			}, 2500);
 		}
 
 		// אם activeCol לא נמצא במשילות (אמצע) — נצמד אליו ללא מעבר נראה לעין,
@@ -1387,6 +1387,7 @@
 		pointer-events: none;
 		z-index: 49;
 		animation: finger-smudge 2s cubic-bezier(0.32, 0.4, 0.36, 1) forwards;
+		animation-delay: 0.5s; /* עיכוב נוסף של חצי שניה כך שהסימן יופיע אחרי שהיד עוברת */
 		mix-blend-mode: screen;
 	}
 	@keyframes finger-smudge {
