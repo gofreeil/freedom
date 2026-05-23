@@ -446,8 +446,15 @@
 			const y = window.scrollY;
 			goingUp = y < prevY;
 			prevY = y;
-			// סף קרבה לתחתית: 80px מהקצה התחתון
-			if (y + window.innerHeight >= document.documentElement.scrollHeight - 80) {
+			// סף קרבה לתחתית: 25% מגובה התצוגה (מאד סלחני) או 250px — לפי הגדול
+			const docH = Math.max(
+				document.body.scrollHeight,
+				document.documentElement.scrollHeight,
+				document.body.offsetHeight,
+				document.documentElement.offsetHeight
+			);
+			const threshold = Math.max(250, window.innerHeight * 0.25);
+			if (y + window.innerHeight >= docH - threshold) {
 				reachedBottom = true;
 			}
 		}
