@@ -384,9 +384,9 @@
 		// מתחילים מאותו מצב סופי של הדמו הקדמי — activeCol=0
 		activeCol = 0;
 		demoReverseActive = true;
-		// בהילוך אחורי, נקודת השיא של הניגוב (45% במקור) מתרחשת ב-55% מהאנימציה ≈ 1100ms.
-		// מסנכרנים את שינוי activeCol בדיוק עם השיא כדי שהמעבר יראה כאילו היד דוחפת את העמודה.
-		setTimeout(() => (activeCol = 1), 1100);
+		// מאחרים את שינוי activeCol כך שיתרחש אחרי שהיד סיימה את הניגוב,
+		// בו-זמנית עם הופעת הסימן (1500ms).
+		setTimeout(() => (activeCol = 1), 1500);
 		setTimeout(() => {
 			demoReverseActive = false;
 			reverseRunning = false;
@@ -404,8 +404,9 @@
 
 		function startThirdAnimation() {
 			demoThirdActive = true;
-			// משתמשים באנימציית ה-reverse (ניגוב שמאלה) — מסונכרן עם שיא הניגוב (~1100ms)
-			setTimeout(() => (activeCol = 2), 1100);
+			// מאחרים את שינוי activeCol כך שיתרחש אחרי שהיד סיימה את הניגוב,
+			// בו-זמנית עם הופעת הסימן (1500ms).
+			setTimeout(() => (activeCol = 2), 1500);
 			setTimeout(() => {
 				demoThirdActive = false;
 				thirdRunning = false;
@@ -710,11 +711,7 @@
 								</span>
 							</div>
 						{/if}
-						<svelte:element
-							this={site.href ? 'a' : 'div'}
-							href={site.href}
-							target={site.href ? '_blank' : undefined}
-							rel={site.href ? 'noopener noreferrer' : undefined}
+						<div
 							class="fx-banner fx-lift group relative block overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
 							       transition-colors hover:border-purple-500/50 hover:bg-white/10
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}"
@@ -736,21 +733,19 @@
 										<span class="text-2xl font-black text-purple-300/70">{site.title}</span>
 									</div>
 								{/if}
-								<div
-									class="absolute inset-0 flex items-center justify-center px-4
-									       bg-slate-950/85 opacity-0 transition-opacity duration-300
-									       group-hover:opacity-100"
-								>
-									<p class="text-center text-sm font-semibold leading-snug text-gray-100">
-										{site.description}
-									</p>
-								</div>
 							</div>
-							<div class="px-10 py-3 bg-black">
-								<p class="text-center text-base font-black leading-tight text-white">{site.title}</p>
-							</div>
-						</svelte:element>
+							<svelte:element
+								this={site.href ? 'a' : 'div'}
+								href={site.href}
+								target={site.href ? '_blank' : undefined}
+								rel={site.href ? 'noopener noreferrer' : undefined}
+								class="banner-caption relative block px-6 py-3 bg-black overflow-hidden cursor-pointer"
+							>
+								<p class="text-center text-base font-black leading-tight text-white transition-opacity duration-300 group-hover:opacity-0">{site.title}</p>
+								<p class="absolute inset-0 flex items-center justify-center px-4 text-center text-sm font-semibold leading-snug text-gray-100 opacity-0 transition-opacity duration-300 group-hover:opacity-100">{site.description}</p>
+							</svelte:element>
 						</div>
+					</div>
 					{/each}
 				</div>
 				</div>
