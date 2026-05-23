@@ -377,7 +377,6 @@
 	let reverseRunning = false;
 	let reverseShown = false; // הדמו ההפוך מוצג רק פעם אחת — בלי קפיצות חזרה לקהילה
 	let fingerSentinel: HTMLElement;
-	let bottomSentinel: HTMLElement;
 	function runReverseSwipeDemo() {
 		if (reverseRunning || reverseShown) return;
 		reverseRunning = true;
@@ -443,7 +442,6 @@
 		if (!fingerSentinel) return;
 
 		let scrolledPastTop = false; // אזור היד יצא למעלה (המשתמש גלל מטה מעבר אליו)
-		let reachedBottom = false; // המשתמש הגיע לתחתית הדף לפחות פעם אחת מאז הטריגר האחרון
 		let prevY = window.scrollY;
 		let goingUp = false;
 
@@ -453,21 +451,6 @@
 			prevY = y;
 		}
 		window.addEventListener('scroll', onScroll, { passive: true });
-
-		// זיהוי "הגעה לתחתית": IO על sentinel נסתר בתחתית הדף — אמין יותר משינוי
-		// scrollY (שעלול להיתפס פחות בנייד עם address bar דינמי).
-		let bottomIO: IntersectionObserver | undefined;
-		if (bottomSentinel) {
-			bottomIO = new IntersectionObserver(
-				(entries) => {
-					if (entries[0]?.isIntersecting) {
-						reachedBottom = true;
-					}
-				},
-				{ threshold: 0 }
-			);
-			bottomIO.observe(bottomSentinel);
-		}
 
 		const io = new IntersectionObserver(
 			(entries) => {
@@ -484,14 +467,13 @@
 					!thirdRunning
 				) {
 					// אזור היד חזר לתצוגה והמשתמש בכיוון גלילה מעלה.
-					// אם בינתיים הגיע לתחתית הדף → דמו שלישי (לעמודה 2/כלכלה),
-					// אחרת → דמו הפוך (חזרה לעמודה 1/משילות).
+					// פעם ראשונה → דמו הפוך (קהילה→משילות).
+					// פעם שניה → דמו שלישי (משילות→כלכלה) — אותו טריגר, לא צריך תחתית.
 					scrolledPastTop = false;
-					if (reachedBottom) {
-						reachedBottom = false;
-						runThirdSwipeDemo();
-					} else {
+					if (!reverseShown) {
 						runReverseSwipeDemo();
+					} else if (!thirdShown) {
+						runThirdSwipeDemo();
 					}
 				}
 			},
@@ -500,7 +482,6 @@
 		io.observe(fingerSentinel);
 		return () => {
 			io.disconnect();
-			bottomIO?.disconnect();
 			window.removeEventListener('scroll', onScroll);
 		};
 	});
@@ -830,14 +811,6 @@
 		{/each}
 	</div>
 </section>
-
-<!-- sentinel לזיהוי "הגעה לתחתית" — נצפה ע"י IntersectionObserver -->
-<div
-	bind:this={bottomSentinel}
-	aria-hidden="true"
-	class="pointer-events-none"
-	style="width:1px; height:1px;"
-></div>
 
 <style>
 	/* ---- אינטראקציות ריחוף לבאנרים (שלט עץ תלוי על חבלים) ---- */
@@ -1468,8 +1441,20 @@
 	.finger-demo.reverse img {
 		animation-direction: reverse;
 	}
+	/* בריצה ההפוכה, היד מגיעה לשיא הניגוב ב-~55% (1100ms). מחזיקים את הניגוב
+	   להופיע רק אחרי שהיא מגיעה לשם, ולא לפניה (כפי שקרה כשפשוט הפעלנו את
+	   ה-keyframes המקוריים בהילוך אחורי). */
 	.finger-smudge.reverse {
-		animation-direction: reverse;
+		animation-direction: normal;
+		animation-name: finger-smudge-reverse;
+	}
+	@keyframes finger-smudge-reverse {
+		0%   { opacity: 0; }
+		55%  { opacity: 0; }
+		60%  { opacity: 0.95; }
+		85%  { opacity: 0.95; }
+		95%  { opacity: 0; }
+		100% { opacity: 0; }
 	}
 
 	@media (min-width: 768px) {
