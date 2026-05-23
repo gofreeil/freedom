@@ -354,6 +354,7 @@
 	let demoFingerActive = $state(false);
 	let demoReverseActive = $state(false);
 	let demoThirdActive = $state(false);
+	let snapNoTransition = $state(false);
 	let demoPlayed = false;
 	let demoStarted = false; // משמר חזק: מבטיח שהדמו ירוץ פעם אחת בלבד
 
@@ -409,14 +410,15 @@
 
 		// אם activeCol לא נמצא במשילות (אמצע) — נצמד אליו ללא מעבר נראה לעין,
 		// כדי שהמשתמש לא יראה את העמודה זזה לפני שהיד אפילו הופיעה.
-		if (activeCol !== 1 && track) {
-			track.classList.add('snap-no-transition');
-			activeCol = 1;
-			// force reflow כדי שהשינוי יחול לפני הסרת ה-class
-			void track.offsetHeight;
+		if (activeCol !== 1) {
+			// שלב 1: מפעילים את מצב חוסם-המעבר
+			snapNoTransition = true;
+			// שלב 2: ממתינים שה-class יחול ב-DOM, אז משנים את activeCol (קופץ מיידית)
 			requestAnimationFrame(() => {
+				activeCol = 1;
+				// שלב 3: ממתינים שהקפיצה תוחל, אז משחררים את חוסם-המעבר ומפעילים את הדמו
 				requestAnimationFrame(() => {
-					track.classList.remove('snap-no-transition');
+					snapNoTransition = false;
 					startThirdAnimation();
 				});
 			});
@@ -618,6 +620,7 @@
 		class:center-active={activeCol === 1}
 		class:side-active={activeCol !== 1}
 		class:dragging
+		class:snap-no-transition={snapNoTransition}
 		style="--drag-offset:{dragOffset}px"
 		bind:this={track}
 		ontouchstart={onTouchStart}
