@@ -363,8 +363,9 @@
 		// המצב הראשוני עומד על משילות (activeCol=1) — שם רצה אנימציית הכותרת.
 		// היד נכנסת רק כמחצית לתוך המסך, מבצעת ניגוב קצר ויוצאת חזרה ימינה.
 		demoFingerActive = true;
-		// activeCol מתחלף כשהיד מבצעת את תנועת הניגוב (~38% מהאנימציה של 2s).
-		setTimeout(() => (activeCol = 0), 760);
+		// activeCol מתחלף בנקודת השיא של הניגוב (45% מ-2s = 900ms) כדי שהמעבר
+		// יראה כאילו היד "דוחפת" את העמודה ולא יקדים את תנועת הניגוב.
+		setTimeout(() => (activeCol = 0), 900);
 		// בסיום — היד יצאה מהפריים בצד ימין, מבטלים את הקיום.
 		setTimeout(() => (demoFingerActive = false), 2000);
 	}
@@ -381,8 +382,8 @@
 		activeCol = 0;
 		demoReverseActive = true;
 		// בהילוך אחורי, נקודת השיא של הניגוב (45% במקור) מתרחשת ב-55% מהאנימציה ≈ 1100ms.
-		// מחליפים את activeCol קצת אחרי השיא כדי שהיד "תמשוך" את העמודה האמצעית פנימה.
-		setTimeout(() => (activeCol = 1), 1240);
+		// מסנכרנים את שינוי activeCol בדיוק עם השיא כדי שהמעבר יראה כאילו היד דוחפת את העמודה.
+		setTimeout(() => (activeCol = 1), 1100);
 		setTimeout(() => {
 			demoReverseActive = false;
 			reverseRunning = false;
@@ -398,8 +399,8 @@
 		// מתחילים ממשילות (אמצע) — כך שהמעבר הוא צעד נוסף שמאלה אל כלכלה
 		activeCol = 1;
 		demoThirdActive = true;
-		// משתמשים באנימציית ה-reverse (ניגוב שמאלה) — באותו תזמון של הדמו ההפוך
-		setTimeout(() => (activeCol = 2), 1240);
+		// משתמשים באנימציית ה-reverse (ניגוב שמאלה) — מסונכרן עם שיא הניגוב (~1100ms)
+		setTimeout(() => (activeCol = 2), 1100);
 		setTimeout(() => {
 			demoThirdActive = false;
 			thirdRunning = false;
