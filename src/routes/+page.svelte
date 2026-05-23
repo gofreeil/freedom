@@ -373,6 +373,7 @@
 	// היד והניגוב רצים בהילוך אחורי (animation-direction: reverse) ו-activeCol
 	// חוזר מ-0 אל 1 בתזמון תואם לנקודת השיא של הניגוב באנימציה המהופכת.
 	let reverseRunning = false;
+	let fingerSentinel: HTMLElement;
 	function runReverseSwipeDemo() {
 		if (reverseRunning) return;
 		reverseRunning = true;
@@ -405,17 +406,17 @@
 		}, 2000);
 	}
 
-	// טריגר לדמו ההפוך:
-	// 1) המשתמש גלל מטה מספיק שהקרוסלה יצאה מהתצוגה כלפי מעלה.
-	// 2) המשתמש גולל מעלה והקרוסלה חוזרת לתצוגה — רק אז (וכשהכיוון מעלה) מפעילים.
-	// היד והניגוב ממוקמים בתוך .cols-container, אז זה הרגע שבו הם נראים על המסך.
+	// טריגר לדמו ההפוך / השלישי:
+	// 1) המשתמש גלל מטה עד שהאזור של היד (sentinel) יצא מהתצוגה כלפי מעלה.
+	// 2) כשהוא חוזר מעלה — ברגע שה-sentinel חוזר לתצוגה (הכותרת/אזור היד נראים שוב)
+	//    מפעילים מיידית ללא עיקוב. בוחרים בין דמו הפוך לדמו שלישי לפי האם הגיע לתחתית.
 	// נייד בלבד.
 	$effect(() => {
 		if (typeof window === 'undefined') return;
 		if (!window.matchMedia('(max-width: 767px)').matches) return;
-		if (!track) return;
+		if (!fingerSentinel) return;
 
-		let scrolledPastTop = false; // הקרוסלה יצאה למעלה (המשתמש גלל מטה מעבר אליה)
+		let scrolledPastTop = false; // אזור היד יצא למעלה (המשתמש גלל מטה מעבר אליו)
 		let reachedBottom = false; // המשתמש הגיע לתחתית הדף לפחות פעם אחת מאז הטריגר האחרון
 		let prevY = window.scrollY;
 		let goingUp = false;
@@ -436,7 +437,7 @@
 				const e = entries[0];
 				if (!e) return;
 				if (!e.isIntersecting && e.boundingClientRect.top < 0) {
-					// הקרוסלה יצאה מהתצוגה כלפי מעלה — המשתמש גלל מטה מעבר אליה
+					// אזור היד יצא מהתצוגה כלפי מעלה — המשתמש גלל מטה מעבר אליו
 					scrolledPastTop = true;
 				} else if (
 					e.isIntersecting &&
@@ -445,7 +446,7 @@
 					!reverseRunning &&
 					!thirdRunning
 				) {
-					// הקרוסלה חזרה לתצוגה והמשתמש בכיוון גלילה מעלה.
+					// אזור היד חזר לתצוגה והמשתמש בכיוון גלילה מעלה.
 					// אם בינתיים הגיע לתחתית הדף → דמו שלישי (לעמודה 2/כלכלה),
 					// אחרת → דמו הפוך (חזרה לעמודה 1/משילות).
 					scrolledPastTop = false;
@@ -459,7 +460,7 @@
 			},
 			{ threshold: 0 }
 		);
-		io.observe(track);
+		io.observe(fingerSentinel);
 		return () => {
 			io.disconnect();
 			window.removeEventListener('scroll', onScroll);
@@ -605,6 +606,13 @@
 		ontouchend={onTouchEnd}
 		ontouchcancel={onTouchCancel}
 	>
+		<!-- sentinel ליד מיקום היד: משמש כטריגר להופעת היד בדיוק כשהאזור שלה נכנס לתצוגה -->
+		<span
+			bind:this={fingerSentinel}
+			aria-hidden="true"
+			class="pointer-events-none absolute"
+			style="top:1.5rem; right:6%; width:1px; height:1px;"
+		></span>
 		{#if demoFingerActive}
 			<span class="finger-smudge" aria-hidden="true"></span>
 			<div class="finger-demo" aria-hidden="true">
