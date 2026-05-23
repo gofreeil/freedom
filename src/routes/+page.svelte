@@ -387,34 +387,47 @@
 		}, 2000);
 	}
 
-	// מעקב גלילה: כשגוללים מטה מעבר לאזור הקרוסלה ואז חוזרים מעלה אל הכותרת —
-	// מפעילים את הדמו ההפוך. נייד בלבד.
-	// משתמשים ב-IntersectionObserver על הקרוסלה: כשהיא יוצאת מהתצוגה (יצאה למעלה — כלומר
-	// גללנו מטה מעבר אליה) → "חצינו". כשהיא חוזרת לתצוגה (חזרנו מעלה) → טריגר.
+	// טריגר לדמו ההפוך:
+	// 1) המשתמש גלל מטה מספיק שהקרוסלה יצאה מהתצוגה כלפי מעלה.
+	// 2) המשתמש גולל מעלה והקרוסלה חוזרת לתצוגה — רק אז (וכשהכיוון מעלה) מפעילים.
+	// היד והניגוב ממוקמים בתוך .cols-container, אז זה הרגע שבו הם נראים על המסך.
+	// נייד בלבד.
 	$effect(() => {
 		if (typeof window === 'undefined') return;
 		if (!window.matchMedia('(max-width: 767px)').matches) return;
 		if (!track) return;
 
-		let scrolledPast = false;
+		let scrolledPastTop = false; // הקרוסלה יצאה למעלה (המשתמש גלל מטה מעבר אליה)
+		let prevY = window.scrollY;
+		let goingUp = false;
+
+		function onScroll() {
+			const y = window.scrollY;
+			goingUp = y < prevY;
+			prevY = y;
+		}
+		window.addEventListener('scroll', onScroll, { passive: true });
 
 		const io = new IntersectionObserver(
 			(entries) => {
 				const e = entries[0];
 				if (!e) return;
 				if (!e.isIntersecting && e.boundingClientRect.top < 0) {
-					// הקרוסלה יצאה מהתצוגה כלפי מעלה — המשתמש גלל מטה
-					scrolledPast = true;
-				} else if (e.isIntersecting && scrolledPast && !reverseRunning) {
-					// הקרוסלה חזרה לתצוגה אחרי שהמשתמש גלל למעלה
-					scrolledPast = false;
+					// הקרוסלה יצאה מהתצוגה כלפי מעלה — המשתמש גלל מטה מעבר אליה
+					scrolledPastTop = true;
+				} else if (e.isIntersecting && scrolledPastTop && goingUp && !reverseRunning) {
+					// הקרוסלה חזרה לתצוגה והמשתמש בכיוון גלילה מעלה
+					scrolledPastTop = false;
 					runReverseSwipeDemo();
 				}
 			},
 			{ threshold: 0 }
 		);
 		io.observe(track);
-		return () => io.disconnect();
+		return () => {
+			io.disconnect();
+			window.removeEventListener('scroll', onScroll);
+		};
 	});
 
 	// מפעילים את הדמו ברגע שאבקת הקסם נכנסה לתצוגה (revealed=true).
