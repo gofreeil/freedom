@@ -1451,8 +1451,8 @@
 	}
 	@keyframes finger-smudge-reverse {
 		0%   { opacity: 0; }
-		55%  { opacity: 0; }
-		60%  { opacity: 0.95; }
+		45%  { opacity: 0; }
+		50%  { opacity: 0.95; }  /* עם delay של 0.5s זה ייתן הופעה ב-1500ms בדיוק */
 		85%  { opacity: 0.95; }
 		95%  { opacity: 0; }
 		100% { opacity: 0; }
