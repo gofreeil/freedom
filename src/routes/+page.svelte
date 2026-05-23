@@ -353,6 +353,7 @@
 	// פעם אחת בלבד לכל טעינת דף.
 	let demoFingerActive = $state(false);
 	let demoReverseActive = $state(false);
+	let demoThirdActive = $state(false);
 	let demoPlayed = false;
 	let demoStarted = false; // משמר חזק: מבטיח שהדמו ירוץ פעם אחת בלבד
 
@@ -387,6 +388,23 @@
 		}, 2000);
 	}
 
+	// דמו שלישי: לאחר שהמשתמש הגיע לתחתית הדף וחזר למעלה אל הקרוסלה —
+	// היד מנגבת עוד שמאלה ומציגה את העמודה השלישית (כלכלה, activeCol=2).
+	let thirdRunning = false;
+	function runThirdSwipeDemo() {
+		if (thirdRunning) return;
+		thirdRunning = true;
+		// מתחילים ממשילות (אמצע) — כך שהמעבר הוא צעד נוסף שמאלה אל כלכלה
+		activeCol = 1;
+		demoThirdActive = true;
+		// משתמשים באנימציית ה-reverse (ניגוב שמאלה) — באותו תזמון של הדמו ההפוך
+		setTimeout(() => (activeCol = 2), 1240);
+		setTimeout(() => {
+			demoThirdActive = false;
+			thirdRunning = false;
+		}, 2000);
+	}
+
 	// טריגר לדמו ההפוך:
 	// 1) המשתמש גלל מטה מספיק שהקרוסלה יצאה מהתצוגה כלפי מעלה.
 	// 2) המשתמש גולל מעלה והקרוסלה חוזרת לתצוגה — רק אז (וכשהכיוון מעלה) מפעילים.
@@ -398,6 +416,7 @@
 		if (!track) return;
 
 		let scrolledPastTop = false; // הקרוסלה יצאה למעלה (המשתמש גלל מטה מעבר אליה)
+		let reachedBottom = false; // המשתמש הגיע לתחתית הדף לפחות פעם אחת מאז הטריגר האחרון
 		let prevY = window.scrollY;
 		let goingUp = false;
 
@@ -405,6 +424,10 @@
 			const y = window.scrollY;
 			goingUp = y < prevY;
 			prevY = y;
+			// סף קרבה לתחתית: 80px מהקצה התחתון
+			if (y + window.innerHeight >= document.documentElement.scrollHeight - 80) {
+				reachedBottom = true;
+			}
 		}
 		window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -415,10 +438,23 @@
 				if (!e.isIntersecting && e.boundingClientRect.top < 0) {
 					// הקרוסלה יצאה מהתצוגה כלפי מעלה — המשתמש גלל מטה מעבר אליה
 					scrolledPastTop = true;
-				} else if (e.isIntersecting && scrolledPastTop && goingUp && !reverseRunning) {
-					// הקרוסלה חזרה לתצוגה והמשתמש בכיוון גלילה מעלה
+				} else if (
+					e.isIntersecting &&
+					scrolledPastTop &&
+					goingUp &&
+					!reverseRunning &&
+					!thirdRunning
+				) {
+					// הקרוסלה חזרה לתצוגה והמשתמש בכיוון גלילה מעלה.
+					// אם בינתיים הגיע לתחתית הדף → דמו שלישי (לעמודה 2/כלכלה),
+					// אחרת → דמו הפוך (חזרה לעמודה 1/משילות).
 					scrolledPastTop = false;
-					runReverseSwipeDemo();
+					if (reachedBottom) {
+						reachedBottom = false;
+						runThirdSwipeDemo();
+					} else {
+						runReverseSwipeDemo();
+					}
 				}
 			},
 			{ threshold: 0 }
@@ -576,6 +612,12 @@
 			</div>
 		{/if}
 		{#if demoReverseActive}
+			<span class="finger-smudge reverse" aria-hidden="true"></span>
+			<div class="finger-demo reverse" aria-hidden="true">
+				<img src="/images/finger.png" alt="" />
+			</div>
+		{/if}
+		{#if demoThirdActive}
 			<span class="finger-smudge reverse" aria-hidden="true"></span>
 			<div class="finger-demo reverse" aria-hidden="true">
 				<img src="/images/finger.png" alt="" />
