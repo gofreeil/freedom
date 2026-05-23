@@ -396,15 +396,33 @@
 	function runThirdSwipeDemo() {
 		if (thirdRunning) return;
 		thirdRunning = true;
-		// מתחילים ממשילות (אמצע) — כך שהמעבר הוא צעד נוסף שמאלה אל כלכלה
-		activeCol = 1;
-		demoThirdActive = true;
-		// משתמשים באנימציית ה-reverse (ניגוב שמאלה) — מסונכרן עם שיא הניגוב (~1100ms)
-		setTimeout(() => (activeCol = 2), 1100);
-		setTimeout(() => {
-			demoThirdActive = false;
-			thirdRunning = false;
-		}, 2000);
+
+		function startThirdAnimation() {
+			demoThirdActive = true;
+			// משתמשים באנימציית ה-reverse (ניגוב שמאלה) — מסונכרן עם שיא הניגוב (~1100ms)
+			setTimeout(() => (activeCol = 2), 1100);
+			setTimeout(() => {
+				demoThirdActive = false;
+				thirdRunning = false;
+			}, 2000);
+		}
+
+		// אם activeCol לא נמצא במשילות (אמצע) — נצמד אליו ללא מעבר נראה לעין,
+		// כדי שהמשתמש לא יראה את העמודה זזה לפני שהיד אפילו הופיעה.
+		if (activeCol !== 1 && track) {
+			track.classList.add('snap-no-transition');
+			activeCol = 1;
+			// force reflow כדי שהשינוי יחול לפני הסרת ה-class
+			void track.offsetHeight;
+			requestAnimationFrame(() => {
+				requestAnimationFrame(() => {
+					track.classList.remove('snap-no-transition');
+					startThirdAnimation();
+				});
+			});
+		} else {
+			startThirdAnimation();
+		}
 	}
 
 	// טריגר לדמו ההפוך / השלישי:
@@ -1324,6 +1342,13 @@
 		.col-slide {
 			transition: none;
 		}
+	}
+
+	/* קפיצת activeCol ללא מעבר נראה (משמש לפני הדמו השלישי כדי להצמיד למשילות) */
+	.cols-container.snap-no-transition .col-slide,
+	.cols-container.snap-no-transition .col-slide-inner > div:first-child,
+	.cols-container.snap-no-transition .col-slide-inner > div:last-child {
+		transition: none !important;
 	}
 
 	/* ===== אנימציית "אצבע מנגבת" — נייד בלבד, פעם אחת ===== */
