@@ -375,10 +375,13 @@
 	// היד והניגוב רצים בהילוך אחורי (animation-direction: reverse) ו-activeCol
 	// חוזר מ-0 אל 1 בתזמון תואם לנקודת השיא של הניגוב באנימציה המהופכת.
 	let reverseRunning = false;
+	let reverseShown = false; // הדמו ההפוך מוצג רק פעם אחת — בלי קפיצות חזרה לקהילה
 	let fingerSentinel: HTMLElement;
+	let bottomSentinel: HTMLElement;
 	function runReverseSwipeDemo() {
-		if (reverseRunning) return;
+		if (reverseRunning || reverseShown) return;
 		reverseRunning = true;
+		reverseShown = true;
 		// מתחילים מאותו מצב סופי של הדמו הקדמי — activeCol=0
 		activeCol = 0;
 		demoReverseActive = true;
@@ -394,9 +397,11 @@
 	// דמו שלישי: לאחר שהמשתמש הגיע לתחתית הדף וחזר למעלה אל הקרוסלה —
 	// היד מנגבת עוד שמאלה ומציגה את העמודה השלישית (כלכלה, activeCol=2).
 	let thirdRunning = false;
+	let thirdShown = false; // מוצג רק פעם אחת בכל טעינת דף
 	function runThirdSwipeDemo() {
-		if (thirdRunning) return;
+		if (thirdRunning || thirdShown) return;
 		thirdRunning = true;
+		thirdShown = true;
 
 		function startThirdAnimation() {
 			demoThirdActive = true;
@@ -446,19 +451,23 @@
 			const y = window.scrollY;
 			goingUp = y < prevY;
 			prevY = y;
-			// סף קרבה לתחתית: 25% מגובה התצוגה (מאד סלחני) או 250px — לפי הגדול
-			const docH = Math.max(
-				document.body.scrollHeight,
-				document.documentElement.scrollHeight,
-				document.body.offsetHeight,
-				document.documentElement.offsetHeight
-			);
-			const threshold = Math.max(250, window.innerHeight * 0.25);
-			if (y + window.innerHeight >= docH - threshold) {
-				reachedBottom = true;
-			}
 		}
 		window.addEventListener('scroll', onScroll, { passive: true });
+
+		// זיהוי "הגעה לתחתית": IO על sentinel נסתר בתחתית הדף — אמין יותר משינוי
+		// scrollY (שעלול להיתפס פחות בנייד עם address bar דינמי).
+		let bottomIO: IntersectionObserver | undefined;
+		if (bottomSentinel) {
+			bottomIO = new IntersectionObserver(
+				(entries) => {
+					if (entries[0]?.isIntersecting) {
+						reachedBottom = true;
+					}
+				},
+				{ threshold: 0 }
+			);
+			bottomIO.observe(bottomSentinel);
+		}
 
 		const io = new IntersectionObserver(
 			(entries) => {
@@ -491,6 +500,7 @@
 		io.observe(fingerSentinel);
 		return () => {
 			io.disconnect();
+			bottomIO?.disconnect();
 			window.removeEventListener('scroll', onScroll);
 		};
 	});
@@ -820,6 +830,14 @@
 		{/each}
 	</div>
 </section>
+
+<!-- sentinel לזיהוי "הגעה לתחתית" — נצפה ע"י IntersectionObserver -->
+<div
+	bind:this={bottomSentinel}
+	aria-hidden="true"
+	class="pointer-events-none"
+	style="width:1px; height:1px;"
+></div>
 
 <style>
 	/* ---- אינטראקציות ריחוף לבאנרים (שלט עץ תלוי על חבלים) ---- */
