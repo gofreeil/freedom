@@ -30,7 +30,7 @@ export const ads: Ad[] = [
         titleKey: "ads.peace_houses.title",
         descriptionKey: "ads.peace_houses.description",
         ctaKey: "ads.peace_houses.cta",
-        href: "https://chachmei-haeda.vercel.app/",
+        href: "https://chachmim.vercel.app/",
         image: "/images/bati-hapius.png",
         color: "from-orange-600 to-red-600"
     },

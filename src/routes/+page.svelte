@@ -29,7 +29,7 @@
 				{
 					titleKey: 'page.sites.courts_reconciliation.title',
 					descriptionKey: 'page.sites.courts_reconciliation.description',
-					href: 'https://chachmei-haeda.vercel.app/',
+					href: 'https://chachmim.vercel.app/',
 					image: '/images/bati-hapius.png'
 				},
 				{
