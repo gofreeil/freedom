@@ -179,7 +179,7 @@
                         <button
                             onclick={() => goto("/about")}
                             class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
-                            aria-label="אודות"
+                            aria-label={tFn("about")}
                         >
                             <span class="text-xl font-bold text-white leading-none">ℹ</span>
                         </button>
@@ -191,7 +191,7 @@
                                 onclick={() => (showLangDropdown = !showLangDropdown)}
                                 onkeydown={handleLangKeydown}
                                 class="flex items-center justify-center w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
-                                aria-label="בחר שפה"
+                                aria-label={tFn("choose_language")}
                                 aria-haspopup="listbox"
                                 aria-expanded={showLangDropdown}
                             >
@@ -205,7 +205,7 @@
                                 <div
                                     class="absolute left-0 z-[160] mt-2 w-36 rounded-lg bg-[#0f172a] border border-white/10 shadow-xl"
                                     role="listbox"
-                                    aria-label="בחר שפה"
+                                    aria-label={tFn("choose_language")}
                                 >
                                     {#each languages as langOption}
                                         <button
@@ -289,7 +289,7 @@
                             transform-origin: top center;">
                     <img
                         src="/images/ad_neighborhoods.png"
-                        alt="יוצאים לחירות"
+                        alt={tFn("welcome")}
                         style="width:580px; border-radius:24px;
                                -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
                                mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
@@ -303,7 +303,7 @@
                         class="flex items-center rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm text-white transition-colors"
                         onclick={() => (showLangDropdown = !showLangDropdown)}
                         onkeydown={handleLangKeydown}
-                        aria-label="בחר שפה"
+                        aria-label={tFn("choose_language")}
                         aria-haspopup="listbox"
                         aria-expanded={showLangDropdown}
                     >
@@ -335,7 +335,7 @@
                         <div
                             class="absolute right-0 z-[160] mt-2 w-44 rounded-lg bg-[#0f172a] border border-white/10 shadow-xl"
                             role="listbox"
-                            aria-label="בחר שפה"
+                            aria-label={tFn("choose_language")}
                         >
                             {#each languages as langOption}
                                 <button

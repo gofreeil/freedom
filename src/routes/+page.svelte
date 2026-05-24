@@ -1,98 +1,104 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe((l) => (_loc = l)));
+	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
 	interface Site {
-		title: string;
-		description: string;
+		titleKey: string;
+		descriptionKey: string;
 		href?: string;
 		image?: string;
 		comingSoon?: boolean;
 		mobileHide?: boolean;
 	}
 
-	const columns: { heading: string; sites: Site[] }[] = [
+	const columns: { headingKey: string; sites: Site[] }[] = [
 		{
-			heading: 'קהילה',
+			headingKey: 'page.columns.community',
 			sites: [
 				{
-					title: 'קהילה בשכונה',
-					description: 'הקהילה החברתית של יוצאים לחירות בשכונה שלך.',
+					titleKey: 'page.sites.community_neighborhood.title',
+					descriptionKey: 'page.sites.community_neighborhood.description',
 					href: 'https://community-blush.vercel.app/',
 					image: '/images/community-neighborhood.png'
 				},
 				{
-					title: 'בתי דין ופיוס',
-					description: 'מתנדבים לתת לך עזרה מלאה בדין / פיוס בכל סיכסוך.',
+					titleKey: 'page.sites.courts_reconciliation.title',
+					descriptionKey: 'page.sites.courts_reconciliation.description',
 					href: 'https://chachmei-haeda.vercel.app/',
 					image: '/images/bati-hapius.png'
 				},
 				{
-					title: 'הגמ"ח הארצי',
-					description: 'כל הגמחים תחת קורת גג אחת.',
+					titleKey: 'page.sites.national_gemach.title',
+					descriptionKey: 'page.sites.national_gemach.description',
 					href: 'https://national-gemach.vercel.app/',
 					image: '/images/gemach-harzi.png'
 				}
 			]
 		},
 		{
-			heading: 'משילות',
+			headingKey: 'page.columns.governance',
 			sites: [
 				{
-					title: 'ועדי שכונות',
-					description: 'מהפכת משילות העם על המוסדות — הכר והשתתף.',
+					titleKey: 'page.sites.neighborhood_committees.title',
+					descriptionKey: 'page.sites.neighborhood_committees.description',
 					href: 'https://www.melecshop.com/page/peace-on-earth_VRHH',
 					image: '/images/news/vaadei-shchunot.png'
 				},
 				{
-					title: 'מבקר רשויות המדינה',
-					description: 'מבקרים את הרשויות, ממצים את זכות התושב.',
+					titleKey: 'page.sites.state_auditor.title',
+					descriptionKey: 'page.sites.state_auditor.description',
 					href: 'https://right-to-live.vercel.app/',
 					image: '/images/mevaker-rashuyot.png'
 				},
 				{
-					title: 'דירוג ציבורי',
-					description: 'העם מדרג את הרשויות ועובדי הציבור.',
+					titleKey: 'page.sites.public_rating.title',
+					descriptionKey: 'page.sites.public_rating.description',
 					href: 'https://public-rating-il.vercel.app/',
 					image: '/images/public-rating.jpeg'
 				},
 				{
-					title: 'המומחים',
-					description: 'פועלים יחד לפתרון בעיות ארציות.',
+					titleKey: 'page.sites.experts.title',
+					descriptionKey: 'page.sites.experts.description',
 					href: 'https://the-experts-rouge.vercel.app/',
 					image: '/images/the-experts.png'
 				},
 				{
-					title: 'משאלי העם',
-					description: 'הבע דעתך על הסוגיות האקטואליות.',
+					titleKey: 'page.sites.referendum.title',
+					descriptionKey: 'page.sites.referendum.description',
 					href: 'https://referendum-azure.vercel.app/',
 					image: '/images/referendum.png'
 				}
 			]
 		},
 		{
-			heading: 'כלכלה',
+			headingKey: 'page.columns.economy',
 			sites: [
 				{
-					title: 'קבוצת רכישה',
-					description: 'הצטרף לקבוצת הרכישה שלנו והוזל מיד את ההוצאות!',
+					titleKey: 'page.sites.purchasing_group.title',
+					descriptionKey: 'page.sites.purchasing_group.description',
 					href: 'https://purchasing-groups.vercel.app/',
 					image: '/images/whatsapp_cta.png'
 				},
 				{
-					title: 'השקעות קבוצתיות',
-					description: 'התחבר עם קבוצת המשקיעים החברתית שלנו.',
+					titleKey: 'page.sites.group_investments.title',
+					descriptionKey: 'page.sites.group_investments.description',
 					href: 'https://www.melecshop.com/page/free',
 					image: '/images/partners/investments.png'
 				},
 				{
-					title: 'בעלי המקצוע שלנו',
-					description: 'בעלי מקצוע כשירים שחתמו על תנאי הקהילה ונותנים הטבות.',
+					titleKey: 'page.sites.professionals.title',
+					descriptionKey: 'page.sites.professionals.description',
 					href: 'https://index-chi-sage.vercel.app/',
 					image: '/images/professionals.png'
 				},
 				{
-					title: 'חנות החירות',
-					description: 'מוצרים נבחרים לבריאות טבעית, חקלאות ביתית, טכנולוגיה ועוד.',
+					titleKey: 'page.sites.freedom_store.title',
+					descriptionKey: 'page.sites.freedom_store.description',
 					href: 'https://heirut-shop.vercel.app/',
 					image: '/images/freedom-store.png'
 				}
@@ -207,7 +213,7 @@
 		if (!site.href) { e.preventDefault(); return; }
 		if (typeof window !== 'undefined' && window.innerWidth < 768) {
 			e.preventDefault();
-			if (!revealedBanners[site.title]) revealedBanners[site.title] = true;
+			if (!revealedBanners[site.titleKey]) revealedBanners[site.titleKey] = true;
 		}
 	}
 
@@ -515,31 +521,27 @@
 		class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent
 		       text-5xl md:text-7xl lg:text-8xl font-black text-center leading-tight px-4"
 	>
-		יוצאים לחירות
+		{tFn("page.hero_title")}
 	</h1>
 </section>
 
-<section class="max-w-5xl mx-auto px-6 pb-6 text-center" dir="rtl">
+<section class="max-w-5xl mx-auto px-6 pb-6 text-center">
 	<p class="intro-p text-base md:text-xl text-gray-300 leading-snug">
 		<span
 			class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400
 			       bg-clip-text text-transparent"
 		>
-			יוצאים לחירות —
+			{tFn("page.intro.movement_label")}
 		</span>
-		הינה תנועה חברתית, העוסקת לקדם ולשפר את החברה בישראל לחברה יותר
-		אחראית, סולידרית וחופשיה. התנועה עוסקת לשחרר את התושבים מריכוזי הכח הנמצאים היום
-		אצל קומץ השולטים בבנקים, בתקשורת, בכלכלה, בפוליטיקה וברשויות המדינה.
+		{tFn("page.intro.movement_text")}
 	</p>
 	<p class="intro-p text-base md:text-xl text-gray-300 leading-snug mt-3">
-		<span class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent">החזון —</span>
-		התאחדות התושבים, ביזור הכח הריכוזי שבמוסדות המדינה, פיקוח, ביקורת, ומעורבות של העם
-		בקבלת ההחלטות.
+		<span class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent">{tFn("page.intro.vision_label")}</span>
+		{tFn("page.intro.vision_text")}
 	</p>
 	<p class="intro-p text-base md:text-xl text-gray-300 leading-snug mt-3">
-		<span class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent">הפעילות —</span>
-		יוצאים לחירות פיתחה אפליקציות המקדמות את המשילות, הקימה רכזים חברתיים בשכונות ברחבי
-		הארץ, וקהילה גדולה המקדמת את ערכי החופש, האחווה, והמשילות של העם על מוסדותיו!
+		<span class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent">{tFn("page.intro.activity_label")}</span>
+		{tFn("page.intro.activity_text")}
 	</p>
 </section>
 
@@ -552,7 +554,7 @@
 			<iframe
 				class="absolute inset-0 h-full w-full"
 				src="https://www.youtube-nocookie.com/embed/CjBbU2ZOsa8?start=2&autoplay=1"
-				title="יוצאים לחירות"
+				title={tFn("page.video.title")}
 				frameborder="0"
 				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 				referrerpolicy="strict-origin-when-cross-origin"
@@ -563,11 +565,11 @@
 				type="button"
 				class="group absolute inset-0 h-full w-full cursor-pointer border-0 p-0"
 				onclick={() => (videoPlaying = true)}
-				aria-label="נגן את הסרטון יוצאים לחירות"
+				aria-label={tFn("page.video.play_aria")}
 			>
 				<img
 					src="https://i.ytimg.com/vi/CjBbU2ZOsa8/sddefault.jpg"
-					alt="יוצאים לחירות"
+					alt={tFn("page.video.title")}
 					class="h-full w-full object-cover"
 					style="object-position:50% 33%"
 					loading="lazy"
@@ -593,23 +595,23 @@
 	</div>
 </section>
 
-<section class="max-w-4xl mx-auto px-6 pb-14 text-center" dir="rtl">
+<section class="max-w-4xl mx-auto px-6 pb-14 text-center">
 	<p class="text-xl md:text-2xl font-black text-gray-200">
-		יוצאים לחירות מונה
+		{tFn("page.members.prefix")}
 		<span
 			class="mx-1 inline-block tabular-nums text-2xl md:text-3xl
 			       bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent"
 		>{memberDisplay}</span>
-		חברים וממשיכים לעלות!
+		{tFn("page.members.suffix")}
 	</p>
 </section>
 
-<section class="max-w-6xl mx-auto px-6 pb-2 md:pb-20" dir="rtl" class:revealed>
+<section class="max-w-6xl mx-auto px-6 pb-2 md:pb-20" class:revealed>
 	<h2
 		class="mx-auto mb-3 max-w-6xl text-center text-2xl md:text-4xl font-black leading-snug
 		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
 	>
-		מודל המשילות של העם, מתפקד ומתקדם על ידי רשת של כלים&nbsp;ופלטפורמות חדשניות:
+		{tFn("page.platforms_title")}
 	</h2>
 
 	<div class="magic-dust" aria-hidden="true" bind:this={revealEl}>
@@ -662,7 +664,7 @@
 				<img src="/images/finger.png" alt="" />
 			</div>
 		{/if}
-		{#each columns as column, i (column.heading)}
+		{#each columns as column, i (column.headingKey)}
 			{#if i > 0}
 				<div
 					class="hidden md:block w-px self-stretch
@@ -681,9 +683,9 @@
 					<h3
 						class="col-heading bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
 						       text-4xl md:text-6xl font-black text-center"
-						style="--char-count:{[...column.heading].length}"
+						style="--char-count:{[...tFn(column.headingKey)].length}"
 					>
-						{#each [...column.heading] as ch, ci (ci)}<span
+						{#each [...tFn(column.headingKey)] as ch, ci (ci)}<span
 							class="col-heading-char"
 							style="--ci:{ci}"
 						>{ch}</span>{/each}
@@ -705,7 +707,7 @@
 					{/key}
 				</div>
 				<div class="flex flex-col {i === 0 ? 'gap-10' : 'gap-4'}">
-					{#each column.sites as site, si (site.title)}
+					{#each column.sites as site, si (site.titleKey)}
 						<div class="relative {site.mobileHide ? 'hidden md:block' : 'block'}">
 						{#if si > 0}
 							<div class="rope-connector {i === 0 ? 'rope-connector-wide' : ''}" aria-hidden="true">
@@ -735,7 +737,7 @@
 								{#if site.image}
 									<img
 										src={site.image}
-										alt={site.title}
+										alt={tFn(site.titleKey)}
 										class="{i === 0 ? 'h-auto' : 'h-full'} w-full object-cover transition-transform"
 										decoding="async"
 										loading="lazy"
@@ -745,18 +747,18 @@
 										class="flex h-full w-full items-center justify-center
 										       bg-gradient-to-br from-blue-500/20 to-purple-500/20"
 									>
-										<span class="text-2xl font-black text-purple-300/70">{site.title}</span>
+										<span class="text-2xl font-black text-purple-300/70">{tFn(site.titleKey)}</span>
 									</div>
 								{/if}
 							</div>
 							<div class="banner-caption hidden md:block relative px-6 py-3 bg-black overflow-hidden">
-								<p class="caption-title text-center text-base font-black leading-tight text-white transition-opacity duration-300">{site.title}</p>
-								<p class="caption-desc absolute inset-0 flex items-center justify-center px-4 text-center text-sm font-semibold leading-snug text-gray-100 transition-opacity duration-300">{site.description}</p>
+								<p class="caption-title text-center text-base font-black leading-tight text-white transition-opacity duration-300">{tFn(site.titleKey)}</p>
+								<p class="caption-desc absolute inset-0 flex items-center justify-center px-4 text-center text-sm font-semibold leading-snug text-gray-100 transition-opacity duration-300">{tFn(site.descriptionKey)}</p>
 							</div>
 							<div class="md:hidden px-4 py-3 bg-black">
-								<p class="text-center text-base font-black leading-tight text-white">{site.title}</p>
-								{#if revealedBanners[site.title]}
-									<p class="mt-2 text-center text-sm font-semibold leading-snug text-gray-200">{site.description}</p>
+								<p class="text-center text-base font-black leading-tight text-white">{tFn(site.titleKey)}</p>
+								{#if revealedBanners[site.titleKey]}
+									<p class="mt-2 text-center text-sm font-semibold leading-snug text-gray-200">{tFn(site.descriptionKey)}</p>
 									{#if site.href}
 										<a
 											href={site.href}
@@ -765,7 +767,7 @@
 											onclick={(e) => e.stopPropagation()}
 											class="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-2 text-sm font-black text-white shadow-md active:scale-95 transition-transform"
 										>
-											עבור אל האתר ←
+											{tFn("page.banner.go_to_site")}
 										</a>
 									{/if}
 								{/if}
@@ -789,7 +791,7 @@
 		       bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400
 		       bg-clip-text text-transparent"
 	>
-		התקשורת שלנו עצמאית - מסקרים את אירועי המדינה מזווית זכות התושב!
+		{tFn("page.news_block.tagline")}
 	</p>
 
 	<a
@@ -800,7 +802,7 @@
 	>
 		<img
 			src="/images/news.png"
-			alt="חדשות"
+			alt={tFn("page.news_block.image_alt")}
 			class="w-full rounded-2xl"
 			loading="lazy"
 			decoding="async"
@@ -811,7 +813,7 @@
 		class="mt-12 text-center text-2xl md:text-4xl font-black leading-snug
 		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
 	>
-		עקבו אחרינו ברשתות החברתיות
+		{tFn("page.socials.title")}
 	</h2>
 
 	<div class="mt-8 flex flex-wrap items-center justify-center gap-4">

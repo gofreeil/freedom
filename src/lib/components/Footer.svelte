@@ -13,43 +13,43 @@
             href="https://freedom-gamma-five.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="יוצאים לחירות (נפתח בחלון חדש)"
+            aria-label={tFn("footer.brand_aria")}
             class="hidden md:flex justify-center pt-5 pb-4 hover:opacity-80 transition-opacity"
         >
             <p class="text-lg md:text-xl font-black text-yellow-500">
-                יוצאים לחירות
+                {tFn("footer.brand")}
             </p>
         </a>
 
         <div
             class="flex flex-col items-center justify-center gap-0 md:gap-2"
         >
-            <!-- Mobile only: Brand text (ימין) -->
+            <!-- Mobile only: Brand text -->
             <a
                 href="https://freedom-gamma-five.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="יוצאים לחירות (נפתח בחלון חדש)"
+                aria-label={tFn("footer.brand_aria")}
                 style="cursor: pointer;"
                 class="flex md:hidden items-center gap-3 hover:opacity-80 transition-opacity"
             >
                 <div class="flex flex-col text-right leading-tight">
                     <p class="text-yellow-400 font-black text-base">
-                        יוצאים לחירות
+                        {tFn("footer.brand")}
                     </p>
                 </div>
             </a>
 
             <!-- Center: Links -->
             <nav
-                aria-label="ניווט תחתון"
+                aria-label={tFn("footer.bottom_nav_aria")}
                 class="flex items-center gap-2 md:gap-3 text-sm md:text-base text-gray-300 font-bold flex-nowrap justify-center whitespace-nowrap"
             >
-                <a href="/about/legal" class="hover:text-white transition-colors text-center leading-tight">תנאי שימוש<br class="md:hidden" /><span class="hidden md:inline">,&nbsp;</span>הצהרת נגישות וכו'</a>
+                <a href="/about/legal" class="hover:text-white transition-colors text-center leading-tight">{tFn("footer.terms_part1")}<br class="md:hidden" /><span class="hidden md:inline">,&nbsp;</span>{tFn("footer.terms_part2")}</a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
-                <a href="mailto:freedomhasbegun@gmail.com" class="hover:text-white transition-colors whitespace-nowrap" aria-label="צור קשר – שלח אימייל">{tFn("contact_us")}</a>
+                <a href="mailto:freedomhasbegun@gmail.com" class="hover:text-white transition-colors whitespace-nowrap" aria-label={tFn("footer.contact_email_aria")}>{tFn("contact_us")}</a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSd54dS1D-MkSVY5PQST2pBm8cOMA5npTcA-xAgDSLQxD3OpUw/viewform?usp=header" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors text-center leading-tight">דרושים מנהיגים<br class="md:hidden" /><span class="hidden md:inline">&nbsp;</span>ומתנדבים</a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSd54dS1D-MkSVY5PQST2pBm8cOMA5npTcA-xAgDSLQxD3OpUw/viewform?usp=header" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors text-center leading-tight">{tFn("footer.leaders_part1")}<br class="md:hidden" /><span class="hidden md:inline">&nbsp;</span>{tFn("footer.leaders_part2")}</a>
             </nav>
 
             <!-- Left: Copyright -->

@@ -1,5 +1,11 @@
 <script lang="ts">
-    import { ads, type Ad } from '$lib/adsData';
+    import { ads } from '$lib/adsData';
+    import { t, locale } from 'svelte-i18n';
+    import { get } from 'svelte/store';
+
+    let _loc = $state(get(locale));
+    $effect(() => locale.subscribe((l) => (_loc = l)));
+    const tFn = (k: string) => { void _loc; return get(t)(k); };
 
     type ApprovedAd = {
         id: string;
@@ -29,10 +35,10 @@
         })),
         ...ads.map(a => ({
             id: String(a.id),
-            title: a.title,
-            description: a.description,
-            cta: a.cta,
-            hover: a.hover,
+            title: tFn(a.titleKey),
+            description: tFn(a.descriptionKey),
+            cta: tFn(a.ctaKey),
+            hover: a.hoverKey ? tFn(a.hoverKey) : undefined,
             href: a.href,
             target: '_blank' as const,
             image: a.image,
@@ -43,11 +49,11 @@
 </script>
 
 <aside
-    aria-label="פרסומות ושותפים"
+    aria-label={tFn("sidebar.aria_label")}
     class="hidden lg:block w-48 flex-shrink-0 sticky top-4 h-fit pb-8 text-center"
 >
     <h4 class="text-xs font-bold text-amber-400 uppercase tracking-widest mb-2 px-2">
-        מתקדמים לחברה מתוקנת ועצמאית
+        {tFn("sidebar.heading")}
     </h4>
     <div class="space-y-4">
         {#each merged as ad (ad.id)}
@@ -55,7 +61,7 @@
                 href={ad.href}
                 target={ad.target}
                 rel={ad.target === '_blank' ? 'noopener noreferrer' : undefined}
-                aria-label="{ad.title} – {ad.description}{ad.target === '_blank' ? ' (נפתח בחלון חדש)' : ''}"
+                aria-label="{ad.title} – {ad.description}{ad.target === '_blank' ? tFn('sidebar.opens_new_window') : ''}"
                 class="block overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105 group relative"
             >
                 <div class="relative overflow-hidden" style="height: {ad.imageHeight ?? '160px'}">

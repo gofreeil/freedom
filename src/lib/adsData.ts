@@ -1,60 +1,63 @@
+// כל המחרוזות הנראות למשתמש מתורגמות באמצעות svelte-i18n.
+// כאן שמורים רק מפתחות התרגום (titleKey/descriptionKey/ctaKey/hoverKey)
+// וערכי עיצוב/קישור. הרכיב הצורך משתמש ב-$t כדי לשלוף את הטקסט בשפה הנוכחית.
 export interface Ad {
     id: number;
-    title: string;
-    description: string;
-    cta: string;
+    titleKey: string;
+    descriptionKey: string;
+    ctaKey: string;
     href: string;
     image: string;
     color: string;
     imageHeight?: string;   // גובה מותאם לתמונה (ברירת מחדל: auto)
     imageScale?: number;    // זום על התמונה (ברירת מחדל: 1)
-    hover?: string;         // טקסט tooltip בריחוף מעל כפתור ה-CTA
+    hoverKey?: string;      // tooltip בריחוף מעל כפתור ה-CTA
 }
 
 export const ads: Ad[] = [
     {
         id: 11,
-        title: "החנות החברתית",
-        description: "מוצרים נבחרים לבריאות טבעית, חקלאות ביתית, טכנולוגיה ועוד",
-        cta: "כנסו לחנות לחיים טובים יותר",
-        hover: "החנות שלנו!",
+        titleKey: "ads.social_store.title",
+        descriptionKey: "ads.social_store.description",
+        ctaKey: "ads.social_store.cta",
+        hoverKey: "ads.social_store.hover",
         href: "https://heirut-shop.vercel.app/",
         image: "/images/freedom-store.png",
         color: "from-emerald-600 to-teal-700"
     },
     {
         id: 1,
-        title: "בתי הפיוס",
-        description: "מתנדבים לתת לך עזרה מלאה בדין / פיוס בכל סיכסוך",
-        cta: "יש לך סיכסוך? לחץ לפתרון",
+        titleKey: "ads.peace_houses.title",
+        descriptionKey: "ads.peace_houses.description",
+        ctaKey: "ads.peace_houses.cta",
         href: "https://chachmei-haeda.vercel.app/",
         image: "/images/bati-hapius.png",
         color: "from-orange-600 to-red-600"
     },
     {
         id: 9,
-        title: 'הגמ"ח הארצי',
-        description: 'כל הגמחים תחת קורת גג אחת',
-        cta: 'לאתר הגמ"ח הארצי',
-        hover: 'מצא כל גמח בקלות!',
+        titleKey: "ads.national_gemach.title",
+        descriptionKey: "ads.national_gemach.description",
+        ctaKey: "ads.national_gemach.cta",
+        hoverKey: "ads.national_gemach.hover",
         href: "https://national-gemach.vercel.app/",
         image: "/images/gemach-harzi.png",
         color: "from-pink-600 via-fuchsia-600 to-purple-700",
     },
     {
         id: 2,
-        title: "ועדי שכונות",
-        description: "מהפכת משילות העם על המוסדות",
-        cta: "הכר והשתתף במהפכת משילות העם על מוסדותיו",
+        titleKey: "ads.neighborhood_committees.title",
+        descriptionKey: "ads.neighborhood_committees.description",
+        ctaKey: "ads.neighborhood_committees.cta",
         href: "https://www.melecshop.com/page/peace-on-earth_VRHH",
         image: "/images/news/vaadei-shchunot.png",
         color: "from-blue-600 to-cyan-600"
     },
     {
         id: 5,
-        title: "מבקר רשויות המדינה",
-        description: "מבקרים את הרשויות, ממצים את זכות התושב",
-        cta: "מבקרים את הרשויות, ממצים את זכות התושב",
+        titleKey: "ads.state_auditor.title",
+        descriptionKey: "ads.state_auditor.description",
+        ctaKey: "ads.state_auditor.cta",
         href: "https://right-to-live.vercel.app/",
         image: "/images/mevaker-rashuyot.png",
         color: "from-blue-700 to-indigo-700",
@@ -63,9 +66,9 @@ export const ads: Ad[] = [
     },
     {
         id: 10,
-        title: "דירוג ציבורי",
-        description: "העם מדרג את הרשויות ועובדי הציבור",
-        cta: "העם מדרג את הרשויות ועובדי הציבור",
+        titleKey: "ads.public_rating.title",
+        descriptionKey: "ads.public_rating.description",
+        ctaKey: "ads.public_rating.cta",
         href: "https://public-rating-il.vercel.app/",
         image: "/images/public-rating.jpeg",
         color: "from-indigo-600 to-blue-600",
@@ -74,37 +77,37 @@ export const ads: Ad[] = [
     },
     {
         id: 8,
-        title: "משאלי העם",
-        description: "הבע דעתך על הסוגיות האקטואליות",
-        cta: "הבע דעתך על הסוגיות האקטואליות",
-        hover: "הבע דעתך על הסוגיות האקטואליות",
+        titleKey: "ads.referendum.title",
+        descriptionKey: "ads.referendum.description",
+        ctaKey: "ads.referendum.cta",
+        hoverKey: "ads.referendum.hover",
         href: "https://referendum-azure.vercel.app/",
         image: "/images/referendum.png",
         color: "from-purple-600 to-indigo-700"
     },
     {
         id: 3,
-        title: "קבוצת רכישה",
-        description: "הוזל את ההוצאות שלך",
-        cta: "הצטרף לקבוצת הרכישה שלנו והוזל מיד את ההוצאות!",
+        titleKey: "ads.purchasing_group.title",
+        descriptionKey: "ads.purchasing_group.description",
+        ctaKey: "ads.purchasing_group.cta",
         href: "https://purchasing-groups.vercel.app/",
         image: "/images/whatsapp_cta.png",
         color: "from-green-800 to-emerald-900"
     },
     {
         id: 4,
-        title: "מועדון המשקיעים החברתי",
-        description: "התחבר עם קבוצת המשקיעים שלנו",
-        cta: "התחבר עם קבוצת המשקיעים שלנו",
+        titleKey: "ads.investors_club.title",
+        descriptionKey: "ads.investors_club.description",
+        ctaKey: "ads.investors_club.cta",
         href: "https://www.melecshop.com/page/free",
         image: "/images/partners/investments.png",
         color: "from-amber-600 to-orange-600"
     },
     {
         id: 6,
-        title: "בעלי מקצוע כשירים",
-        description: "חתמו על תנאי הקהילה ונותנים לנו הנחות והטבות יחודיות",
-        cta: "מחפש בעל מקצוע איכותי באזורך?",
+        titleKey: "ads.professionals.title",
+        descriptionKey: "ads.professionals.description",
+        ctaKey: "ads.professionals.cta",
         href: "https://index-chi-sage.vercel.app/",
         image: "/images/professionals.png",
         color: "from-yellow-500 to-orange-500"
