@@ -289,15 +289,6 @@
 				</div>
 			</a>
 			{/each}
-
-			<!-- מקום פרסום ריק -->
-			<a href="/about/advertise" class="ad-card ad-empty" onclick={() => open = false}>
-				<div class="ad-empty-inner">
-					<span class="ad-empty-icon">📌</span>
-					<p class="ad-empty-text">{tFn("drawer.ad_slot_title")}</p>
-					<p class="ad-empty-sub">{tFn("drawer.ad_slot_sub")}</p>
-				</div>
-			</a>
 		</div>
 	</div>
 

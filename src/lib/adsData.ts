@@ -16,16 +16,6 @@ export interface Ad {
 
 export const ads: Ad[] = [
     {
-        id: 11,
-        titleKey: "ads.social_store.title",
-        descriptionKey: "ads.social_store.description",
-        ctaKey: "ads.social_store.cta",
-        hoverKey: "ads.social_store.hover",
-        href: "https://heirut-shop.vercel.app/",
-        image: "/images/freedom-store.png",
-        color: "from-emerald-600 to-teal-700"
-    },
-    {
         id: 1,
         titleKey: "ads.peace_houses.title",
         descriptionKey: "ads.peace_houses.description",
@@ -49,7 +39,7 @@ export const ads: Ad[] = [
         titleKey: "ads.neighborhood_committees.title",
         descriptionKey: "ads.neighborhood_committees.description",
         ctaKey: "ads.neighborhood_committees.cta",
-        href: "https://www.melecshop.com/page/peace-on-earth_VRHH",
+        href: "https://neighborhoods-il.vercel.app/",
         image: "/images/news/vaadei-shchunot.png",
         color: "from-blue-600 to-cyan-600"
     },
@@ -111,5 +101,15 @@ export const ads: Ad[] = [
         href: "https://index-chi-sage.vercel.app/",
         image: "/images/professionals.png",
         color: "from-yellow-500 to-orange-500"
+    },
+    {
+        id: 11,
+        titleKey: "ads.social_store.title",
+        descriptionKey: "ads.social_store.description",
+        ctaKey: "ads.social_store.cta",
+        hoverKey: "ads.social_store.hover",
+        href: "https://heirut-shop.vercel.app/",
+        image: "/images/freedom-store.png",
+        color: "from-emerald-600 to-teal-700"
     }
 ];

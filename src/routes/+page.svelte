@@ -46,7 +46,7 @@
 				{
 					titleKey: 'page.sites.neighborhood_committees.title',
 					descriptionKey: 'page.sites.neighborhood_committees.description',
-					href: 'https://www.melecshop.com/page/peace-on-earth_VRHH',
+					href: 'https://neighborhoods-il.vercel.app/',
 					image: '/images/news/vaadei-shchunot.png'
 				},
 				{
