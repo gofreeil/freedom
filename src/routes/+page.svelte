@@ -678,6 +678,7 @@
 						class="col-heading bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent
 						       text-4xl md:text-6xl font-black text-center"
 						style="--char-count:{[...tFn(column.headingKey)].length}"
+						dir={/^[A-Za-z]/.test(tFn(column.headingKey)) ? 'ltr' : 'rtl'}
 					>
 						{#each [...tFn(column.headingKey)] as ch, ci (ci)}<span
 							class="col-heading-char"
