@@ -201,6 +201,16 @@
 	// הסרטון נטען רק בלחיצה — מאיץ משמעותית את טעינת הדף
 	let videoPlaying = $state(false);
 
+	// בנייד: לחיצה ראשונה על באנר חושפת תיאור + כפתור; הניווט רק דרך הכפתור.
+	let revealedBanners: Record<string, boolean> = $state({});
+	function onBannerClick(e: MouseEvent, site: Site) {
+		if (!site.href) { e.preventDefault(); return; }
+		if (typeof window !== 'undefined' && window.innerWidth < 768) {
+			e.preventDefault();
+			if (!revealedBanners[site.title]) revealedBanners[site.title] = true;
+		}
+	}
+
 	// מונה חברים — ספירה מהירה מ-1,000 עד 10,000
 	const memberFrom = 1000;
 	const memberTo = 10000;
@@ -711,7 +721,12 @@
 								</span>
 							</div>
 						{/if}
-						<div
+						<svelte:element
+							this={site.href ? 'a' : 'div'}
+							href={site.href}
+							target={site.href ? '_blank' : undefined}
+							rel={site.href ? 'noopener noreferrer' : undefined}
+							onclick={(e) => onBannerClick(e, site)}
 							class="fx-banner fx-lift group relative block overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
 							       transition-colors hover:border-purple-500/50 hover:bg-white/10
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}"
@@ -721,7 +736,7 @@
 									<img
 										src={site.image}
 										alt={site.title}
-										class="{i === 0 ? 'h-auto' : 'h-full'} w-full object-cover transition-transform group-hover:scale-105"
+										class="{i === 0 ? 'h-auto' : 'h-full'} w-full object-cover transition-transform"
 										decoding="async"
 										loading="lazy"
 									/>
@@ -734,31 +749,28 @@
 									</div>
 								{/if}
 							</div>
-							<svelte:element
-								this={site.href ? 'a' : 'div'}
-								href={site.href}
-								target={site.href ? '_blank' : undefined}
-								rel={site.href ? 'noopener noreferrer' : undefined}
-								class="banner-caption hidden md:block relative px-6 py-3 bg-black overflow-hidden cursor-pointer"
-							>
+							<div class="banner-caption hidden md:block relative px-6 py-3 bg-black overflow-hidden">
 								<p class="caption-title text-center text-base font-black leading-tight text-white transition-opacity duration-300">{site.title}</p>
 								<p class="caption-desc absolute inset-0 flex items-center justify-center px-4 text-center text-sm font-semibold leading-snug text-gray-100 transition-opacity duration-300">{site.description}</p>
-							</svelte:element>
+							</div>
 							<div class="md:hidden px-4 py-3 bg-black">
 								<p class="text-center text-base font-black leading-tight text-white">{site.title}</p>
-								<p class="mt-1 text-center text-sm font-semibold leading-snug text-gray-200">{site.description}</p>
-								{#if site.href}
-									<a
-										href={site.href}
-										target="_blank"
-										rel="noopener noreferrer"
-										class="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-2 text-sm font-black text-white shadow-md active:scale-95 transition-transform"
-									>
-										עבור אל האתר ←
-									</a>
+								{#if revealedBanners[site.title]}
+									<p class="mt-2 text-center text-sm font-semibold leading-snug text-gray-200">{site.description}</p>
+									{#if site.href}
+										<a
+											href={site.href}
+											target="_blank"
+											rel="noopener noreferrer"
+											onclick={(e) => e.stopPropagation()}
+											class="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-2 text-sm font-black text-white shadow-md active:scale-95 transition-transform"
+										>
+											עבור אל האתר ←
+										</a>
+									{/if}
 								{/if}
 							</div>
-						</div>
+						</svelte:element>
 					</div>
 					{/each}
 				</div>
