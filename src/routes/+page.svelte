@@ -85,12 +85,6 @@
 					image: '/images/whatsapp_cta.png'
 				},
 				{
-					titleKey: 'page.sites.group_investments.title',
-					descriptionKey: 'page.sites.group_investments.description',
-					href: 'https://www.melecshop.com/page/free',
-					image: '/images/partners/investments.png'
-				},
-				{
 					titleKey: 'page.sites.professionals.title',
 					descriptionKey: 'page.sites.professionals.description',
 					href: 'https://index-chi-sage.vercel.app/',
@@ -733,7 +727,7 @@
 							       transition-colors hover:border-purple-500/50 hover:bg-white/10
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}"
 						>
-							<div class="relative {i === 0 ? 'h-auto' : i === 1 ? (si === 2 ? 'h-60 md:h-44' : si === 3 ? 'h-52 md:h-[137px]' : si === 4 ? 'h-52 md:h-[138px]' : 'h-44 md:h-28') : i === 2 ? (si === 0 ? 'h-36' : si === 1 ? 'h-44' : si === 3 ? 'h-52' : 'h-40') : 'h-28'} w-full overflow-hidden bg-slate-800">
+							<div class="relative {i === 0 ? 'h-auto' : i === 1 ? (si === 2 ? 'h-60 md:h-44' : si === 3 ? 'h-52 md:h-[137px]' : si === 4 ? 'h-52 md:h-[138px]' : 'h-44 md:h-28') : i === 2 ? (si === 0 ? 'h-36 md:h-48' : si === 1 ? 'h-44 md:h-56' : 'h-40 md:h-[335px]') : 'h-28'} w-full overflow-hidden bg-slate-800">
 								{#if site.image}
 									<img
 										src={site.image}
