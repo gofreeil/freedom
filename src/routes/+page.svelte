@@ -741,8 +741,8 @@
 								rel={site.href ? 'noopener noreferrer' : undefined}
 								class="banner-caption hidden md:block relative px-6 py-3 bg-black overflow-hidden cursor-pointer"
 							>
-								<p class="text-center text-base font-black leading-tight text-white transition-opacity duration-300 group-hover:opacity-0">{site.title}</p>
-								<p class="absolute inset-0 flex items-center justify-center px-4 text-center text-sm font-semibold leading-snug text-gray-100 opacity-0 transition-opacity duration-300 group-hover:opacity-100">{site.description}</p>
+								<p class="caption-title text-center text-base font-black leading-tight text-white transition-opacity duration-300">{site.title}</p>
+								<p class="caption-desc absolute inset-0 flex items-center justify-center px-4 text-center text-sm font-semibold leading-snug text-gray-100 transition-opacity duration-300">{site.description}</p>
 							</svelte:element>
 							<div class="md:hidden px-4 py-3 bg-black">
 								<p class="text-center text-base font-black leading-tight text-white">{site.title}</p>
@@ -835,6 +835,13 @@
 	.fx-lift:hover {
 		transform: translateY(-6px) rotate(-0.6deg);
 	}
+
+	/* החלפת שם<->תיאור בריחוף (Tailwind v4 לא מקמפל group-hover כאן) */
+	.caption-title { opacity: 1; }
+	.caption-desc { opacity: 0; }
+	.fx-banner:hover .caption-title { opacity: 0; }
+	.fx-banner:hover .caption-desc { opacity: 1; }
+	.fx-banner:hover img { transform: scale(1.05); }
 
 	@media (prefers-reduced-motion: reduce) {
 		.fx-banner:hover {
