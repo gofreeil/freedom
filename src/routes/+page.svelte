@@ -739,11 +739,25 @@
 								href={site.href}
 								target={site.href ? '_blank' : undefined}
 								rel={site.href ? 'noopener noreferrer' : undefined}
-								class="banner-caption relative block px-6 py-3 bg-black overflow-hidden cursor-pointer"
+								class="banner-caption hidden md:block relative px-6 py-3 bg-black overflow-hidden cursor-pointer"
 							>
 								<p class="text-center text-base font-black leading-tight text-white transition-opacity duration-300 group-hover:opacity-0">{site.title}</p>
 								<p class="absolute inset-0 flex items-center justify-center px-4 text-center text-sm font-semibold leading-snug text-gray-100 opacity-0 transition-opacity duration-300 group-hover:opacity-100">{site.description}</p>
 							</svelte:element>
+							<div class="md:hidden px-4 py-3 bg-black">
+								<p class="text-center text-base font-black leading-tight text-white">{site.title}</p>
+								<p class="mt-1 text-center text-sm font-semibold leading-snug text-gray-200">{site.description}</p>
+								{#if site.href}
+									<a
+										href={site.href}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-2 text-sm font-black text-white shadow-md active:scale-95 transition-transform"
+									>
+										עבור אל האתר ←
+									</a>
+								{/if}
+							</div>
 						</div>
 					</div>
 					{/each}
