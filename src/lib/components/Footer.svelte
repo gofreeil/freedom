@@ -10,7 +10,7 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <!-- Desktop: title centered above -->
         <a
-            href="https://freedom-gamma-five.vercel.app/"
+            href="https://freedom-il.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
             aria-label={tFn("footer.brand_aria")}
@@ -26,7 +26,7 @@
         >
             <!-- Mobile only: Brand text -->
             <a
-                href="https://freedom-gamma-five.vercel.app/"
+                href="https://freedom-il.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={tFn("footer.brand_aria")}
