@@ -71,7 +71,7 @@ export const ads: Ad[] = [
         descriptionKey: "ads.referendum.description",
         ctaKey: "ads.referendum.cta",
         hoverKey: "ads.referendum.hover",
-        href: "https://referendum-azure.vercel.app/",
+        href: "https://referendum-il.vercel.app/",
         image: "/images/referendum.png",
         color: "from-purple-600 to-indigo-700"
     },

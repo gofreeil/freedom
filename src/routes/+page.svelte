@@ -23,7 +23,7 @@
 				{
 					titleKey: 'page.sites.community_neighborhood.title',
 					descriptionKey: 'page.sites.community_neighborhood.description',
-					href: 'https://community-blush.vercel.app/',
+					href: 'https://community-il.vercel.app/',
 					image: '/images/community-neighborhood.png'
 				},
 				{
@@ -70,7 +70,7 @@
 				{
 					titleKey: 'page.sites.referendum.title',
 					descriptionKey: 'page.sites.referendum.description',
-					href: 'https://referendum-azure.vercel.app/',
+					href: 'https://referendum-il.vercel.app/',
 					image: '/images/referendum.png'
 				}
 			]
