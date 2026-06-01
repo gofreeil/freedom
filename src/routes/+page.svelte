@@ -52,7 +52,7 @@
 				{
 					titleKey: 'page.sites.state_auditor.title',
 					descriptionKey: 'page.sites.state_auditor.description',
-					href: 'https://right-to-live.vercel.app/',
+					href: 'https://criticism.vercel.app/',
 					image: '/images/mevaker-rashuyot.png'
 				},
 				{

@@ -48,7 +48,7 @@ export const ads: Ad[] = [
         titleKey: "ads.state_auditor.title",
         descriptionKey: "ads.state_auditor.description",
         ctaKey: "ads.state_auditor.cta",
-        href: "https://right-to-live.vercel.app/",
+        href: "https://criticism.vercel.app/",
         image: "/images/mevaker-rashuyot.png",
         color: "from-blue-700 to-indigo-700",
         imageHeight: "120px",
