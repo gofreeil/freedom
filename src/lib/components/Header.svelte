@@ -40,7 +40,7 @@
             if (saved) locale.set(saved);
         } catch {}
 
-        // hover על כפתור אודות — תמונה ב-fixed position
+        // hover על כפתור אודות - תמונה ב-fixed position
         const preview = document.getElementById('about-preview') as HTMLElement | null;
         const btnWrapper = document.getElementById('about-btn-wrapper');
         if (preview && btnWrapper) {
@@ -117,7 +117,7 @@
             options[options.length - 1].focus();
         }
     }
-	// tFn: תרגום reactive — $t אסור ב-Svelte 5
+	// tFn: תרגום reactive - $t אסור ב-Svelte 5
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
 	const tFn = (k: string) => { void _loc; return get(t)(k); };
@@ -281,7 +281,7 @@
                         {tFn("about")}
                     </button>
                 </div>
-                <!-- תמונת preview — position:fixed כדי לחמוק מ-overflow של ההדר -->
+                <!-- תמונת preview - position:fixed כדי לחמוק מ-overflow של ההדר -->
                 <div id="about-preview"
                      style="position:fixed; z-index:9999; pointer-events:none;
                             transition: opacity 0.2s ease-out, transform 0.2s ease-out;

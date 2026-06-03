@@ -32,11 +32,11 @@ register('he', () => Promise.resolve({
     page: {
         hero_title: "יוצאים לחירות",
         intro: {
-            movement_label: "יוצאים לחירות —",
+            movement_label: "יוצאים לחירות -",
             movement_text: "הינה תנועה חברתית, העוסקת לקדם ולשפר את החברה בישראל לחברה יותר אחראית, סולידרית וחופשיה. התנועה עוסקת לשחרר את התושבים מריכוזי הכח הנמצאים היום אצל קומץ השולטים בבנקים, בתקשורת, בכלכלה, בפוליטיקה וברשויות המדינה.",
-            vision_label: "החזון —",
+            vision_label: "החזון -",
             vision_text: "התאחדות התושבים, ביזור הכח הריכוזי שבמוסדות המדינה, פיקוח, ביקורת, ומעורבות של העם בקבלת ההחלטות.",
-            activity_label: "הפעילות —",
+            activity_label: "הפעילות -",
             activity_text: "יוצאים לחירות פיתחה אפליקציות המקדמות את המשילות, הקימה רכזים חברתיים בשכונות ברחבי הארץ, וקהילה גדולה המקדמת את ערכי החופש, האחווה, והמשילות של העם על מוסדותיו!",
         },
         video: {
@@ -68,7 +68,7 @@ register('he', () => Promise.resolve({
             },
             neighborhood_committees: {
                 title: "ועדי שכונות",
-                description: "מהפכת משילות העם על המוסדות — הכר והשתתף.",
+                description: "מהפכת משילות העם על המוסדות - הכר והשתתף.",
             },
             state_auditor: {
                 title: "מבקר רשויות המדינה",
@@ -241,11 +241,11 @@ register('en', () => Promise.resolve({
     page: {
         hero_title: "Going to Freedom",
         intro: {
-            movement_label: "Going to Freedom —",
+            movement_label: "Going to Freedom -",
             movement_text: "is a social movement working to advance and improve Israeli society into a more responsible, solidary, and free society. The movement works to liberate residents from the concentrations of power currently held by a handful of people who control the banks, the media, the economy, politics, and state authorities.",
-            vision_label: "The Vision —",
+            vision_label: "The Vision -",
             vision_text: "Uniting residents, decentralizing the concentrated power within state institutions, oversight, audit, and public involvement in decision-making.",
-            activity_label: "Our Work —",
+            activity_label: "Our Work -",
             activity_text: "Going to Freedom has built applications that advance governance, established neighborhood community coordinators across the country, and grown a large community that promotes the values of freedom, fellowship, and the people's governance over its institutions!",
         },
         video: {
@@ -254,7 +254,7 @@ register('en', () => Promise.resolve({
         },
         members: {
             prefix: "Going to Freedom now has",
-            suffix: "members — and growing!",
+            suffix: "members - and growing!",
         },
         platforms_title: "The people's governance model, powered and advanced by a network of innovative tools and platforms:",
         columns: {
@@ -277,7 +277,7 @@ register('en', () => Promise.resolve({
             },
             neighborhood_committees: {
                 title: "Neighborhood Committees",
-                description: "The people's governance revolution over institutions — learn and join.",
+                description: "The people's governance revolution over institutions - learn and join.",
             },
             state_auditor: {
                 title: "State Authorities Auditor",
@@ -316,7 +316,7 @@ register('en', () => Promise.resolve({
             go_to_site: "Visit the site →",
         },
         news_block: {
-            tagline: "Our media is independent — we cover the country's events from the resident's perspective!",
+            tagline: "Our media is independent - we cover the country's events from the resident's perspective!",
             image_alt: "News",
         },
         socials: {
@@ -441,7 +441,7 @@ register('ru', () => Promise.resolve({
         bottom_nav_aria: "Нижняя навигация",
         terms_part1: "Условия использования",
         terms_part2: "Заявление о доступности и др.",
-        contact_email_aria: "Связаться с нами — отправить письмо",
+        contact_email_aria: "Связаться с нами - отправить письмо",
         leaders_part1: "Требуются лидеры",
         leaders_part2: "и волонтёры",
     },
@@ -450,11 +450,11 @@ register('ru', () => Promise.resolve({
     page: {
         hero_title: "Путь к свободе",
         intro: {
-            movement_label: "Путь к свободе —",
-            movement_text: "это общественное движение, цель которого — развивать и улучшать израильское общество, делая его более ответственным, солидарным и свободным. Движение работает над тем, чтобы освободить жителей от концентрации власти, сосредоточенной сегодня в руках узкого круга людей, контролирующих банки, СМИ, экономику, политику и государственные органы.",
-            vision_label: "Видение —",
+            movement_label: "Путь к свободе -",
+            movement_text: "это общественное движение, цель которого - развивать и улучшать израильское общество, делая его более ответственным, солидарным и свободным. Движение работает над тем, чтобы освободить жителей от концентрации власти, сосредоточенной сегодня в руках узкого круга людей, контролирующих банки, СМИ, экономику, политику и государственные органы.",
+            vision_label: "Видение -",
             vision_text: "Объединение жителей, децентрализация концентрированной власти государственных институтов, надзор, контроль и участие народа в принятии решений.",
-            activity_label: "Деятельность —",
+            activity_label: "Деятельность -",
             activity_text: "Движение «Путь к свободе» разработало приложения, продвигающие народное управление, создало сеть общественных координаторов в районах по всей стране и сформировало большое сообщество, продвигающее ценности свободы, братства и власти народа над его институтами!",
         },
         video: {
@@ -463,7 +463,7 @@ register('ru', () => Promise.resolve({
         },
         members: {
             prefix: "В движении «Путь к свободе» уже",
-            suffix: "участников — и нас становится больше!",
+            suffix: "участников - и нас становится больше!",
         },
         platforms_title: "Модель народного управления работает и развивается благодаря сети инновационных инструментов и платформ:",
         columns: {
@@ -486,7 +486,7 @@ register('ru', () => Promise.resolve({
             },
             neighborhood_committees: {
                 title: "Районные комитеты",
-                description: "Революция народного управления над институтами — узнайте и присоединяйтесь.",
+                description: "Революция народного управления над институтами - узнайте и присоединяйтесь.",
             },
             state_auditor: {
                 title: "Аудитор государственных органов",
@@ -525,7 +525,7 @@ register('ru', () => Promise.resolve({
             go_to_site: "Перейти на сайт →",
         },
         news_block: {
-            tagline: "Наши СМИ независимы — освещаем события страны с точки зрения прав жителя!",
+            tagline: "Наши СМИ независимы - освещаем события страны с точки зрения прав жителя!",
             image_alt: "Новости",
         },
         socials: {
