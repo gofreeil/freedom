@@ -728,12 +728,12 @@
 							       transition-colors hover:border-purple-500/50 hover:bg-white/10
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}"
 						>
-							<div class="relative {i === 0 ? 'h-auto' : i === 1 ? (si === 2 ? 'h-60 md:h-44' : si === 3 ? 'h-52 md:h-[137px]' : si === 4 ? 'h-52 md:h-[138px]' : 'h-44 md:h-28') : i === 2 ? (si === 0 ? 'h-36 md:h-48' : si === 1 ? 'h-44 md:h-56' : 'h-40 md:h-[335px]') : 'h-28'} w-full overflow-hidden bg-slate-800">
+							<div class="banner-media relative {i === 0 ? 'h-auto' : i === 1 ? (si === 2 ? 'h-60 md:h-44' : si === 3 ? 'h-52 md:h-[137px]' : si === 4 ? 'h-52 md:h-[138px]' : 'h-44 md:h-28') : i === 2 ? (si === 0 ? 'h-36 md:h-48' : si === 1 ? 'h-44 md:h-56' : 'h-40 md:h-[335px]') : 'h-28'} w-full overflow-hidden bg-slate-800">
 								{#if site.image}
 									<img
 										src={site.image}
 										alt={tFn(site.titleKey)}
-										class="{i === 0 ? 'h-auto' : 'h-full'} w-full object-cover transition-transform"
+										class="banner-img {i === 0 ? 'h-auto' : 'h-full'} w-full object-cover transition-transform"
 										decoding="async"
 										loading="lazy"
 									/>
@@ -745,6 +745,18 @@
 										<span class="text-2xl font-black text-purple-300/70">{tFn(site.titleKey)}</span>
 									</div>
 								{/if}
+								<div
+									class="banner-text-overlay absolute inset-0 hidden md:flex items-center justify-center px-6 text-center"
+								>
+									<div class="banner-text-inner">
+										<p class="text-xl lg:text-2xl font-black leading-tight text-white">
+											{tFn(site.titleKey)}
+										</p>
+										<p class="mt-2 text-sm lg:text-base font-semibold leading-snug text-gray-200">
+											{tFn(site.descriptionKey)}
+										</p>
+									</div>
+								</div>
 							</div>
 							<div class="banner-caption hidden md:block relative px-6 py-3 bg-black overflow-hidden">
 								<p class="caption-title text-center text-base font-black leading-tight text-white transition-opacity duration-300">{tFn(site.titleKey)}</p>
@@ -852,10 +864,78 @@
 	.fx-banner:hover .caption-desc { opacity: 1; }
 	.fx-banner:hover img { transform: scale(1.05); }
 
+	/* ===== מעבר ענן/ערפל איטי: התמונה מטשטשת מאחורי שכבת ערפל שמתעבה ===== */
+	/* הטקסט עצמו סטטי - כבר שם, ללא אנימציה. רק הענן זז ומגלה אותו. */
+	.banner-img {
+		transition:
+			transform 1.6s cubic-bezier(0.22, 1, 0.36, 1),
+			filter 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+		will-change: transform, filter;
+	}
+	.fx-banner:hover .banner-img {
+		transform: scale(1.08);
+		filter: blur(4px) brightness(0.7) saturate(0.85);
+	}
+
+	.banner-text-overlay {
+		opacity: 0;
+		pointer-events: none;
+		background:
+			radial-gradient(ellipse 65% 55% at 18% 22%, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0) 72%),
+			radial-gradient(ellipse 55% 50% at 82% 28%, rgba(30, 41, 59, 0.92) 0%, rgba(30, 41, 59, 0) 72%),
+			radial-gradient(ellipse 70% 60% at 30% 82%, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0) 72%),
+			radial-gradient(ellipse 60% 55% at 80% 78%, rgba(30, 41, 59, 0.92) 0%, rgba(30, 41, 59, 0) 72%),
+			radial-gradient(ellipse 90% 80% at 50% 50%, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.55) 100%);
+		background-size:
+			170% 170%,
+			170% 170%,
+			170% 170%,
+			170% 170%,
+			140% 140%;
+		background-position:
+			40% 40%,
+			60% 40%,
+			40% 60%,
+			60% 60%,
+			50% 50%;
+		backdrop-filter: blur(0px) saturate(1);
+		-webkit-backdrop-filter: blur(0px) saturate(1);
+		transition:
+			opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1),
+			background-position 2.2s cubic-bezier(0.22, 1, 0.36, 1),
+			backdrop-filter 1.8s cubic-bezier(0.22, 1, 0.36, 1),
+			-webkit-backdrop-filter 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+		will-change: opacity, backdrop-filter, background-position;
+	}
+	.fx-banner:hover .banner-text-overlay {
+		opacity: 1;
+		background-position:
+			18% 22%,
+			82% 28%,
+			30% 82%,
+			80% 78%,
+			50% 50%;
+		backdrop-filter: blur(10px) saturate(1.05);
+		-webkit-backdrop-filter: blur(10px) saturate(1.05);
+	}
+
+	/* הטקסט סטטי לחלוטין - אין transition, אין transform, אין filter.
+	   הוא יושב שם תמיד; הענן הוא זה שמתעבה ומגלה אותו דרך opacity של ה-overlay. */
+	.banner-text-inner {
+		opacity: 1;
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		.fx-banner:hover {
 			animation: none !important;
 			transform: none !important;
+		}
+		.banner-text-overlay,
+		.banner-img {
+			transition: none;
+		}
+		.fx-banner:hover .banner-img {
+			filter: none;
 		}
 	}
 
