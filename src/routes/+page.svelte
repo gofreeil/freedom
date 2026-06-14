@@ -852,9 +852,9 @@
 		transform-origin: top center;
 	}
 
-	/* הרמה קלה כלפי מעלה בריחוף */
+	/* הרמה קלה כלפי מעלה בריחוף - ללא סיבוב */
 	.fx-lift:hover {
-		transform: translateY(-6px) rotate(-0.6deg);
+		transform: translateY(-6px);
 	}
 
 	/* החלפת שם<->תיאור בריחוף (Tailwind v4 לא מקמפל group-hover כאן) */
