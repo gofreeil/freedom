@@ -102,6 +102,13 @@
 	}
 
 	@media (max-width: 1024px) {
+		/* קווי הזהב והמסגרת רק לדסקטופ - בנייד/טאבלט מסתירים ומשחררים את רוחב האתר */
+		.golden-frame {
+			display: none;
+		}
+		.site-frame {
+			max-width: 100vw;
+		}
 		.layout-container {
 			padding: 0;
 			gap: 0;
