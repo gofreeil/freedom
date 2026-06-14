@@ -908,7 +908,7 @@
 		will-change: opacity, backdrop-filter, background-position;
 	}
 	.fx-banner:hover .banner-text-overlay {
-		opacity: 1;
+		opacity: 0.9; /* 10% שקיפות - התמונה שמאחור כמעט נראית */
 		background-position:
 			18% 22%,
 			82% 28%,
