@@ -202,13 +202,17 @@
 	// הסרטון נטען רק בלחיצה - מאיץ משמעותית את טעינת הדף
 	let videoPlaying = $state(false);
 
-	// בנייד: לחיצה ראשונה על באנר חושפת תיאור + כפתור; הניווט רק דרך הכפתור.
+	// בנייד: לחיצה ראשונה חושפת את ה-overlay (כותרת+תיאור על התמונה, כמו hover בדסקטופ);
+	// לחיצה שניה - ניווט לאתר.
 	let revealedBanners: Record<string, boolean> = $state({});
 	function onBannerClick(e: MouseEvent, site: Site) {
 		if (!site.href) { e.preventDefault(); return; }
 		if (typeof window !== 'undefined' && window.innerWidth < 768) {
-			e.preventDefault();
-			if (!revealedBanners[site.titleKey]) revealedBanners[site.titleKey] = true;
+			if (!revealedBanners[site.titleKey]) {
+				e.preventDefault();
+				revealedBanners[site.titleKey] = true;
+			}
+			// אם כבר נחשף - לא חוסמים, ה-anchor מנווט כרגיל ב-target=_blank
 		}
 	}
 
@@ -747,7 +751,7 @@
 									</div>
 								{/if}
 								<div
-									class="banner-text-overlay absolute inset-0 hidden md:flex items-center justify-center px-6 text-center"
+									class="banner-text-overlay absolute inset-0 flex items-center justify-center px-6 text-center {revealedBanners[site.titleKey] ? 'is-revealed' : ''}"
 								>
 									<div class="banner-text-inner">
 										<p class="text-xl lg:text-2xl font-black leading-tight text-white">
@@ -759,26 +763,8 @@
 									</div>
 								</div>
 							</div>
-							<div class="banner-caption hidden md:block relative px-6 py-3 bg-black overflow-hidden">
-								<p class="caption-title text-center text-base font-black leading-tight text-white transition-opacity duration-300">{tFn(site.titleKey)}</p>
-								<p class="caption-desc absolute inset-0 flex items-center justify-center px-4 text-center text-sm font-semibold leading-snug text-gray-100 transition-opacity duration-300">{tFn(site.descriptionKey)}</p>
-							</div>
-							<div class="md:hidden px-4 py-3 bg-black">
+							<div class="banner-caption px-6 py-3 bg-black">
 								<p class="text-center text-base font-black leading-tight text-white">{tFn(site.titleKey)}</p>
-								{#if revealedBanners[site.titleKey]}
-									<p class="mt-2 text-center text-sm font-semibold leading-snug text-gray-200">{tFn(site.descriptionKey)}</p>
-									{#if site.href}
-										<a
-											href={site.href}
-											target="_blank"
-											rel="noopener noreferrer"
-											onclick={(e) => e.stopPropagation()}
-											class="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-2 text-sm font-black text-white shadow-md active:scale-95 transition-transform"
-										>
-											{tFn("page.banner.go_to_site")}
-										</a>
-									{/if}
-								{/if}
 							</div>
 						</svelte:element>
 					</div>
@@ -824,17 +810,17 @@
 		{tFn("page.socials.title")}
 	</h2>
 
-	<div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+	<div class="mt-8 flex flex-wrap items-center justify-center gap-2 md:gap-4">
 		{#each socials as s (s.name)}
 			<a
 				href={s.href}
 				target="_blank"
 				rel="noopener noreferrer"
 				aria-label={s.name}
-				class="social-icon flex h-12 w-12 items-center justify-center rounded-full
+				class="social-icon flex h-9 w-9 md:h-12 md:w-12 items-center justify-center rounded-full
 				       transition-transform hover:scale-110"
 			>
-				<svg class="h-12 w-12" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+				<svg class="h-9 w-9 md:h-12 md:w-12" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 					{@html s.svg}
 				</svg>
 			</a>
@@ -857,11 +843,6 @@
 		transform: translateY(-6px);
 	}
 
-	/* החלפת שם<->תיאור בריחוף (Tailwind v4 לא מקמפל group-hover כאן) */
-	.caption-title { opacity: 1; }
-	.caption-desc { opacity: 0; }
-	.fx-banner:hover .caption-title { opacity: 0; }
-	.fx-banner:hover .caption-desc { opacity: 1; }
 	.fx-banner:hover img { transform: scale(1.05); }
 
 	/* ===== מעבר ענן/ערפל איטי: התמונה מטשטשת מאחורי שכבת ערפל שמתעבה ===== */
@@ -872,7 +853,8 @@
 			filter 1.8s cubic-bezier(0.22, 1, 0.36, 1);
 		will-change: transform, filter;
 	}
-	.fx-banner:hover .banner-img {
+	.fx-banner:hover .banner-img,
+	.banner-media:has(.banner-text-overlay.is-revealed) .banner-img {
 		transform: scale(1.08);
 		filter: blur(4px) brightness(0.7) saturate(0.85);
 	}
@@ -905,9 +887,9 @@
 			background-position 2.2s cubic-bezier(0.22, 1, 0.36, 1),
 			backdrop-filter 1.8s cubic-bezier(0.22, 1, 0.36, 1),
 			-webkit-backdrop-filter 1.8s cubic-bezier(0.22, 1, 0.36, 1);
-		will-change: opacity, backdrop-filter, background-position;
 	}
-	.fx-banner:hover .banner-text-overlay {
+	.fx-banner:hover .banner-text-overlay,
+	.banner-text-overlay.is-revealed {
 		opacity: 0.9; /* 10% שקיפות - התמונה שמאחור כמעט נראית */
 		background-position:
 			18% 22%,
@@ -917,6 +899,22 @@
 			50% 50%;
 		backdrop-filter: blur(10px) saturate(1.05);
 		-webkit-backdrop-filter: blur(10px) saturate(1.05);
+	}
+
+	/* בנייד: מעבר קצר ויעיל בלי will-change (תגובה מיידית לטאפ) */
+	@media (max-width: 767px) {
+		.banner-text-overlay {
+			transition:
+				opacity 0.4s ease,
+				background-position 0.5s ease,
+				backdrop-filter 0.4s ease,
+				-webkit-backdrop-filter 0.4s ease;
+		}
+		.banner-img {
+			transition:
+				transform 0.5s ease,
+				filter 0.5s ease;
+		}
 	}
 
 	/* הטקסט סטטי לחלוטין - אין transition, אין transform, אין filter.
