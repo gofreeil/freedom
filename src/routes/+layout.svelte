@@ -72,23 +72,23 @@
 			0 0 6px rgba(245, 213, 122, 0.55),
 			0 0 18px rgba(212, 175, 55, 0.35);
 	}
-	/* ממוקמים על שולי המסגרת הפנימית (1360px). על מסכים צרים נצמדים פנימה ב-12px. */
+	/* ממוקמים על שולי המסגרת הפנימית (1280px). על מסכים צרים נצמדים פנימה ב-12px. */
 	.golden-frame-left {
-		left: max(12px, calc(50% - 680px));
+		left: max(12px, calc(50% - 640px));
 	}
 	.golden-frame-right {
-		right: max(12px, calc(50% - 680px));
+		right: max(12px, calc(50% - 640px));
 	}
 
 	/* כל האתר חי בתוך המסגרת בלבד; מחוץ אליה - עמוד ריק (רקע ה-body). */
 	.site-frame {
-		max-width: 1360px;
+		max-width: 1280px;
 		margin: 0 auto;
 		width: 100%;
 	}
 
 	.layout-container {
-		max-width: 1360px;
+		max-width: 1280px;
 		margin: 0 auto;
 		display: flex;
 		gap: 2rem;
