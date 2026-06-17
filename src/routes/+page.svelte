@@ -64,7 +64,7 @@
 				{
 					titleKey: 'page.sites.experts.title',
 					descriptionKey: 'page.sites.experts.description',
-					href: 'https://the-experts-rouge.vercel.app/',
+					href: 'https://the-experts-il.vercel.app/',
 					image: '/images/the-experts.png'
 				},
 				{
