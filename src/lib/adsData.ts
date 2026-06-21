@@ -20,7 +20,7 @@ export const ads: Ad[] = [
         titleKey: "ads.peace_houses.title",
         descriptionKey: "ads.peace_houses.description",
         ctaKey: "ads.peace_houses.cta",
-        href: "https://chachmim.vercel.app/",
+        href: "https://chachmim.gofreeil.com/",
         image: "/images/bati-hapius.png",
         color: "from-orange-600 to-red-600"
     },
@@ -30,7 +30,7 @@ export const ads: Ad[] = [
         descriptionKey: "ads.national_gemach.description",
         ctaKey: "ads.national_gemach.cta",
         hoverKey: "ads.national_gemach.hover",
-        href: "https://national-gemach.vercel.app/",
+        href: "https://gemach.gofreeil.com/",
         image: "/images/gemach-harzi.png",
         color: "from-pink-600 via-fuchsia-600 to-purple-700",
     },
@@ -39,7 +39,7 @@ export const ads: Ad[] = [
         titleKey: "ads.neighborhood_committees.title",
         descriptionKey: "ads.neighborhood_committees.description",
         ctaKey: "ads.neighborhood_committees.cta",
-        href: "https://neighborhoods-il.vercel.app/",
+        href: "https://neighborhoods.gofreeil.com/",
         image: "/images/news/vaadei-shchunot.png",
         color: "from-blue-600 to-cyan-600"
     },
@@ -48,7 +48,7 @@ export const ads: Ad[] = [
         titleKey: "ads.state_auditor.title",
         descriptionKey: "ads.state_auditor.description",
         ctaKey: "ads.state_auditor.cta",
-        href: "https://criticism.vercel.app/",
+        href: "https://criticism.gofreeil.com/",
         image: "/images/mevaker-rashuyot.png",
         color: "from-blue-700 to-indigo-700",
         imageHeight: "120px",
@@ -59,7 +59,7 @@ export const ads: Ad[] = [
         titleKey: "ads.public_rating.title",
         descriptionKey: "ads.public_rating.description",
         ctaKey: "ads.public_rating.cta",
-        href: "https://public-rating-il.vercel.app/",
+        href: "https://rating.gofreeil.com/",
         image: "/images/public-rating.jpeg",
         color: "from-indigo-600 to-blue-600",
         imageHeight: "200px",
@@ -71,7 +71,7 @@ export const ads: Ad[] = [
         descriptionKey: "ads.referendum.description",
         ctaKey: "ads.referendum.cta",
         hoverKey: "ads.referendum.hover",
-        href: "https://referendum-il.vercel.app/",
+        href: "https://referendum.gofreeil.com/",
         image: "/images/referendum.png",
         color: "from-purple-600 to-indigo-700"
     },
@@ -80,7 +80,7 @@ export const ads: Ad[] = [
         titleKey: "ads.purchasing_group.title",
         descriptionKey: "ads.purchasing_group.description",
         ctaKey: "ads.purchasing_group.cta",
-        href: "https://purchasing-groups.vercel.app/",
+        href: "https://groups.gofreeil.com/",
         image: "/images/whatsapp_cta.png",
         color: "from-green-800 to-emerald-900"
     },
@@ -98,7 +98,7 @@ export const ads: Ad[] = [
         titleKey: "ads.professionals.title",
         descriptionKey: "ads.professionals.description",
         ctaKey: "ads.professionals.cta",
-        href: "https://index-chi-sage.vercel.app/",
+        href: "https://index.gofreeil.com/",
         image: "/images/professionals.png",
         color: "from-yellow-500 to-orange-500"
     },
@@ -108,7 +108,7 @@ export const ads: Ad[] = [
         descriptionKey: "ads.social_store.description",
         ctaKey: "ads.social_store.cta",
         hoverKey: "ads.social_store.hover",
-        href: "https://heirut-shop.vercel.app/",
+        href: "https://shop.gofreeil.com/",
         image: "/images/freedom-store.png",
         color: "from-emerald-600 to-teal-700"
     }

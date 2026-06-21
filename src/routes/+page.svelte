@@ -23,19 +23,19 @@
 				{
 					titleKey: 'page.sites.community_neighborhood.title',
 					descriptionKey: 'page.sites.community_neighborhood.description',
-					href: 'https://community-il.vercel.app/',
+					href: 'https://community.gofreeil.com/',
 					image: '/images/community-neighborhood.png'
 				},
 				{
 					titleKey: 'page.sites.courts_reconciliation.title',
 					descriptionKey: 'page.sites.courts_reconciliation.description',
-					href: 'https://chachmim.vercel.app/',
+					href: 'https://chachmim.gofreeil.com/',
 					image: '/images/bati-hapius.png'
 				},
 				{
 					titleKey: 'page.sites.national_gemach.title',
 					descriptionKey: 'page.sites.national_gemach.description',
-					href: 'https://national-gemach.vercel.app/',
+					href: 'https://gemach.gofreeil.com/',
 					image: '/images/gemach-harzi.png'
 				}
 			]
@@ -46,31 +46,31 @@
 				{
 					titleKey: 'page.sites.neighborhood_committees.title',
 					descriptionKey: 'page.sites.neighborhood_committees.description',
-					href: 'https://neighborhoods-il.vercel.app/',
+					href: 'https://neighborhoods.gofreeil.com/',
 					image: '/images/news/vaadei-shchunot.png'
 				},
 				{
 					titleKey: 'page.sites.state_auditor.title',
 					descriptionKey: 'page.sites.state_auditor.description',
-					href: 'https://criticism.vercel.app/',
+					href: 'https://criticism.gofreeil.com/',
 					image: '/images/mevaker-rashuyot.png'
 				},
 				{
 					titleKey: 'page.sites.public_rating.title',
 					descriptionKey: 'page.sites.public_rating.description',
-					href: 'https://public-rating-il.vercel.app/',
+					href: 'https://rating.gofreeil.com/',
 					image: '/images/public-rating.jpeg'
 				},
 				{
 					titleKey: 'page.sites.experts.title',
 					descriptionKey: 'page.sites.experts.description',
-					href: 'https://the-experts-il.vercel.app/',
+					href: 'https://experts.gofreeil.com/',
 					image: '/images/the-experts.png'
 				},
 				{
 					titleKey: 'page.sites.referendum.title',
 					descriptionKey: 'page.sites.referendum.description',
-					href: 'https://referendum-il.vercel.app/',
+					href: 'https://referendum.gofreeil.com/',
 					image: '/images/referendum.png'
 				}
 			]
@@ -81,19 +81,19 @@
 				{
 					titleKey: 'page.sites.purchasing_group.title',
 					descriptionKey: 'page.sites.purchasing_group.description',
-					href: 'https://purchasing-groups.vercel.app/',
+					href: 'https://groups.gofreeil.com/',
 					image: '/images/whatsapp_cta.png'
 				},
 				{
 					titleKey: 'page.sites.professionals.title',
 					descriptionKey: 'page.sites.professionals.description',
-					href: 'https://index-chi-sage.vercel.app/',
+					href: 'https://index.gofreeil.com/',
 					image: '/images/professionals.png'
 				},
 				{
 					titleKey: 'page.sites.freedom_store.title',
 					descriptionKey: 'page.sites.freedom_store.description',
-					href: 'https://heirut-shop.vercel.app/',
+					href: 'https://shop.gofreeil.com/',
 					image: '/images/freedom-store.png'
 				}
 			]
