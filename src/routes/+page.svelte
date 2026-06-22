@@ -897,6 +897,7 @@
 		object-fit: cover;
 		z-index: -2;
 		pointer-events: none;
+		filter: brightness(1.15) saturate(1.1);
 	}
 
 	/* מסגרת עדינה לבלוקי טקסט - הצבעים של הנוף מבצבצים דרכה, רק טשטוש קל מאחורי הטקסט.
