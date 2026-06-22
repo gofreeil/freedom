@@ -514,8 +514,9 @@
 		return () => clearTimeout(timer);
 	});
 
-	// רקע וידאו - מאט את הפלייבק לחצי כדי שהתנועה תהיה חולמנית ועדינה.
-	// טוענים את הוידאו (7.7MB) רק אחרי שהדף האינטראקטיבי - poster מוצג מיד, ואז
+	// רקע וידאו - הוידאו מקודד native ב-2x slow-motion עם frame interpolation (minterpolate=blend),
+	// כך שמתנגן ב-1.0x ללא קפיצות שגרם playbackRate=0.5 (שמכריח את הדפדפן לחזור על פריימים).
+	// טוענים את הוידאו (~12MB) רק אחרי שהדף האינטראקטיבי - poster מוצג מיד, ואז
 	// requestIdleCallback (או setTimeout fallback) מוסיף את ה-<video> כשהדפדפן פנוי.
 	let bgVideoEl: HTMLVideoElement | undefined = $state();
 	let videoSrc = $state('');
@@ -528,9 +529,6 @@
 			if (ric && cic) cic(id);
 			else clearTimeout(id);
 		};
-	});
-	$effect(() => {
-		if (bgVideoEl) bgVideoEl.playbackRate = 0.5;
 	});
 </script>
 
@@ -545,7 +543,7 @@
 	muted
 	loop
 	playsinline
-	preload="metadata"
+	preload="auto"
 	poster="/images/bg-poster.jpg"
 	aria-hidden="true"
 >
