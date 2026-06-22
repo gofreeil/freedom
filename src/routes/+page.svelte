@@ -24,19 +24,19 @@
 					titleKey: 'page.sites.community_neighborhood.title',
 					descriptionKey: 'page.sites.community_neighborhood.description',
 					href: 'https://community.gofreeil.com/',
-					image: '/images/community-neighborhood.png'
+					image: '/images/community-neighborhood.webp'
 				},
 				{
 					titleKey: 'page.sites.courts_reconciliation.title',
 					descriptionKey: 'page.sites.courts_reconciliation.description',
 					href: 'https://chachmim.gofreeil.com/',
-					image: '/images/bati-hapius.png'
+					image: '/images/bati-hapius.webp'
 				},
 				{
 					titleKey: 'page.sites.national_gemach.title',
 					descriptionKey: 'page.sites.national_gemach.description',
 					href: 'https://gemach.gofreeil.com/',
-					image: '/images/gemach-harzi.png'
+					image: '/images/gemach-harzi.webp'
 				}
 			]
 		},
@@ -47,31 +47,31 @@
 					titleKey: 'page.sites.neighborhood_committees.title',
 					descriptionKey: 'page.sites.neighborhood_committees.description',
 					href: 'https://neighborhoods.gofreeil.com/',
-					image: '/images/news/vaadei-shchunot.png'
+					image: '/images/news/vaadei-shchunot.webp'
 				},
 				{
 					titleKey: 'page.sites.state_auditor.title',
 					descriptionKey: 'page.sites.state_auditor.description',
 					href: 'https://criticism.gofreeil.com/',
-					image: '/images/mevaker-rashuyot.png'
+					image: '/images/mevaker-rashuyot.webp'
 				},
 				{
 					titleKey: 'page.sites.public_rating.title',
 					descriptionKey: 'page.sites.public_rating.description',
 					href: 'https://rating.gofreeil.com/',
-					image: '/images/public-rating.jpeg'
+					image: '/images/public-rating.webp'
 				},
 				{
 					titleKey: 'page.sites.experts.title',
 					descriptionKey: 'page.sites.experts.description',
 					href: 'https://experts.gofreeil.com/',
-					image: '/images/the-experts.png'
+					image: '/images/the-experts.webp'
 				},
 				{
 					titleKey: 'page.sites.referendum.title',
 					descriptionKey: 'page.sites.referendum.description',
 					href: 'https://referendum.gofreeil.com/',
-					image: '/images/referendum.png'
+					image: '/images/referendum.webp'
 				}
 			]
 		},
@@ -82,19 +82,19 @@
 					titleKey: 'page.sites.purchasing_group.title',
 					descriptionKey: 'page.sites.purchasing_group.description',
 					href: 'https://groups.gofreeil.com/',
-					image: '/images/whatsapp_cta.png'
+					image: '/images/whatsapp_cta.webp'
 				},
 				{
 					titleKey: 'page.sites.professionals.title',
 					descriptionKey: 'page.sites.professionals.description',
 					href: 'https://index.gofreeil.com/',
-					image: '/images/professionals.png'
+					image: '/images/professionals.webp'
 				},
 				{
 					titleKey: 'page.sites.freedom_store.title',
 					descriptionKey: 'page.sites.freedom_store.description',
 					href: 'https://shop.gofreeil.com/',
-					image: '/images/freedom-store.png'
+					image: '/images/freedom-store.webp'
 				}
 			]
 		}
@@ -515,14 +515,29 @@
 	});
 
 	// רקע וידאו - מאט את הפלייבק לחצי כדי שהתנועה תהיה חולמנית ועדינה.
+	// טוענים את הוידאו (7.7MB) רק אחרי שהדף האינטראקטיבי - poster מוצג מיד, ואז
+	// requestIdleCallback (או setTimeout fallback) מוסיף את ה-<video> כשהדפדפן פנוי.
 	let bgVideoEl: HTMLVideoElement | undefined = $state();
+	let videoSrc = $state('');
+	onMount(() => {
+		const load = () => (videoSrc = '/images/bg.mp4');
+		const ric = (window as any).requestIdleCallback;
+		const id = ric ? ric(load, { timeout: 1500 }) : setTimeout(load, 600);
+		return () => {
+			const cic = (window as any).cancelIdleCallback;
+			if (ric && cic) cic(id);
+			else clearTimeout(id);
+		};
+	});
 	$effect(() => {
 		if (bgVideoEl) bgVideoEl.playbackRate = 0.5;
 	});
 </script>
 
 <!-- רקע וידאו של נוף - נהר/הרים/שמיים, מסמל חופש. position:fixed מבטיח שהרקע נשאר קבוע גם בגלילה.
-     אין overlay גלובלי - הצבעים הטבעיים של הנוף נשארים חיים. כל בלוק טקסט מקבל מסגרת כהה משלו (class="text-card"). -->
+     אין overlay גלובלי - הצבעים הטבעיים של הנוף נשארים חיים. כל בלוק טקסט מקבל מסגרת כהה משלו (class="text-card").
+     poster מציג מיד תמונה דקה (~286KB) - הוידאו עצמו (7.7MB) נדחה עד אחרי mount, כדי שה-LCP יהיה מהיר. -->
+{#if videoSrc}
 <video
 	bind:this={bgVideoEl}
 	class="bg-video"
@@ -530,11 +545,15 @@
 	muted
 	loop
 	playsinline
-	preload="auto"
+	preload="metadata"
+	poster="/images/bg-poster.jpg"
 	aria-hidden="true"
 >
-	<source src="/images/14969021_2560_1440_30fps.mp4" type="video/mp4" />
+	<source src={videoSrc} type="video/mp4" />
 </video>
+{:else}
+<img class="bg-video" src="/images/bg-poster.jpg" alt="" aria-hidden="true" fetchpriority="high" />
+{/if}
 
 <section class="max-w-5xl mx-auto px-6 pt-4 pb-6 text-center">
 	<div class="text-card">
@@ -593,7 +612,9 @@
 						alt={tFn("page.video.title")}
 						class="h-full w-full object-cover"
 						style="object-position:50% 33%"
-						loading="lazy"
+						loading="eager"
+						fetchpriority="high"
+						decoding="async"
 					/>
 					<span
 						class="absolute inset-0 flex items-center justify-center bg-black/25
@@ -626,16 +647,19 @@
 </section>
 
 <section class="max-w-6xl mx-auto px-6 pb-2 md:pb-20" class:revealed>
-	<!-- מסגרת אחת גדולה לכל אזור הפלטפורמות: הכותרת + שלוש העמודות + כל הבאנרים -->
-	<div class="text-card platforms-card">
-		<h2
-			class="text-center text-2xl md:text-4xl font-black leading-snug mb-6
-			       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
-		>
-			{tFn("page.platforms_title")}
-		</h2>
+	<!-- הכותרת בלבד במסגרת. הטורים עצמם בלי מסגרת - האסימטריה הטבעית של הגבהים נבלעת ברקע הוידאו. -->
+	<div class="text-center mb-6">
+		<div class="text-card-hero">
+			<h2
+				class="text-center text-2xl md:text-4xl font-black leading-snug
+				       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+			>
+				{tFn("page.platforms_title")}
+			</h2>
+		</div>
+	</div>
 
-		<div class="magic-dust" aria-hidden="true" bind:this={revealEl}>
+	<div class="magic-dust" aria-hidden="true" bind:this={revealEl}>
 		{#if dustActive}
 			{#each magicDust as p, i (i)}
 				<span
@@ -670,19 +694,19 @@
 		{#if demoFingerActive}
 			<span class="finger-smudge" aria-hidden="true"></span>
 			<div class="finger-demo" aria-hidden="true">
-				<img src="/images/finger.png" alt="" />
+				<img src="/images/finger.webp" alt="" />
 			</div>
 		{/if}
 		{#if demoReverseActive}
 			<span class="finger-smudge reverse" aria-hidden="true"></span>
 			<div class="finger-demo reverse" aria-hidden="true">
-				<img src="/images/finger.png" alt="" />
+				<img src="/images/finger.webp" alt="" />
 			</div>
 		{/if}
 		{#if demoThirdActive}
 			<span class="finger-smudge reverse" aria-hidden="true"></span>
 			<div class="finger-demo reverse" aria-hidden="true">
-				<img src="/images/finger.png" alt="" />
+				<img src="/images/finger.webp" alt="" />
 			</div>
 		{/if}
 		{#each columns as column, i (column.headingKey)}
@@ -728,7 +752,7 @@
 						</span>
 					{/key}
 				</div>
-				<div class="flex flex-col {i === 0 ? 'gap-16' : 'gap-4'}">
+				<div class="flex flex-col {i === 0 ? 'gap-12' : 'gap-4'}">
 					{#each column.sites as site, si (site.titleKey)}
 						<div class="relative {site.mobileHide ? 'hidden md:block' : 'block'}">
 						{#if si > 0}
@@ -736,12 +760,12 @@
 								<span class="rope-unit">
 									<span class="rope-hole rope-hole-top"></span>
 									<span class="rope-hole rope-hole-bot"></span>
-									<img class="rope-img" src="/images/rope.png" alt="" />
+									<img class="rope-img" src="/images/rope.webp" alt="" />
 								</span>
 								<span class="rope-unit rope-unit-flip">
 									<span class="rope-hole rope-hole-top"></span>
 									<span class="rope-hole rope-hole-bot"></span>
-									<img class="rope-img" src="/images/rope.png" alt="" />
+									<img class="rope-img" src="/images/rope.webp" alt="" />
 								</span>
 							</div>
 						{/if}
@@ -796,7 +820,6 @@
 			</div>
 		{/each}
 	</div>
-	</div><!-- /.text-card.platforms-card -->
 
 	<div
 		class="mx-auto mt-20 h-px max-w-3xl
@@ -819,7 +842,7 @@
 			class="mx-auto mt-6 block w-full transition-transform hover:scale-[1.02]"
 		>
 			<img
-				src="/images/news.png"
+				src="/images/news.webp"
 				alt={tFn("page.news_block.image_alt")}
 				class="w-full rounded-2xl"
 				loading="lazy"

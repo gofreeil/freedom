@@ -15,6 +15,11 @@
 		<meta name="twitter:title" content="יוצאים לחירות" />
 		<meta name="twitter:description" content="מתקדמים לעולם סולידרי, אחראי וחופשי" />
 		<meta name="twitter:image" content="/images/ad_neighborhoods.png" />
+		<!-- preload ל-LCP assets: ה-poster של רקע הוידאו וה-thumbnail של YouTube מופיעים על המסך הראשון.
+		     preconnect ל-i.ytimg.com מקצר את ה-handshake לתמונה הזו. -->
+		<link rel="preload" as="image" href="/images/bg-poster.jpg" fetchpriority="high" />
+		<link rel="preconnect" href="https://i.ytimg.com" crossorigin />
+		<link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
 		<!-- פונט Assistant - preconnect מקצר את ה-FOUT (פונט סריף עברי בזק לפני שהפונט הסופי נטען).
 		     display=optional: אם הפונט לא נטען ב-100ms, נשאר ב-fallback - אין החלפה צורמת באמצע הצפייה.
 		     preload של ה-CSS עם as=style + onload swap מטעין במקביל ולא חוסם render. -->

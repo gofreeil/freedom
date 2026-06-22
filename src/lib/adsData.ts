@@ -21,7 +21,7 @@ export const ads: Ad[] = [
         descriptionKey: "ads.peace_houses.description",
         ctaKey: "ads.peace_houses.cta",
         href: "https://chachmim.gofreeil.com/",
-        image: "/images/bati-hapius.png",
+        image: "/images/bati-hapius.webp",
         color: "from-orange-600 to-red-600"
     },
     {
@@ -31,7 +31,7 @@ export const ads: Ad[] = [
         ctaKey: "ads.national_gemach.cta",
         hoverKey: "ads.national_gemach.hover",
         href: "https://gemach.gofreeil.com/",
-        image: "/images/gemach-harzi.png",
+        image: "/images/gemach-harzi.webp",
         color: "from-pink-600 via-fuchsia-600 to-purple-700",
     },
     {
@@ -40,7 +40,7 @@ export const ads: Ad[] = [
         descriptionKey: "ads.neighborhood_committees.description",
         ctaKey: "ads.neighborhood_committees.cta",
         href: "https://neighborhoods.gofreeil.com/",
-        image: "/images/news/vaadei-shchunot.png",
+        image: "/images/news/vaadei-shchunot.webp",
         color: "from-blue-600 to-cyan-600"
     },
     {
@@ -49,7 +49,7 @@ export const ads: Ad[] = [
         descriptionKey: "ads.state_auditor.description",
         ctaKey: "ads.state_auditor.cta",
         href: "https://criticism.gofreeil.com/",
-        image: "/images/mevaker-rashuyot.png",
+        image: "/images/mevaker-rashuyot.webp",
         color: "from-blue-700 to-indigo-700",
         imageHeight: "120px",
         imageScale: 1.2,
@@ -60,7 +60,7 @@ export const ads: Ad[] = [
         descriptionKey: "ads.public_rating.description",
         ctaKey: "ads.public_rating.cta",
         href: "https://rating.gofreeil.com/",
-        image: "/images/public-rating.jpeg",
+        image: "/images/public-rating.webp",
         color: "from-indigo-600 to-blue-600",
         imageHeight: "200px",
         imageScale: 0.9,
@@ -72,7 +72,7 @@ export const ads: Ad[] = [
         ctaKey: "ads.referendum.cta",
         hoverKey: "ads.referendum.hover",
         href: "https://referendum.gofreeil.com/",
-        image: "/images/referendum.png",
+        image: "/images/referendum.webp",
         color: "from-purple-600 to-indigo-700"
     },
     {
@@ -81,7 +81,7 @@ export const ads: Ad[] = [
         descriptionKey: "ads.purchasing_group.description",
         ctaKey: "ads.purchasing_group.cta",
         href: "https://groups.gofreeil.com/",
-        image: "/images/whatsapp_cta.png",
+        image: "/images/whatsapp_cta.webp",
         color: "from-green-800 to-emerald-900"
     },
     {
@@ -90,7 +90,7 @@ export const ads: Ad[] = [
         descriptionKey: "ads.investors_club.description",
         ctaKey: "ads.investors_club.cta",
         href: "https://www.melecshop.com/page/free",
-        image: "/images/partners/investments.png",
+        image: "/images/partners/investments.webp",
         color: "from-amber-600 to-orange-600"
     },
     {
@@ -99,7 +99,7 @@ export const ads: Ad[] = [
         descriptionKey: "ads.professionals.description",
         ctaKey: "ads.professionals.cta",
         href: "https://index.gofreeil.com/",
-        image: "/images/professionals.png",
+        image: "/images/professionals.webp",
         color: "from-yellow-500 to-orange-500"
     },
     {
@@ -109,7 +109,7 @@ export const ads: Ad[] = [
         ctaKey: "ads.social_store.cta",
         hoverKey: "ads.social_store.hover",
         href: "https://shop.gofreeil.com/",
-        image: "/images/freedom-store.png",
+        image: "/images/freedom-store.webp",
         color: "from-emerald-600 to-teal-700"
     }
 ];
