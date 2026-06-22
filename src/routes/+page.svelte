@@ -513,107 +513,129 @@
 		const timer = setTimeout(runSwipeDemo, 1800);
 		return () => clearTimeout(timer);
 	});
+
+	// רקע וידאו - מאט את הפלייבק לחצי כדי שהתנועה תהיה חולמנית ועדינה.
+	let bgVideoEl: HTMLVideoElement | undefined = $state();
+	$effect(() => {
+		if (bgVideoEl) bgVideoEl.playbackRate = 0.5;
+	});
 </script>
 
-<section class="flex items-center justify-center pt-0 pb-4 md:pb-6">
-	<h1
-		class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent
-		       text-5xl md:text-7xl lg:text-8xl font-black text-center leading-tight px-4"
-	>
-		{tFn("page.hero_title")}
-	</h1>
-</section>
+<!-- רקע וידאו של נוף - נהר/הרים/שמיים, מסמל חופש. position:fixed מבטיח שהרקע נשאר קבוע גם בגלילה.
+     אין overlay גלובלי - הצבעים הטבעיים של הנוף נשארים חיים. כל בלוק טקסט מקבל מסגרת כהה משלו (class="text-card"). -->
+<video
+	bind:this={bgVideoEl}
+	class="bg-video"
+	autoplay
+	muted
+	loop
+	playsinline
+	preload="auto"
+	aria-hidden="true"
+>
+	<source src="/images/14969021_2560_1440_30fps.mp4" type="video/mp4" />
+</video>
 
-<section class="max-w-5xl mx-auto px-6 pb-6 text-center">
-	<p class="intro-p text-base md:text-xl text-gray-300 leading-snug">
-		<span
-			class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400
-			       bg-clip-text text-transparent"
+<section class="max-w-5xl mx-auto px-6 pt-4 pb-6 text-center">
+	<div class="text-card">
+		<h1
+			class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent
+			       text-5xl md:text-7xl lg:text-8xl font-black text-center leading-tight px-4 mb-4 md:mb-6"
 		>
-			{tFn("page.intro.movement_label")}
-		</span>
-		{tFn("page.intro.movement_text")}
-	</p>
-	<p class="intro-p text-base md:text-xl text-gray-300 leading-snug mt-3">
-		<span class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent">{tFn("page.intro.vision_label")}</span>
-		{tFn("page.intro.vision_text")}
-	</p>
-	<p class="intro-p text-base md:text-xl text-gray-300 leading-snug mt-3">
-		<span class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent">{tFn("page.intro.activity_label")}</span>
-		{tFn("page.intro.activity_text")}
-	</p>
-</section>
-
-<section class="max-w-2xl mx-auto px-6 pb-0">
-	<div
-		class="relative w-full overflow-hidden rounded-2xl shadow-2xl"
-		style="padding-top:{videoPlaying ? '56.25%' : '46.875%'}"
-	>
-		{#if videoPlaying}
-			<iframe
-				class="absolute inset-0 h-full w-full"
-				src="https://www.youtube-nocookie.com/embed/CjBbU2ZOsa8?start=2&autoplay=1"
-				title={tFn("page.video.title")}
-				frameborder="0"
-				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-				referrerpolicy="strict-origin-when-cross-origin"
-				allowfullscreen
-			></iframe>
-		{:else}
-			<button
-				type="button"
-				class="group absolute inset-0 h-full w-full cursor-pointer border-0 p-0"
-				onclick={() => (videoPlaying = true)}
-				aria-label={tFn("page.video.play_aria")}
+			{tFn("page.hero_title")}
+		</h1>
+		<p class="intro-p text-base md:text-xl text-gray-50 leading-snug">
+			<span
+				class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400
+				       bg-clip-text text-transparent"
 			>
-				<img
-					src="https://i.ytimg.com/vi/CjBbU2ZOsa8/sddefault.jpg"
-					alt={tFn("page.video.title")}
-					class="h-full w-full object-cover"
-					style="object-position:50% 33%"
-					loading="lazy"
-				/>
-				<span
-					class="absolute inset-0 flex items-center justify-center bg-black/25
-					       transition-colors group-hover:bg-black/10"
-				>
-					<svg
-						class="h-14 w-20 drop-shadow-lg transition-transform group-hover:scale-110 md:h-16 md:w-24"
-						viewBox="0 0 68 48"
-						aria-hidden="true"
-					>
-						<path
-							d="M66.5 7.5c-.8-3-3-5.2-6-6C55 0 34 0 34 0S13 0 7.5 1.5c-3 .8-5.2 3-6 6C0 13 0 24 0 24s0 11 1.5 16.5c.8 3 3 5.2 6 6C13 48 34 48 34 48s21 0 26.5-1.5c3-.8 5.2-3 6-6C68 35 68 24 68 24s0-11-1.5-16.5z"
-							fill="#f00"
-						/>
-						<path d="M27 34l18-10-18-10z" fill="#fff" />
-					</svg>
-				</span>
-			</button>
-		{/if}
+				{tFn("page.intro.movement_label")}
+			</span>
+			{tFn("page.intro.movement_text")}
+		</p>
+		<p class="intro-p text-base md:text-xl text-gray-50 leading-snug mt-3">
+			<span class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent">{tFn("page.intro.vision_label")}</span>
+			{tFn("page.intro.vision_text")}
+		</p>
+		<p class="intro-p text-base md:text-xl text-gray-50 leading-snug mt-3">
+			<span class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent">{tFn("page.intro.activity_label")}</span>
+			{tFn("page.intro.activity_text")}
+		</p>
 	</div>
 </section>
 
-<section class="max-w-4xl mx-auto px-6 pb-14 text-center">
-	<p class="text-xl md:text-2xl font-black text-gray-200">
-		{tFn("page.members.prefix")}
-		<span
-			class="mx-1 inline-block tabular-nums text-2xl md:text-3xl
-			       bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent"
-		>{memberDisplay}</span>
-		{tFn("page.members.suffix")}
-	</p>
+<!-- וידאו + מונה החברים במסגרת אחת, padding מינימלי סביב הוידאו -->
+<section class="max-w-2xl mx-auto px-6 pb-14">
+	<div class="text-card video-card">
+		<div
+			class="relative w-full overflow-hidden rounded-xl shadow-2xl"
+			style="padding-top:{videoPlaying ? '56.25%' : '46.875%'}"
+		>
+			{#if videoPlaying}
+				<iframe
+					class="absolute inset-0 h-full w-full"
+					src="https://www.youtube-nocookie.com/embed/CjBbU2ZOsa8?start=2&autoplay=1"
+					title={tFn("page.video.title")}
+					frameborder="0"
+					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+					referrerpolicy="strict-origin-when-cross-origin"
+					allowfullscreen
+				></iframe>
+			{:else}
+				<button
+					type="button"
+					class="group absolute inset-0 h-full w-full cursor-pointer border-0 p-0"
+					onclick={() => (videoPlaying = true)}
+					aria-label={tFn("page.video.play_aria")}
+				>
+					<img
+						src="https://i.ytimg.com/vi/CjBbU2ZOsa8/sddefault.jpg"
+						alt={tFn("page.video.title")}
+						class="h-full w-full object-cover"
+						style="object-position:50% 33%"
+						loading="lazy"
+					/>
+					<span
+						class="absolute inset-0 flex items-center justify-center bg-black/25
+						       transition-colors group-hover:bg-black/10"
+					>
+						<svg
+							class="h-14 w-20 drop-shadow-lg transition-transform group-hover:scale-110 md:h-16 md:w-24"
+							viewBox="0 0 68 48"
+							aria-hidden="true"
+						>
+							<path
+								d="M66.5 7.5c-.8-3-3-5.2-6-6C55 0 34 0 34 0S13 0 7.5 1.5c-3 .8-5.2 3-6 6C0 13 0 24 0 24s0 11 1.5 16.5c.8 3 3 5.2 6 6C13 48 34 48 34 48s21 0 26.5-1.5c3-.8 5.2-3 6-6C68 35 68 24 68 24s0-11-1.5-16.5z"
+								fill="#f00"
+							/>
+							<path d="M27 34l18-10-18-10z" fill="#fff" />
+						</svg>
+					</span>
+				</button>
+			{/if}
+		</div>
+		<p class="text-xl md:text-2xl font-black text-white text-center mt-3">
+			{tFn("page.members.prefix")}
+			<span
+				class="mx-1 inline-block tabular-nums text-2xl md:text-3xl
+				       bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent"
+			>{memberDisplay}</span>
+			{tFn("page.members.suffix")}
+		</p>
+	</div>
 </section>
 
 <section class="max-w-6xl mx-auto px-6 pb-2 md:pb-20" class:revealed>
-	<h2
-		class="mx-auto mb-3 max-w-6xl text-center text-2xl md:text-4xl font-black leading-snug
-		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
-	>
-		{tFn("page.platforms_title")}
-	</h2>
+	<!-- מסגרת אחת גדולה לכל אזור הפלטפורמות: הכותרת + שלוש העמודות + כל הבאנרים -->
+	<div class="text-card platforms-card">
+		<h2
+			class="text-center text-2xl md:text-4xl font-black leading-snug mb-6
+			       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+		>
+			{tFn("page.platforms_title")}
+		</h2>
 
-	<div class="magic-dust" aria-hidden="true" bind:this={revealEl}>
+		<div class="magic-dust" aria-hidden="true" bind:this={revealEl}>
 		{#if dustActive}
 			{#each magicDust as p, i (i)}
 				<span
@@ -757,7 +779,7 @@
 										<p class="text-xl lg:text-2xl font-black leading-tight text-white">
 											{tFn(site.titleKey)}
 										</p>
-										<p class="mt-2 text-sm lg:text-base font-semibold leading-snug text-gray-200">
+										<p class="mt-2 text-sm lg:text-base font-semibold leading-snug text-gray-50">
 											{tFn(site.descriptionKey)}
 										</p>
 									</div>
@@ -774,61 +796,124 @@
 			</div>
 		{/each}
 	</div>
+	</div><!-- /.text-card.platforms-card -->
 
 	<div
 		class="mx-auto mt-20 h-px max-w-3xl
 		       bg-gradient-to-r from-transparent via-slate-400/40 to-transparent"
 	></div>
 
-	<p
-		class="mx-auto mt-12 max-w-3xl text-center text-lg md:text-2xl font-black
-		       bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400
-		       bg-clip-text text-transparent"
-	>
-		{tFn("page.news_block.tagline")}
-	</p>
+	<div class="text-card mx-auto mt-12 max-w-3xl">
+		<p
+			class="text-center text-lg md:text-2xl font-black
+			       bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400
+			       bg-clip-text text-transparent"
+		>
+			{tFn("page.news_block.tagline")}
+		</p>
 
-	<a
-		href="https://chat.whatsapp.com/Bek6Bh0fJMJ63ozhIjlgCz"
-		target="_blank"
-		rel="noopener noreferrer"
-		class="mx-auto mt-6 block w-full max-w-3xl transition-transform hover:scale-[1.02]"
-	>
-		<img
-			src="/images/news.png"
-			alt={tFn("page.news_block.image_alt")}
-			class="w-full rounded-2xl"
-			loading="lazy"
-			decoding="async"
-		/>
-	</a>
+		<a
+			href="https://chat.whatsapp.com/Bek6Bh0fJMJ63ozhIjlgCz"
+			target="_blank"
+			rel="noopener noreferrer"
+			class="mx-auto mt-6 block w-full transition-transform hover:scale-[1.02]"
+		>
+			<img
+				src="/images/news.png"
+				alt={tFn("page.news_block.image_alt")}
+				class="w-full rounded-2xl"
+				loading="lazy"
+				decoding="async"
+			/>
+		</a>
 
-	<h2
-		class="mt-12 text-center text-2xl md:text-4xl font-black leading-snug
-		       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
-	>
-		{tFn("page.socials.title")}
-	</h2>
+		<h2
+			class="mt-12 text-center text-2xl md:text-4xl font-black leading-snug
+			       bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+		>
+			{tFn("page.socials.title")}
+		</h2>
 
-	<div class="mt-8 flex flex-wrap items-center justify-center gap-2 md:gap-4">
-		{#each socials as s (s.name)}
-			<a
-				href={s.href}
-				target="_blank"
-				rel="noopener noreferrer"
-				aria-label={s.name}
-				class="social-icon flex h-9 w-9 md:h-12 md:w-12 items-center justify-center rounded-full
-				       transition-transform hover:scale-110"
-			>
-				<svg class="h-9 w-9 md:h-12 md:w-12" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-					{@html s.svg}
-				</svg>
-			</a>
-		{/each}
+		<div class="mt-8 flex flex-wrap items-center justify-center gap-2 md:gap-4">
+			{#each socials as s (s.name)}
+				<a
+					href={s.href}
+					target="_blank"
+					rel="noopener noreferrer"
+					aria-label={s.name}
+					class="social-icon flex h-9 w-9 md:h-12 md:w-12 items-center justify-center rounded-full
+					       transition-transform hover:scale-110"
+				>
+					<svg class="h-9 w-9 md:h-12 md:w-12" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+						{@html s.svg}
+					</svg>
+				</a>
+			{/each}
+		</div>
 	</div>
 </section>
 
 <style>
+	/* ===== רקע וידאו של נוף חופש (דף הבית בלבד) =====
+	   הוידאו ב-position:fixed כדי שיישאר ברקע גם בגלילה.
+	   ה-:global selectors מבטלים את הרקע הכהה של site-frame/body/html
+	   כדי שהוידאו ייראה דרכם. החזרה לרגיל מתרחשת כשעוזבים את הדף (Svelte מסיר את ה-style). */
+	:global(html),
+	:global(body),
+	:global(.site-frame) {
+		background-color: transparent !important;
+	}
+	/* שכבת רקע כחולה כהה מתחת לוידאו - כדי שלא ייראה הבזק לבן בזמן טעינת הוידאו. */
+	:global(html) {
+		background: #070b14 !important;
+	}
+
+	.bg-video {
+		position: fixed;
+		inset: 0;
+		width: 100vw;
+		height: 100vh;
+		object-fit: cover;
+		z-index: -2;
+		pointer-events: none;
+	}
+
+	/* מסגרת עדינה לבלוקי טקסט - הצבעים של הנוף מבצבצים דרכה, רק טשטוש קל מאחורי הטקסט.
+	   רקע שקוף יותר (0.3), blur עדין, padding דק - כדי שהמסגרת לא תהיה דומיננטית. */
+	.text-card {
+		background: rgba(7, 11, 20, 0.45);
+		backdrop-filter: blur(0.3px);
+		-webkit-backdrop-filter: blur(0.3px);
+		border-radius: 0.875rem;
+		padding: 0.75rem 1.1rem;
+	}
+	/* וריאציה לכרטיס הגדול שעוטף את כל אזור הפלטפורמות - יותר breathing room. */
+	.platforms-card {
+		padding: 1.75rem 1.5rem 2.5rem 1.5rem;
+		border-radius: 1.25rem;
+	}
+	/* וריאציה לכרטיס הוידאו - padding מינימלי סביב, רק רמז של מסגרת */
+	.video-card {
+		padding: 0.4rem 0.4rem 0.75rem 0.4rem;
+		border-radius: 1rem;
+	}
+	/* וריאציה דקה עוד יותר לכותרות - רק רמז למסגרת */
+	.text-card-hero {
+		background: rgba(7, 11, 20, 0.4);
+		backdrop-filter: blur(0.2px);
+		-webkit-backdrop-filter: blur(0.2px);
+		border-radius: 1rem;
+		padding: 0.25rem 1rem;
+		display: inline-block;
+	}
+
+	/* כיבוד העדפת תנועה מופחתת - אם המשתמש ביקש פחות אנימציות, מסתירים את הוידאו. */
+	@media (prefers-reduced-motion: reduce) {
+		.bg-video {
+			display: none;
+		}
+	}
+
 	/* ---- אינטראקציות ריחוף לבאנרים (שלט עץ תלוי על חבלים) ---- */
 	.fx-banner {
 		transition:
@@ -956,7 +1041,7 @@
 	}
 	.rope-unit {
 		position: relative;
-		width: 15px;
+		width: 22px;
 		height: 100%;
 	}
 	.rope-unit-flip {

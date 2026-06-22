@@ -6,7 +6,7 @@
     const tFn = (k: string) => { void _loc; return get(t)(k); };
 </script>
 
-<footer class="bg-[#0d1117] border-t border-white/10 pt-4 md:pt-10 pb-0 md:pb-2 mt-1 md:mt-0">
+<footer class="bg-[#0d1117] border-t border-white/10 pt-2 md:pt-3 pb-0 md:pb-1 mt-1 md:mt-0">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <!-- Desktop: title centered above -->
         <a
@@ -14,7 +14,7 @@
             target="_blank"
             rel="noopener noreferrer"
             aria-label={tFn("footer.brand_aria")}
-            class="hidden md:flex justify-center pt-5 pb-4 hover:opacity-80 transition-opacity"
+            class="hidden md:flex justify-center pt-1 pb-1 hover:opacity-80 transition-opacity"
         >
             <p class="text-lg md:text-xl font-black text-yellow-500">
                 {tFn("footer.brand")}
@@ -22,7 +22,7 @@
         </a>
 
         <div
-            class="flex flex-col items-center justify-center gap-0 md:gap-2"
+            class="flex flex-col items-center justify-center gap-0 md:gap-1"
         >
             <!-- Mobile only: Brand text -->
             <a
@@ -53,7 +53,7 @@
             </nav>
 
             <!-- Left: Copyright -->
-            <p class="text-gray-400 font-bold text-xs md:text-sm text-center pt-3 md:pt-4 pb-4 md:pb-2">
+            <p class="text-gray-400 font-bold text-xs md:text-sm text-center pt-1 md:pt-1 pb-2 md:pb-1">
                 &copy; {new Date().getFullYear()} {tFn("all_rights_reserved")}
             </p>
         </div>
