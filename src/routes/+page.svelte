@@ -728,7 +728,7 @@
 						</span>
 					{/key}
 				</div>
-				<div class="flex flex-col {i === 0 ? 'gap-10' : 'gap-4'}">
+				<div class="flex flex-1 flex-col {i === 0 ? 'justify-between' : 'gap-7'}">
 					{#each column.sites as site, si (site.titleKey)}
 						<div class="relative {site.mobileHide ? 'hidden md:block' : 'block'}">
 						{#if si > 0}
@@ -1028,7 +1028,7 @@
 		left: 0;
 		right: 0;
 		bottom: 100%;
-		height: 64px;
+		height: 84px;
 		margin-bottom: -24px;
 		display: flex;
 		justify-content: space-between;
@@ -1036,8 +1036,10 @@
 		pointer-events: none;
 		z-index: 10;
 	}
+	/* גרסה ארוכה במיוחד לטור קהילה - הבאנרים מתפזרים על גובה כל הטור,
+	   החבלים צריכים להיות ארוכים מספיק כדי לחבר אותם ויזואלית. */
 	.rope-connector-wide {
-		height: 88px;
+		height: 360px;
 	}
 	.rope-unit {
 		position: relative;
