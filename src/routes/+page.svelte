@@ -897,6 +897,9 @@
 		object-fit: cover;
 		z-index: -2;
 		pointer-events: none;
+		/* "ערב" → "יום": brightness מבהיר, contrast מחזיר עומק, saturate מחיה צבעים,
+		   sepia 0.08 מוסיף נגיעת חום (אור שמש) במקום הטון הכחול-קר של הוידאו המקורי. */
+		filter: brightness(1.05) contrast(1.08) saturate(1.15) sepia(0.08);
 	}
 
 	/* מסגרת עדינה לבלוקי טקסט - הצבעים של הנוף מבצבצים דרכה, רק טשטוש קל מאחורי הטקסט.
