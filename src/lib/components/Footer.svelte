@@ -6,7 +6,7 @@
     const tFn = (k: string) => { void _loc; return get(t)(k); };
 </script>
 
-<footer class="bg-[#0d1117] border-t border-white/10 pt-2 md:pt-3 pb-0 md:pb-1 mt-1 md:mt-0">
+<footer class="bg-[#0d1117]/50 border-t border-white/10 pt-2 md:pt-3 pb-0 md:pb-1 mt-1 md:mt-0">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <!-- Desktop: title centered above -->
         <a
