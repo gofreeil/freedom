@@ -752,7 +752,7 @@
 						</span>
 					{/key}
 				</div>
-				<div class="flex flex-col {i === 0 ? 'gap-12' : 'gap-4'}">
+				<div class="flex flex-col {i === 0 ? 'gap-10' : 'gap-4'}">
 					{#each column.sites as site, si (site.titleKey)}
 						<div class="relative {site.mobileHide ? 'hidden md:block' : 'block'}">
 						{#if si > 0}
