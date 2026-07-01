@@ -532,9 +532,11 @@
 	});
 </script>
 
-<!-- רקע וידאו של נוף - נהר/הרים/שמיים, מסמל חופש. position:fixed מבטיח שהרקע נשאר קבוע גם בגלילה.
-     אין overlay גלובלי - הצבעים הטבעיים של הנוף נשארים חיים. כל בלוק טקסט מקבל מסגרת כהה משלו (class="text-card").
+<!-- ה-hero-stage תוחם את וידאו הרקע למסך הראשון בלבד (כותרת+וידאו+מונה) ובתוך רוחב המסגרת.
+     position:relative על ה-stage + position:absolute על הוידאו => הוידאו ממלא רק את האזור הזה, ונגלל איתו.
+     מהמודל המשילות ומטה אין וידאו - רק הרקע הכהה של האתר, כמו מקודם.
      poster מציג מיד תמונה דקה (~286KB) - הוידאו עצמו (7.7MB) נדחה עד אחרי mount, כדי שה-LCP יהיה מהיר. -->
+<div class="hero-stage">
 {#if videoSrc}
 <video
 	bind:this={bgVideoEl}
@@ -643,6 +645,7 @@
 		</p>
 	</div>
 </section>
+</div><!-- /hero-stage: סוף אזור וידאו הרקע -->
 
 <section class="max-w-6xl mx-auto px-6 pb-2 md:pb-20" class:revealed>
 	<!-- הכותרת בלבד במסגרת. הטורים עצמם בלי מסגרת - האסימטריה הטבעית של הגבהים נבלעת ברקע הוידאו. -->
@@ -889,17 +892,36 @@
 		background: #070b14 !important;
 	}
 
+	/* אזור הוידאו: תוחם למסך הראשון בלבד. isolation יוצר הקשר-ערימה כדי שהוידאו
+	   (z-index:-1) יישאר מאחורי התוכן של ה-stage אך לא ידלוף מאחורי הרקע הכהה שמתחתיו. */
+	.hero-stage {
+		position: relative;
+		isolation: isolate;
+	}
+
+	/* הוידאו ממורכז לרוחב המסגרת המלא (1280px) במרכז אזור התוכן. אזור התוכן ממורכז
+	   בתוך המסגרת (2rem משני הצדדים), ולכן מרכוז וידאו ברוחב-מסגרת מגיע לשני קווי הזהב
+	   באופן זהה - בלי תלות בכיוון RTL ובלי רצועות כהות. top:-2rem סוגר את הרווח מתחת להדר. */
 	.bg-video {
-		position: fixed;
-		inset: 0;
-		width: 100vw;
-		height: 100vh;
+		position: absolute;
+		top: -2rem;
+		left: 50%;
+		width: min(1280px, 100vw);
+		/* Tailwind Preflight מגדיר video{max-width:100%} - זה תוחם את הוידאו לרוחב
+		   main-content ומשאיר רצועות כהות עד קווי הזהב. none מבטל את התקרה. */
+		max-width: none;
+		height: calc(100% + 2rem);
 		object-fit: cover;
-		z-index: -2;
+		z-index: -1;
 		pointer-events: none;
 		/* "ערב" → "יום": brightness מבהיר, contrast מחזיר עומק, saturate מחיה צבעים,
 		   sepia 0.08 מוסיף נגיעת חום (אור שמש) במקום הטון הכחול-קר של הוידאו המקורי. */
 		filter: brightness(1.05) contrast(1.08) saturate(1.15) sepia(0.08);
+		/* translateX(-50%) ממרכז; translateZ(0) מקדם לשכבת GPU נפרדת (fixed קיבל את זה
+		   אוטומטית, absolute לא) - בלעדיו הוידאו מתצייר מחדש בכל פריים עם ה-backdrop-filter => קפיצות. */
+		transform: translateX(-50%) translateZ(0);
+		will-change: transform;
+		backface-visibility: hidden;
 	}
 
 	/* מסגרת עדינה לבלוקי טקסט - הצבעים של הנוף מבצבצים דרכה, רק טשטוש קל מאחורי הטקסט.
@@ -916,11 +938,6 @@
 		padding: 1.75rem 1.5rem 2.5rem 1.5rem;
 		border-radius: 1.25rem;
 	}
-	/* וריאציה לכרטיס הוידאו - padding מינימלי סביב, רק רמז של מסגרת */
-	.video-card {
-		padding: 0.4rem 0.4rem 0.75rem 0.4rem;
-		border-radius: 1rem;
-	}
 	/* וריאציה דקה עוד יותר לכותרות - רק רמז למסגרת */
 	.text-card-hero {
 		background: rgba(7, 11, 20, 0.4);
@@ -929,6 +946,11 @@
 		border-radius: 1rem;
 		padding: 0.25rem 1rem;
 		display: inline-block;
+	}
+	/* וריאציה לכרטיס הוידאו - padding מינימלי סביב, רק רמז של מסגרת */
+	.video-card {
+		padding: 0.4rem 0.4rem 0.75rem 0.4rem;
+		border-radius: 1rem;
 	}
 
 	/* כיבוד העדפת תנועה מופחתת - אם המשתמש ביקש פחות אנימציות, מסתירים את הוידאו. */
