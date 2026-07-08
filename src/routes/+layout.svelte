@@ -7,7 +7,7 @@
 	import Header from "$lib/components/Header.svelte";
 	import Footer from "$lib/components/Footer.svelte";
 
-	let { children } = $props();
+	let { children, data } = $props();
 
 	let _loc = $state(get(locale) ?? 'he');
 	$effect(() => locale.subscribe((l) => (_loc = l ?? 'he')));
@@ -38,7 +38,7 @@
 <span class="golden-frame golden-frame-left" aria-hidden="true"></span>
 <span class="golden-frame golden-frame-right" aria-hidden="true"></span>
 <div class="site-frame min-h-screen flex flex-col bg-[#0f172a]">
-	<Header />
+	<Header user={data.user} />
 
 	<div class="layout-container flex-grow">
 		<main id="main-content" tabindex="-1" class="main-content">
