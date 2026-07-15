@@ -20,6 +20,10 @@
 			<p class="mt-1 text-sm text-gray-400">הצטרפו למערכת המאוחדת של יוצאים לחירות</p>
 		</div>
 
+		<div class="mb-5 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.08] px-4 py-3 text-center text-sm font-semibold leading-relaxed text-emerald-100">
+			🕊️ מי שנרשם כאן מזוהה <span class="font-black text-white">אוטומטית בכל אתרי יוצאים לחירות</span> — חשבון אחד לכל הרשת.
+		</div>
+
 		{#if form?.error}
 			<div class="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-center text-sm text-red-400">
 				{form.error}
