@@ -283,7 +283,7 @@
                     </a>
                 {:else}
                     <a
-                        href="/login?redirect=/profile"
+                        href="/login"
                         class="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-pink-600 hover:from-amber-400 hover:to-pink-500 px-3 py-2 text-sm font-bold text-white transition-all"
                     >
                         <span>🕊️</span>

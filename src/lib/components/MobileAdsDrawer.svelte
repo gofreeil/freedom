@@ -352,7 +352,7 @@
 				</div>
 			</a>
 			{:else}
-			<a href="/login?redirect=/profile" class="login-btn" onclick={closeAll}>
+			<a href="/login" class="login-btn" onclick={closeAll}>
 				<div class="anon-avatar-wrap">
 					<span class="anon-avatar">
 						<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
