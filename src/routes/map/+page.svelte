@@ -12,6 +12,7 @@
 	let ready = $state(false);
 
 	onMount(() => {
+		if (!data.loggedIn) return; // אורח לא מסמן — סימון דורש התחברות/הרשמה
 		try {
 			const raw = localStorage.getItem(STORAGE_KEY);
 			if (raw) {
@@ -40,13 +41,6 @@
 	const pct = $derived(data.total ? Math.round((knownCount / data.total) * 100) : 0);
 	const remaining = $derived(data.total - knownCount);
 
-	const catColor: Record<string, string> = {
-		'ראשי': 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-		'קהילה': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-		'משילות': 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-		'כלכלה': 'bg-purple-500/20 text-purple-300 border-purple-500/30'
-	};
-
 	const catIcon: Record<string, string> = {
 		'ראשי': '🏛️',
 		'קהילה': '🤝',
@@ -61,10 +55,10 @@
 	<!-- כותרת -->
 	<header class="mb-6 text-center">
 		<h1 class="flex items-center justify-center gap-2 text-2xl font-black text-white sm:text-3xl">
-			<span>🗺️</span> מפת רשת יוצאים לחירות
+			<span>🗺️</span> יוצאים לחירות
 		</h1>
 		<p class="mt-1 text-sm text-gray-400">
-			כל הפלטפורמות של הרשת במקום אחד — סמנו אילו אתרים אתם כבר מכירים, וגלו את השאר.
+			כל הפלטפורמות של הרשת במקום אחד — סמן אילו אתרים אתה כבר מכיר, וגלה את השאר.
 		</p>
 	</header>
 
@@ -119,88 +113,111 @@
 				{/if}
 			</div>
 		</div>
+	{:else}
+		<!-- אורח: הזמנה ברורה להרשמה + הבטחת הזיהוי המשותף -->
+		<div class="mb-8 rounded-3xl border border-amber-500/25 bg-gradient-to-l from-amber-500/10 to-pink-600/10 p-6 text-center shadow-lg">
+			<p class="text-lg font-black text-white sm:text-xl">🕊️ הרשמה אחת — נוכחות בכל הרשת</p>
+			<p class="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-amber-100/90 sm:text-base">
+				מי שנרשם כאן מזוהה <span class="font-bold text-white">אוטומטית בכל האפליקציות</span> של יוצאים לחירות —
+				חשבון אחד לכל אתרי הרשת. התחברו כדי לסמן אילו אתרים כבר מוכרים לכם ולגלות את השאר.
+			</p>
+			<div class="mt-4 flex flex-wrap justify-center gap-3">
+				<a
+					href="/register?redirect=/map"
+					class="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-2.5 text-sm font-black text-white transition hover:opacity-90"
+				>
+					✨ הרשמה
+				</a>
+				<a
+					href="/login?redirect=/map"
+					class="rounded-xl border border-white/15 bg-white/5 px-6 py-2.5 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+				>
+					כבר רשומים? התחברות
+				</a>
+			</div>
+		</div>
 	{/if}
-
-	<!-- מקרא + הבהרת שמירה -->
-	<div class="mb-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs text-gray-400">
-		<span class="inline-flex items-center gap-1.5">
-			<span class="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20 text-[10px] text-emerald-300">✓</span>
-			מכירים
-		</span>
-		<span class="inline-flex items-center gap-1.5">
-			<span class="flex h-4 w-4 items-center justify-center rounded-full bg-amber-500/20 text-[10px] text-amber-300">✨</span>
-			עדיין לא
-		</span>
-		<span class="text-gray-500">· לחיצה על "סימון" מסמנת אתר כמוכר · נשמר בדפדפן הזה</span>
-	</div>
 
 	<!-- קבוצות לפי קטגוריה -->
 	{#each data.groups as group (group.category)}
 		<section class="mb-8">
-			<h2 class="mb-3 flex items-center gap-2 text-lg font-black text-white">
+			<h2 class="mb-4 flex items-center gap-2 text-lg font-black text-white">
 				<span>{catIcon[group.category] ?? '🕊️'}</span>
 				<span>{group.category}</span>
 				<span class="h-px flex-1 bg-white/10"></span>
 			</h2>
 
-			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
 				{#each group.sites as site (site.id)}
-					{@const isKnown = known.has(site.id)}
+					{@const isKnown = data.loggedIn && known.has(site.id)}
 					<div
-						class="relative flex flex-col overflow-hidden rounded-2xl border p-4 shadow-lg transition
-							{isKnown
-								? 'border-emerald-500/30 bg-emerald-500/[0.06]'
-								: 'border-white/10 bg-white/[0.03]'}"
+						class="flex flex-col overflow-hidden rounded-2xl border shadow-lg transition
+							{isKnown ? 'border-emerald-500/40 bg-emerald-500/[0.06]' : 'border-white/10 bg-white/[0.03]'}"
 					>
-						<!-- תג היכרות -->
-						<span
-							class="pointer-events-none absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-bold transition
-								{isKnown
-									? 'border-emerald-500/30 bg-emerald-500/20 text-emerald-200'
-									: 'border-amber-500/30 bg-amber-500/15 text-amber-200'}"
-						>
-							{#if isKnown}✓ מכירים{:else}✨ חדש לכם{/if}
-						</span>
-
-						<!-- אזור הקישור לאתר -->
+						<!-- באנר תמונה גדול -->
 						<a
 							href={site.url}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="group flex items-start gap-3"
+							class="group relative block"
+							aria-label={site.name}
 						>
-							<div class="h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
+							<div class="relative h-44 w-full overflow-hidden bg-white/5">
 								{#if site.image}
-									<img src={site.image} alt="" class="h-full w-full object-cover transition group-hover:scale-105" />
+									<img
+										src={site.image}
+										alt=""
+										class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]"
+									/>
 								{:else}
-									<div class="flex h-full w-full items-center justify-center text-2xl">🕊️</div>
+									<div class="flex h-full w-full items-center justify-center text-5xl">🕊️</div>
 								{/if}
-							</div>
-							<div class="min-w-0 flex-1 pt-0.5">
-								<h3 class="truncate text-base font-bold text-white group-hover:text-sky-300">{site.name}</h3>
-								<span class="mt-0.5 inline-block rounded-full border px-2 py-0.5 text-[10px] font-semibold {catColor[site.category] ?? 'border-white/20 text-gray-300'}">
-									{site.category}
-								</span>
-								<p class="mt-1.5 line-clamp-2 text-xs leading-relaxed text-gray-400">{site.description}</p>
-								<span class="mt-1 inline-block text-xs text-sky-400" dir="ltr">
-									{site.url.replace(/^https?:\/\//, '').replace(/\/$/, '')} ↗
-								</span>
+								<!-- הצללה תחתונה לקריאוּת השם -->
+								<div class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+
+								<!-- תג היכרות (רק למחוברים) -->
+								{#if data.loggedIn}
+									<span
+										class="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold backdrop-blur-sm transition
+											{isKnown
+												? 'border-emerald-400/40 bg-emerald-500/30 text-emerald-50'
+												: 'border-white/25 bg-black/40 text-amber-100'}"
+									>
+										{#if isKnown}✓ מכירים{:else}✨ חדש{/if}
+									</span>
+								{/if}
+
+								<!-- שם האתר על הבאנר -->
+								<h3 class="absolute inset-x-0 bottom-0 px-4 pb-3 text-xl font-black leading-tight text-white drop-shadow-lg">
+									{site.name}
+								</h3>
 							</div>
 						</a>
 
-						<!-- כפתור סימון ידני -->
-						<button
-							type="button"
-							onclick={() => toggle(site.id)}
-							disabled={!ready}
-							aria-pressed={isKnown}
-							class="mt-3 w-full rounded-lg border px-3 py-2 text-sm font-bold transition disabled:opacity-50
-								{isKnown
-									? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/25'
-									: 'border-white/15 bg-white/5 text-gray-200 hover:border-amber-400/40 hover:bg-white/10'}"
-						>
-							{#if isKnown}✓ אני מכיר/ה — בטלו סימון{:else}☆ סמנו: אני מכיר/ה{/if}
-						</button>
+						<!-- פעולה: סימון (מחובר) / הזמנה להתחבר (אורח) -->
+						<div class="p-3">
+							{#if data.loggedIn}
+								<button
+									type="button"
+									onclick={() => toggle(site.id)}
+									disabled={!ready}
+									aria-pressed={isKnown}
+									class="w-full rounded-xl border px-3 py-2.5 text-sm font-bold transition disabled:opacity-50
+										{isKnown
+											? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-100 hover:bg-emerald-500/25'
+											: 'border-white/15 bg-white/5 text-gray-100 hover:border-amber-400/40 hover:bg-white/10'}"
+								>
+									{#if isKnown}✓ אני מכיר/ה — בטל סימון{:else}☆ סמן: אני מכיר/ה{/if}
+								</button>
+							{:else}
+								<a
+									href="/register?redirect=/map"
+									class="flex w-full items-center justify-center rounded-xl border border-white/15 bg-white/5 px-3 py-2.5 text-sm font-bold text-gray-200 transition hover:border-amber-400/40 hover:bg-white/10"
+								>
+									🔒 התחברו כדי לסמן
+								</a>
+							{/if}
+						</div>
 					</div>
 				{/each}
 			</div>
