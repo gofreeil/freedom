@@ -20,6 +20,8 @@ export interface SiteAdmin {
 	adminName: string;
 	/** תפקיד / הערה חופשית (למשל "רכז ראשי", "ממלא מקום") */
 	role?: string;
+	/** קישור לתמונת אווטאר מפורשת; אם ריק — נגזר מהאימייל (Gravatar) */
+	avatarUrl?: string;
 	/** מתי מונה (ISO) */
 	updatedAt: string;
 	/** מי מינה (אימייל הסופר-אדמין) */

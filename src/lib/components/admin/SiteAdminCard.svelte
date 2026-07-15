@@ -6,6 +6,9 @@
 		adminEmail: string;
 		adminName: string;
 		role?: string;
+		avatarUrl?: string;
+		/** התמונה האפקטיבית לתצוגה (מחושבת בשרת: מפורשת או מהאימייל) */
+		avatar?: string;
 		updatedAt: string;
 		updatedBy: string;
 	}
@@ -20,9 +23,12 @@
 	let email = $state(site.admin?.adminEmail ?? '');
 	// svelte-ignore state_referenced_locally
 	let role = $state(site.admin?.role ?? '');
+	// svelte-ignore state_referenced_locally
+	let avatarUrl = $state(site.admin?.avatarUrl ?? '');
 	let busy = $state(false);
 	let status = $state<{ type: 'ok' | 'err'; msg: string } | null>(null);
 	let imgOk = $state(true);
+	let previewBroken = $state(false);
 
 	const catColor: Record<string, string> = {
 		'ראשי': 'bg-amber-500/20 text-amber-300 border-amber-500/30',
@@ -77,15 +83,31 @@
 	<!-- מצב אדמין נוכחי -->
 	<div class="mt-3 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs">
 		{#if site.admin}
-			<div class="flex items-center gap-1.5 text-emerald-300">
-				<span>✅</span><span class="font-semibold">אדמין ממונה</span>
+			<div class="flex items-center gap-2.5">
+				<!-- עיגול אווטאר: תמונה מפורשת אם הוגדרה, אחרת מהאימייל (Gravatar) -->
+				{#key site.admin.avatar}
+					<div class="relative h-11 w-11 flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5 shadow">
+						<span class="absolute inset-0 flex items-center justify-center text-lg" aria-hidden="true">👤</span>
+						<img
+							src={site.admin.avatar}
+							alt=""
+							class="absolute inset-0 h-full w-full object-cover"
+							onerror={(e) => ((e.currentTarget as HTMLImageElement).style.visibility = 'hidden')}
+						/>
+					</div>
+				{/key}
+				<div class="min-w-0 flex-1">
+					<div class="flex items-center gap-1.5 text-emerald-300">
+						<span>✅</span><span class="font-semibold">אדמין ממונה</span>
+					</div>
+					<div class="mt-0.5 text-gray-200">
+						<span class="font-bold">{site.admin.adminName}</span>
+						{#if site.admin.role}<span class="text-sky-300"> · {site.admin.role}</span>{/if}
+					</div>
+					<div class="truncate text-gray-400" dir="ltr">{site.admin.adminEmail}</div>
+				</div>
 			</div>
-			<div class="mt-1 text-gray-200">
-				<span class="font-bold">{site.admin.adminName}</span>
-				{#if site.admin.role}<span class="text-sky-300"> · {site.admin.role}</span>{/if}
-				<span class="text-gray-400"> · {site.admin.adminEmail}</span>
-			</div>
-			<div class="mt-0.5 text-[11px] text-gray-500">
+			<div class="mt-1.5 text-[11px] text-gray-500">
 				עודכן {fmtDate(site.admin.updatedAt)}{site.admin.updatedBy ? ` · ע"י ${site.admin.updatedBy}` : ''}
 			</div>
 		{:else}
@@ -108,7 +130,7 @@
 				busy = false;
 				if (result.type === 'success') {
 					status = { type: 'ok', msg: isRemove ? 'המינוי הוסר' : 'המינוי נשמר בהצלחה' };
-					if (isRemove) { name = ''; email = ''; role = ''; }
+					if (isRemove) { name = ''; email = ''; role = ''; avatarUrl = ''; previewBroken = false; }
 				} else if (result.type === 'failure') {
 					status = { type: 'err', msg: (result.data?.error as string) ?? 'הפעולה נכשלה' };
 				} else {
@@ -140,6 +162,28 @@
 			placeholder="תפקיד / הערה (רשות) — למשל: רכז ראשי"
 			class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none"
 		/>
+		<div class="flex items-center gap-2">
+			<!-- תצוגה מקדימה של האווטאר: תמונה שהוקלדה, אחרת נגזרת מהאימייל בשמירה -->
+			<div class="relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
+				<span class="absolute inset-0 flex items-center justify-center text-sm" aria-hidden="true">🖼️</span>
+				{#if avatarUrl.trim() && !previewBroken}
+					<img
+						src={avatarUrl}
+						alt=""
+						class="absolute inset-0 h-full w-full object-cover"
+						onerror={() => (previewBroken = true)}
+					/>
+				{/if}
+			</div>
+			<input
+				name="avatarUrl"
+				bind:value={avatarUrl}
+				oninput={() => (previewBroken = false)}
+				placeholder="קישור לתמונה (רשות) — אם ריק, מהאימייל"
+				dir="ltr"
+				class="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white text-right placeholder:text-gray-500 focus:border-sky-500 focus:outline-none"
+			/>
+		</div>
 
 		<div class="flex items-center gap-2">
 			<button

@@ -2,6 +2,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { SITES, getSite } from '$lib/sitesData';
 import { isSuperAdmin } from '$lib/server/superAdmin';
 import { getSiteAdmins, setSiteAdmin, removeSiteAdmin } from '$lib/server/siteAdmins';
+import { gravatarUrl } from '$lib/server/gravatar';
 import type { PageServerLoad, Actions } from './$types';
 
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -19,7 +20,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const admins = await getSiteAdmins();
 	return {
 		me: { name: user.name ?? '', email: user.email ?? '' },
-		sites: SITES.map((s) => ({ ...s, admin: admins[s.id] ?? null }))
+		sites: SITES.map((s) => {
+			const a = admins[s.id] ?? null;
+			return {
+				...s,
+				// avatar = התמונה האפקטיבית לתצוגה (מפורשת אם הוגדרה, אחרת מהאימייל)
+				admin: a ? { ...a, avatar: a.avatarUrl?.trim() || gravatarUrl(a.adminEmail) } : null
+			};
+		})
 	};
 };
 
@@ -32,14 +40,18 @@ export const actions: Actions = {
 		const adminEmail = String(form.get('adminEmail') ?? '').trim().toLowerCase();
 		const adminName = String(form.get('adminName') ?? '').trim();
 		const role = String(form.get('role') ?? '').trim();
+		const avatarUrl = String(form.get('avatarUrl') ?? '').trim();
 
 		if (!getSite(siteId)) return fail(400, { siteId, error: 'אתר לא מוכר' });
 		if (!emailRe.test(adminEmail)) return fail(400, { siteId, error: 'כתובת אימייל לא תקינה' });
+		if (avatarUrl && !/^https?:\/\//i.test(avatarUrl))
+			return fail(400, { siteId, error: 'קישור התמונה חייב להתחיל ב-http/https' });
 
 		await setSiteAdmin(siteId, {
 			adminEmail,
 			adminName: adminName || adminEmail.split('@')[0],
 			role: role || undefined,
+			avatarUrl: avatarUrl || undefined,
 			updatedAt: new Date().toISOString(),
 			updatedBy: me.email ?? ''
 		});
