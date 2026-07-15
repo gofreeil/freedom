@@ -6,3 +6,6 @@ node_modules
 .env.*
 !.env.example
 .DS_Store
+
+# אחסון מינויי האדמינים של פאנל הניהול (נשמר בשרת, לא ב-git)
+/data
