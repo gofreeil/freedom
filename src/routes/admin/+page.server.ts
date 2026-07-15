@@ -31,6 +31,7 @@ export const actions: Actions = {
 		const siteId = String(form.get('siteId') ?? '');
 		const adminEmail = String(form.get('adminEmail') ?? '').trim().toLowerCase();
 		const adminName = String(form.get('adminName') ?? '').trim();
+		const role = String(form.get('role') ?? '').trim();
 
 		if (!getSite(siteId)) return fail(400, { siteId, error: 'אתר לא מוכר' });
 		if (!emailRe.test(adminEmail)) return fail(400, { siteId, error: 'כתובת אימייל לא תקינה' });
@@ -38,6 +39,7 @@ export const actions: Actions = {
 		await setSiteAdmin(siteId, {
 			adminEmail,
 			adminName: adminName || adminEmail.split('@')[0],
+			role: role || undefined,
 			updatedAt: new Date().toISOString(),
 			updatedBy: me.email ?? ''
 		});

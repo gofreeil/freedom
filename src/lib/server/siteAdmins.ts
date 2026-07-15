@@ -18,6 +18,8 @@ export interface SiteAdmin {
 	adminEmail: string;
 	/** שם תצוגה */
 	adminName: string;
+	/** תפקיד / הערה חופשית (למשל "רכז ראשי", "ממלא מקום") */
+	role?: string;
 	/** מתי מונה (ISO) */
 	updatedAt: string;
 	/** מי מינה (אימייל הסופר-אדמין) */

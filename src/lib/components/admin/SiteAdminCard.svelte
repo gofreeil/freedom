@@ -5,6 +5,7 @@
 	interface Admin {
 		adminEmail: string;
 		adminName: string;
+		role?: string;
 		updatedAt: string;
 		updatedBy: string;
 	}
@@ -17,6 +18,8 @@
 	let name = $state(site.admin?.adminName ?? '');
 	// svelte-ignore state_referenced_locally
 	let email = $state(site.admin?.adminEmail ?? '');
+	// svelte-ignore state_referenced_locally
+	let role = $state(site.admin?.role ?? '');
 	let busy = $state(false);
 	let status = $state<{ type: 'ok' | 'err'; msg: string } | null>(null);
 	let imgOk = $state(true);
@@ -79,6 +82,7 @@
 			</div>
 			<div class="mt-1 text-gray-200">
 				<span class="font-bold">{site.admin.adminName}</span>
+				{#if site.admin.role}<span class="text-sky-300"> · {site.admin.role}</span>{/if}
 				<span class="text-gray-400"> · {site.admin.adminEmail}</span>
 			</div>
 			<div class="mt-0.5 text-[11px] text-gray-500">
@@ -104,7 +108,7 @@
 				busy = false;
 				if (result.type === 'success') {
 					status = { type: 'ok', msg: isRemove ? 'המינוי הוסר' : 'המינוי נשמר בהצלחה' };
-					if (isRemove) { name = ''; email = ''; }
+					if (isRemove) { name = ''; email = ''; role = ''; }
 				} else if (result.type === 'failure') {
 					status = { type: 'err', msg: (result.data?.error as string) ?? 'הפעולה נכשלה' };
 				} else {
@@ -129,6 +133,12 @@
 			placeholder="אימייל האדמין"
 			dir="ltr"
 			class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white text-right placeholder:text-gray-500 focus:border-sky-500 focus:outline-none"
+		/>
+		<input
+			name="role"
+			bind:value={role}
+			placeholder="תפקיד / הערה (רשות) — למשל: רכז ראשי"
+			class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none"
 		/>
 
 		<div class="flex items-center gap-2">
