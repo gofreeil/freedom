@@ -147,11 +147,13 @@
 				<span class="h-px flex-1 bg-white/10"></span>
 			</h2>
 
-			<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+			<!-- קטגוריית "ראשי" (כרטיס יחיד) — הבאנר ממורכז; שאר הקטגוריות בגריד רגיל -->
+			<div class="{group.category === 'ראשי' ? 'flex justify-center' : 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'}">
 				{#each group.sites as site (site.id)}
 					{@const isKnown = data.loggedIn && known.has(site.id)}
 					<div
 						class="flex flex-col overflow-hidden rounded-2xl border shadow-lg transition
+							{group.category === 'ראשי' ? 'w-full max-w-md' : ''}
 							{isKnown ? 'border-emerald-500/40 bg-emerald-500/[0.06]' : 'border-white/10 bg-white/[0.03]'}"
 					>
 						<!-- באנר תמונה גדול -->

@@ -25,7 +25,7 @@ export interface FreedomSite {
 export const SITES: FreedomSite[] = [
 	{
 		id: 'portal',
-		name: 'פורטל יוצאים לחירות',
+		name: 'יוצאים לחירות',
 		description: 'עמוד הבית של הרשת — שער לכל הפלטפורמות.',
 		url: 'https://gofreeil.com/',
 		image: '/images/ad_neighborhoods.webp',
