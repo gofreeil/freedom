@@ -20,7 +20,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const admins = await getSiteAdmins();
 	return {
 		me: { name: user.name ?? '', email: user.email ?? '' },
-		sites: SITES.map((s) => {
+		// חנות החירות לא מנוהלת בדף הזה
+		sites: SITES.filter((s) => s.id !== 'freedom_store').map((s) => {
 			const a = admins[s.id] ?? null;
 			return {
 				...s,

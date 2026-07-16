@@ -8,9 +8,10 @@
 
 	// תבנית העמודות המשותפת לכותרת ולשורות (form עם display:contents מזרים
 	// את התאים ישירות לרשת הזו — כך כל השורות מיושרות לעמודות זהות).
-	// עמודות שם/תפקיד מוגבלות ברוחב כדי שיישבו צמוד ימינה, ליד עמודת האתר
+	// עמודת האתר קומפקטית (לא בולעת את הרוחב הפנוי) — כך השדות צמודים ימינה;
+	// שדות שם/תפקיד רחבים, והשטח העודף נשאר בקצה השמאלי.
 	const GRID_COLS =
-		'grid-template-columns: minmax(150px,1fr) minmax(120px,190px) minmax(150px,260px) 72px 100px minmax(44px,auto);';
+		'grid-template-columns: minmax(150px,210px) minmax(160px,300px) minmax(200px,380px) 88px 100px minmax(44px,auto);';
 </script>
 
 <svelte:head><title>ניהול אתרי יוצאים לחירות</title></svelte:head>
@@ -28,17 +29,9 @@
 		</div>
 	</header>
 
-	<!-- טבלה: רשת אחת; הכותרת והשורות חולקות את אותן עמודות -->
+	<!-- טבלה: רשת אחת, ללא שורת כותרות (השינויים בשדות נשמרים אוטומטית) -->
 	<div class="overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.02] p-3">
-		<div class="grid min-w-[680px] items-center gap-x-2 gap-y-1.5" style={GRID_COLS}>
-			<!-- כותרת עמודות (השינויים בשדות נשמרים אוטומטית) -->
-			<div class="border-b border-white/10 px-1 pb-1.5 text-[11px] font-bold text-gray-400">אתר</div>
-			<div class="border-b border-white/10 px-1 pb-1.5 text-[11px] font-bold text-gray-400">שם האדמין</div>
-			<div class="border-b border-white/10 px-1 pb-1.5 text-[11px] font-bold text-gray-400">תפקיד / הערה</div>
-			<div class="border-b border-white/10 px-1 pb-1.5 text-center text-[11px] font-bold text-gray-400">תמונה</div>
-			<div class="border-b border-white/10 px-1 pb-1.5 text-center text-[11px] font-bold text-gray-400">יצירת קשר</div>
-			<div class="border-b border-white/10 px-1 pb-1.5"></div>
-
+		<div class="grid items-center gap-x-2 gap-y-1.5" style={GRID_COLS}>
 			{#each data.sites as site (site.id)}
 				<SiteAdminRow {site} {editMode} />
 			{/each}

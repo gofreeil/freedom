@@ -178,7 +178,7 @@
 				onclick={pickPhoto}
 				title="העלאת תמונה"
 				aria-label="העלאת תמונת האדמין"
-				class="group relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-full border border-dashed border-sky-400/60 bg-white/5"
+				class="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full border border-dashed border-sky-400/60 bg-white/5"
 			>
 				{#if avatar && !avatarBroken}
 					<img src={avatar} alt="" class="h-full w-full object-cover" onerror={() => (avatarBroken = true)} />
@@ -194,7 +194,7 @@
 			</button>
 			<input type="file" accept="image/*" hidden bind:this={fileInput} onchange={onFileChosen} />
 		{:else}
-			<div class="h-16 w-16 flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
+			<div class="h-20 w-20 flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
 				{#if avatar && !avatarBroken}
 					<img
 						src={avatar}
