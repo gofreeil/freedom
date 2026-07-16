@@ -7,6 +7,8 @@
 		adminEmail: string;
 		adminName: string;
 		role?: string;
+		phone?: string;
+		communityId?: string;
 		avatarUrl?: string;
 		avatar?: string;
 		updatedAt: string;
@@ -24,6 +26,12 @@
 	// svelte-ignore state_referenced_locally
 	let role = $state(site.admin?.role ?? '');
 	// svelte-ignore state_referenced_locally
+	let email = $state(site.admin?.adminEmail ?? '');
+	// svelte-ignore state_referenced_locally
+	let phone = $state(site.admin?.phone ?? '');
+	// svelte-ignore state_referenced_locally
+	let communityId = $state(site.admin?.communityId ?? '');
+	// svelte-ignore state_referenced_locally
 	let avatarUrl = $state(site.admin?.avatarUrl ?? '');
 	let busy = $state(false);
 	let status = $state<{ type: 'ok' | 'err'; msg: string } | null>(null);
@@ -36,6 +44,22 @@
 	const hasAdmin = $derived(!!site.admin);
 	// התמונה לתצוגה: מה שהועלה/הוגדר מקומית, אחרת האפקטיבית מהשרת (Gravatar וכו')
 	const avatar = $derived(avatarUrl.trim() ? avatarUrl : (site.admin?.avatar ?? ''));
+
+	// קישור וואטסאפ: 05x-xxxxxxx → 9725xxxxxxxx
+	const waHref = $derived.by(() => {
+		const digits = phone.replace(/\D/g, '');
+		if (!digits) return '';
+		return `https://wa.me/${digits.startsWith('0') ? '972' + digits.slice(1) : digits}`;
+	});
+	const mailHref = $derived(email.trim() ? `mailto:${email.trim()}` : '');
+	// צ'אט בקהילה בשכונה: לפי מזהה מפורש, ואם אין — ניסיון לפי האימייל (חשבון credentials)
+	const chatHref = $derived.by(() => {
+		const id = communityId.trim() || (email.trim() ? `credentials_${email.trim().toLowerCase()}` : '');
+		return id ? `https://community.gofreeil.com/admin/users/${encodeURIComponent(id)}#chat` : '';
+	});
+
+	const contactBtnCls =
+		'flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-sm transition hover:bg-white/15';
 
 	// שמירה אוטומטית ביציאה משדה שהשתנה (onchange) — אין כפתור "שמור".
 	function autoSave() {
@@ -97,9 +121,14 @@
 	}}
 >
 	<input type="hidden" name="siteId" value={site.id} />
-	<!-- שדות שאינם מוצגים כטקסט — עוברים כערכים חבויים כדי לא להימחק בשמירה -->
-	<input type="hidden" name="adminEmail" value={site.admin?.adminEmail ?? ''} />
+	<!-- התמונה נשלחת תמיד כערך חבוי (מוזנת דרך הקרופר) -->
 	<input type="hidden" name="avatarUrl" value={avatarUrl} />
+	{#if !editMode}
+		<!-- מחוץ למצב עריכה — פרטי הקשר עוברים כערכים חבויים כדי לא להימחק בשמירה -->
+		<input type="hidden" name="adminEmail" value={email} />
+		<input type="hidden" name="phone" value={phone} />
+		<input type="hidden" name="communityId" value={communityId} />
+	{/if}
 
 	<!-- אתר (קישור לאתר עצמו) -->
 	<a
@@ -180,6 +209,25 @@
 		{/if}
 	</div>
 
+	<!-- יצירת קשר -->
+	<div class="flex items-center justify-center gap-1">
+		{#if waHref}
+			<a href={waHref} target="_blank" rel="noopener" title="וואטסאפ" aria-label="וואטסאפ" class={contactBtnCls}>💬</a>
+		{:else}
+			<span class="{contactBtnCls} cursor-default opacity-25" title="אין טלפון — מלאו במצב עריכה" aria-hidden="true">💬</span>
+		{/if}
+		{#if mailHref}
+			<a href={mailHref} title="שליחת אימייל" aria-label="שליחת אימייל" class={contactBtnCls}>📧</a>
+		{:else}
+			<span class="{contactBtnCls} cursor-default opacity-25" title="אין אימייל — מלאו במצב עריכה" aria-hidden="true">📧</span>
+		{/if}
+		{#if chatHref}
+			<a href={chatHref} target="_blank" rel="noopener" title="הודעה בצ'אט קהילה בשכונה" aria-label="הודעה בצ'אט קהילה בשכונה" class={contactBtnCls}>🏘️</a>
+		{:else}
+			<span class="{contactBtnCls} cursor-default opacity-25" title="אין מזהה/אימייל — מלאו במצב עריכה" aria-hidden="true">🏘️</span>
+		{/if}
+	</div>
+
 	<!-- הסרה -->
 	<div class="flex items-center justify-end">
 		{#if hasAdmin}
@@ -196,6 +244,40 @@
 			</button>
 		{/if}
 	</div>
+
+	<!-- פרטי קשר — נערכים רק במצב עריכה, בשורת-משנה מתחת לשורה -->
+	{#if editMode}
+		<div class="col-span-full flex flex-wrap items-center gap-2 pb-1.5">
+			<input
+				name="adminEmail"
+				type="email"
+				bind:value={email}
+				onchange={autoSave}
+				placeholder="אימייל"
+				aria-label="אימייל האדמין"
+				dir="ltr"
+				class="{inputCls} max-w-[210px] text-right"
+			/>
+			<input
+				name="phone"
+				bind:value={phone}
+				onchange={autoSave}
+				placeholder="טלפון (לוואטסאפ)"
+				aria-label="טלפון האדמין"
+				dir="ltr"
+				class="{inputCls} max-w-[160px] text-right"
+			/>
+			<input
+				name="communityId"
+				bind:value={communityId}
+				onchange={autoSave}
+				placeholder="מזהה בקהילה בשכונה"
+				aria-label="מזהה המשתמש בקהילה בשכונה"
+				dir="ltr"
+				class="{inputCls} max-w-[190px] text-right"
+			/>
+		</div>
+	{/if}
 
 	<!-- סטטוס (משתרע על כל הרוחב, מופיע רק כשיש) -->
 	{#if status}

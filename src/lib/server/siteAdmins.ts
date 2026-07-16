@@ -20,6 +20,10 @@ export interface SiteAdmin {
 	adminName: string;
 	/** תפקיד / הערה חופשית (למשל "רכז ראשי", "ממלא מקום") */
 	role?: string;
+	/** טלפון (לכפתור וואטסאפ) */
+	phone?: string;
+	/** מזהה המשתמש בקהילה בשכונה (id מספרי או external_id) — לכפתור הצ'אט */
+	communityId?: string;
 	/** קישור לתמונת אווטאר מפורשת; אם ריק — נגזר מהאימייל (Gravatar) */
 	avatarUrl?: string;
 	/** מתי מונה (ISO) */

@@ -43,6 +43,8 @@ export const actions: Actions = {
 		const adminName = String(form.get('adminName') ?? '').trim();
 		const role = String(form.get('role') ?? '').trim();
 		const avatarUrl = String(form.get('avatarUrl') ?? '').trim();
+		const phone = String(form.get('phone') ?? '').trim();
+		const communityId = String(form.get('communityId') ?? '').trim();
 
 		if (!getSite(siteId)) return fail(400, { siteId, error: 'אתר לא מוכר' });
 		if (!adminName) return fail(400, { siteId, error: 'צריך למלא שם אדמין' });
@@ -55,11 +57,17 @@ export const actions: Actions = {
 			return fail(400, { siteId, error: 'תמונה לא תקינה' });
 		if (avatarUrl.length > 700_000)
 			return fail(400, { siteId, error: 'התמונה גדולה מדי' });
+		if (phone && !/^[+\d][\d\s-]{5,20}$/.test(phone))
+			return fail(400, { siteId, error: 'מספר טלפון לא תקין' });
+		if (communityId.length > 100)
+			return fail(400, { siteId, error: 'מזהה קהילה ארוך מדי' });
 
 		await setSiteAdmin(siteId, {
 			adminEmail,
 			adminName,
 			role: role || undefined,
+			phone: phone || undefined,
+			communityId: communityId || undefined,
 			avatarUrl: avatarUrl || undefined,
 			updatedAt: new Date().toISOString(),
 			updatedBy: me.email ?? ''
