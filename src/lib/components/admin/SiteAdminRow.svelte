@@ -121,8 +121,12 @@
 			if (result.type === 'success') {
 				flashOk(isRemove ? 'הוסר' : 'נשמר ✓');
 				if (isRemove) {
+					// מנקה רק את נתוני האדמין (המסגרות והתמונה) — שורת האתר עצמה קבועה ולא נמחקת
 					name = '';
 					role = '';
+					email = '';
+					phone = '';
+					communityId = '';
 					avatarUrl = '';
 					avatarBroken = false;
 				}
