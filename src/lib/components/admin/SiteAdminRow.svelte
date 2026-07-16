@@ -101,8 +101,14 @@
 	<input type="hidden" name="adminEmail" value={site.admin?.adminEmail ?? ''} />
 	<input type="hidden" name="avatarUrl" value={avatarUrl} />
 
-	<!-- אתר -->
-	<div class="flex min-w-0 items-center gap-2 py-1">
+	<!-- אתר (קישור לאתר עצמו) -->
+	<a
+		href={site.url}
+		target="_blank"
+		rel="noopener"
+		title={site.name}
+		class="group/site flex min-w-0 items-center gap-2 py-1"
+	>
 		<div class="h-8 w-8 flex-shrink-0 overflow-hidden rounded-lg bg-white/5">
 			{#if site.image && imgOk}
 				<img src={site.image} alt="" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
@@ -110,8 +116,10 @@
 				<div class="flex h-full w-full items-center justify-center text-sm">🕊️</div>
 			{/if}
 		</div>
-		<span class="truncate text-sm font-bold text-white" title={site.name}>{site.name}</span>
-	</div>
+		<span class="truncate text-sm font-bold text-white transition group-hover/site:text-sky-300 group-hover/site:underline">
+			{site.name}
+		</span>
+	</a>
 
 	<!-- שם האדמין -->
 	<input
@@ -133,15 +141,15 @@
 		class={inputCls}
 	/>
 
-	<!-- תמונת האדמין -->
-	<div class="flex items-center justify-center py-1">
+	<!-- תמונת האדמין (בלי padding אנכי — כך העיגול גדל בלי להגביה את השורה) -->
+	<div class="flex items-center justify-center">
 		{#if editMode}
 			<button
 				type="button"
 				onclick={pickPhoto}
 				title="העלאת תמונה"
 				aria-label="העלאת תמונת האדמין"
-				class="group relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-full border border-dashed border-sky-400/60 bg-white/5"
+				class="group relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-full border border-dashed border-sky-400/60 bg-white/5"
 			>
 				{#if avatar && !avatarBroken}
 					<img src={avatar} alt="" class="h-full w-full object-cover" onerror={() => (avatarBroken = true)} />
@@ -157,7 +165,7 @@
 			</button>
 			<input type="file" accept="image/*" hidden bind:this={fileInput} onchange={onFileChosen} />
 		{:else}
-			<div class="h-14 w-14 flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
+			<div class="h-16 w-16 flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
 				{#if avatar && !avatarBroken}
 					<img
 						src={avatar}

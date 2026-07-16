@@ -8,8 +8,9 @@
 
 	// תבנית העמודות המשותפת לכותרת ולשורות (form עם display:contents מזרים
 	// את התאים ישירות לרשת הזו — כך כל השורות מיושרות לעמודות זהות).
+	// עמודות שם/תפקיד מוגבלות ברוחב כדי שיישבו צמוד ימינה, ליד עמודת האתר
 	const GRID_COLS =
-		'grid-template-columns: minmax(150px,1.3fr) minmax(130px,1fr) minmax(150px,1.2fr) 72px minmax(44px,auto);';
+		'grid-template-columns: minmax(150px,1fr) minmax(120px,190px) minmax(150px,260px) 72px minmax(44px,auto);';
 </script>
 
 <svelte:head><title>ניהול אתרי יוצאים לחירות</title></svelte:head>
@@ -24,20 +25,6 @@
 				</span>
 				ניהול אתרי יוצאים לחירות
 			</h1>
-		</div>
-		<div class="flex flex-shrink-0 items-center gap-2">
-			<button
-				type="button"
-				onclick={() => (editMode = !editMode)}
-				class="rounded-lg px-3 py-1.5 text-sm font-bold transition {editMode
-					? 'bg-gradient-to-r from-amber-500 to-pink-600 text-white hover:opacity-90'
-					: 'border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10'}"
-			>
-				{editMode ? 'סיום עריכה' : '✏️ עריכה'}
-			</button>
-			<a href="/" class="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-bold text-gray-300 transition hover:bg-white/10">
-				← לאתר
-			</a>
 		</div>
 	</header>
 
@@ -55,5 +42,18 @@
 				<SiteAdminRow {site} {editMode} />
 			{/each}
 		</div>
+	</div>
+
+	<!-- כפתור עריכה — מתחת לטבלה -->
+	<div class="mt-3">
+		<button
+			type="button"
+			onclick={() => (editMode = !editMode)}
+			class="rounded-lg px-4 py-1.5 text-sm font-bold transition {editMode
+				? 'bg-gradient-to-r from-amber-500 to-pink-600 text-white hover:opacity-90'
+				: 'border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10'}"
+		>
+			{editMode ? 'סיום עריכה' : '✏️ עריכה'}
+		</button>
 	</div>
 </div>
