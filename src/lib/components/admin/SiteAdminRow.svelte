@@ -209,7 +209,7 @@
 		title={site.name}
 		class="group/site flex min-w-0 items-center gap-2"
 	>
-		<div class="h-[60px] w-[60px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
+		<div class="h-[58px] w-[58px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
 			{#if site.image && imgOk}
 				<img src={site.image} alt="" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
 			{:else}
