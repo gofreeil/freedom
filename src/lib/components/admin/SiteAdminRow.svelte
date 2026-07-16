@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tick } from 'svelte';
 	import { enhance } from '$app/forms';
 	import type { FreedomSite } from '$lib/sitesData';
 	import AvatarCropper from './AvatarCropper.svelte';
@@ -89,10 +90,12 @@
 		if (f) pickedFile = f;
 		input.value = ''; // מאפשר לבחור שוב את אותו קובץ
 	}
-	function onCropSave(dataUrl: string) {
+	async function onCropSave(dataUrl: string) {
 		pickedFile = null;
 		avatarUrl = dataUrl;
 		avatarBroken = false;
+		// ממתינים לעדכון ה-DOM — אחרת השדה החבוי avatarUrl נשלח עם הערך הישן (ריק)
+		await tick();
 		formEl.requestSubmit();
 	}
 
