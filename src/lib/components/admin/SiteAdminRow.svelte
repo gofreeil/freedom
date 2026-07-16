@@ -90,6 +90,9 @@
 
 	const inputCls =
 		'w-full rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[13px] text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none';
+	// שדה שם האדמין — פונט גדול יותר ובצבע זהב
+	const nameInputCls =
+		'w-full rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[15px] font-bold text-amber-400 placeholder:font-normal placeholder:text-gray-500 focus:border-sky-500 focus:outline-none';
 </script>
 
 <form
@@ -176,7 +179,7 @@
 		onchange={autoSave}
 		placeholder="שם"
 		aria-label="שם האדמין"
-		class={inputCls}
+		class={nameInputCls}
 	/>
 
 	<!-- תפקיד / הערה -->
@@ -204,7 +207,7 @@
 				<div class="flex h-full w-full items-center justify-center text-2xl">🕊️</div>
 			{/if}
 		</div>
-		<span class="truncate text-base font-bold text-amber-400 transition group-hover/site:text-amber-200 group-hover/site:underline">
+		<span class="truncate text-sm font-bold text-white transition group-hover/site:text-sky-300 group-hover/site:underline">
 			{site.name}
 		</span>
 	</a>
