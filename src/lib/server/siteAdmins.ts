@@ -1,17 +1,14 @@
 // ============================================================
-// אחסון מינויי האדמינים לאתרי הרשת.
-// נשמר בקובץ JSON בשרת (עובד עם adapter-node / כל תהליך Node קבוע).
-// מיקום הקובץ: לפי SITE_ADMINS_FILE, אחרת data/site-admins.json בתיקיית ההרצה.
+// אחסון מינויי האדמינים לאתרי הרשת — ב-Strapi המשותף (api.gofreeil.com).
 //
-// מבנה הקובץ:
-// {
-//   "community_neighborhood": { "adminEmail": "...", "adminName": "...", "updatedAt": "...", "updatedBy": "..." },
-//   ...
-// }
+// למה לא קובץ מקומי: האתר רץ על Vercel שבו מערכת הקבצים לקריאה בלבד —
+// כתיבה לקובץ נכשלת (500). הנתונים נשמרים ב-core_store של Strapi דרך
+// נקודות הקצה GET/PUT /api/site-admins (סופר-אדמין בלבד, לפי ה-JWT).
+//
+// המבנה בשרת: { [siteId]: SiteAdmin }
 // ============================================================
 
-import { promises as fs } from 'fs';
-import { dirname, resolve } from 'path';
+import { STRAPI_URL } from './strapiAuth';
 
 export interface SiteAdmin {
 	/** אימייל האדמין שמונה לאתר (זהות אחידה מול ה-Strapi המשותף) */
@@ -24,7 +21,7 @@ export interface SiteAdmin {
 	phone?: string;
 	/** מזהה המשתמש בקהילה בשכונה (id מספרי או external_id) — לכפתור הצ'אט */
 	communityId?: string;
-	/** קישור לתמונת אווטאר מפורשת; אם ריק — נגזר מהאימייל (Gravatar) */
+	/** קישור לתמונת אווטאר מפורשת או data URL מהקרופר; אם ריק — נגזר מהאימייל (Gravatar) */
 	avatarUrl?: string;
 	/** מתי מונה (ISO) */
 	updatedAt: string;
@@ -34,38 +31,34 @@ export interface SiteAdmin {
 
 export type SiteAdminsMap = Record<string, SiteAdmin>;
 
-const FILE = process.env.SITE_ADMINS_FILE
-	? resolve(process.env.SITE_ADMINS_FILE)
-	: resolve(process.cwd(), 'data', 'site-admins.json');
-
-/** קריאת כל המינויים (מפה ריקה אם הקובץ לא קיים/פגום) */
-export async function getSiteAdmins(): Promise<SiteAdminsMap> {
-	try {
-		const raw = await fs.readFile(FILE, 'utf-8');
-		const parsed = JSON.parse(raw);
-		return parsed && typeof parsed === 'object' ? (parsed as SiteAdminsMap) : {};
-	} catch {
-		return {};
-	}
+function authHeaders(jwt: string): Record<string, string> {
+	return { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' };
 }
 
-async function writeAll(map: SiteAdminsMap): Promise<void> {
-	await fs.mkdir(dirname(FILE), { recursive: true });
-	await fs.writeFile(FILE, JSON.stringify(map, null, 2), 'utf-8');
+/** קריאת כל המינויים (זורק בשגיאת שרת/הרשאה) */
+export async function getSiteAdmins(jwt: string): Promise<SiteAdminsMap> {
+	const res = await fetch(`${STRAPI_URL}/api/site-admins`, { headers: authHeaders(jwt) });
+	if (!res.ok) throw new Error(`site-admins GET failed: ${res.status}`);
+	const json = (await res.json()) as { data?: SiteAdminsMap };
+	return json.data && typeof json.data === 'object' ? json.data : {};
+}
+
+/** עדכון מינוי לאתר בודד (admin=null מוחק) */
+async function putSiteAdmin(jwt: string, siteId: string, admin: SiteAdmin | null): Promise<void> {
+	const res = await fetch(`${STRAPI_URL}/api/site-admins`, {
+		method: 'PUT',
+		headers: authHeaders(jwt),
+		body: JSON.stringify({ siteId, admin })
+	});
+	if (!res.ok) throw new Error(`site-admins PUT failed: ${res.status}`);
 }
 
 /** מינוי/עדכון אדמין לאתר */
-export async function setSiteAdmin(siteId: string, admin: SiteAdmin): Promise<void> {
-	const map = await getSiteAdmins();
-	map[siteId] = admin;
-	await writeAll(map);
+export async function setSiteAdmin(jwt: string, siteId: string, admin: SiteAdmin): Promise<void> {
+	await putSiteAdmin(jwt, siteId, admin);
 }
 
 /** ביטול מינוי אדמין לאתר */
-export async function removeSiteAdmin(siteId: string): Promise<void> {
-	const map = await getSiteAdmins();
-	if (siteId in map) {
-		delete map[siteId];
-		await writeAll(map);
-	}
+export async function removeSiteAdmin(jwt: string, siteId: string): Promise<void> {
+	await putSiteAdmin(jwt, siteId, null);
 }

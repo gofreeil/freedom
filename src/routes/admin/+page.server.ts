@@ -7,17 +7,26 @@ import type { PageServerLoad, Actions } from './$types';
 
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** מוודא שהמשתמש מחובר וסופר-אדמין; אחרת מפנה/חוסם */
+/** מוודא שהמשתמש מחובר וסופר-אדמין; אחרת מפנה/חוסם. מחזיר גם את ה-JWT מול Strapi. */
 async function requireSuperAdmin(locals: App.Locals) {
 	const session = await locals.auth();
 	if (!session?.user) throw redirect(302, '/login?redirect=/admin');
 	if (!isSuperAdmin(session.user.email)) throw error(403, 'אין לך הרשאה לגשת לאזור הניהול');
-	return session.user;
+	const jwt = (session.user as { strapiJwt?: string }).strapiJwt ?? '';
+	// האחסון יושב ב-Strapi המשותף — בלי JWT אי אפשר לקרוא/לשמור
+	if (!jwt) throw error(401, 'חסר אישור מול השרת המשותף — יש להתנתק ולהתחבר מחדש');
+	return { user: session.user, jwt };
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const user = await requireSuperAdmin(locals);
-	const admins = await getSiteAdmins();
+	const { user, jwt } = await requireSuperAdmin(locals);
+	let admins: Awaited<ReturnType<typeof getSiteAdmins>>;
+	try {
+		admins = await getSiteAdmins(jwt);
+	} catch (e) {
+		console.error('site-admins load failed:', e);
+		throw error(502, 'שגיאה בטעינת נתוני האדמינים מהשרת המשותף');
+	}
 	return {
 		me: { name: user.name ?? '', email: user.email ?? '' },
 		// חנות החירות לא מנוהלת בדף הזה
@@ -37,7 +46,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 export const actions: Actions = {
 	// מינוי / עדכון אדמין לאתר
 	assign: async ({ request, locals }) => {
-		const me = await requireSuperAdmin(locals);
+		const { user: me, jwt } = await requireSuperAdmin(locals);
 		const form = await request.formData();
 		const siteId = String(form.get('siteId') ?? '');
 		const adminEmail = String(form.get('adminEmail') ?? '').trim().toLowerCase();
@@ -63,26 +72,36 @@ export const actions: Actions = {
 		if (communityId.length > 100)
 			return fail(400, { siteId, error: 'מזהה קהילה ארוך מדי' });
 
-		await setSiteAdmin(siteId, {
-			adminEmail,
-			adminName,
-			role: role || undefined,
-			phone: phone || undefined,
-			communityId: communityId || undefined,
-			avatarUrl: avatarUrl || undefined,
-			updatedAt: new Date().toISOString(),
-			updatedBy: me.email ?? ''
-		});
+		try {
+			await setSiteAdmin(jwt, siteId, {
+				adminEmail,
+				adminName,
+				role: role || undefined,
+				phone: phone || undefined,
+				communityId: communityId || undefined,
+				avatarUrl: avatarUrl || undefined,
+				updatedAt: new Date().toISOString(),
+				updatedBy: me.email ?? ''
+			});
+		} catch (e) {
+			console.error('site-admins save failed:', e);
+			return fail(502, { siteId, error: 'השמירה בשרת המשותף נכשלה — נסו שוב' });
+		}
 		return { siteId, saved: true };
 	},
 
 	// ביטול מינוי אדמין
 	remove: async ({ request, locals }) => {
-		await requireSuperAdmin(locals);
+		const { jwt } = await requireSuperAdmin(locals);
 		const form = await request.formData();
 		const siteId = String(form.get('siteId') ?? '');
 		if (!getSite(siteId)) return fail(400, { siteId, error: 'אתר לא מוכר' });
-		await removeSiteAdmin(siteId);
+		try {
+			await removeSiteAdmin(jwt, siteId);
+		} catch (e) {
+			console.error('site-admins remove failed:', e);
+			return fail(502, { siteId, error: 'ההסרה בשרת המשותף נכשלה — נסו שוב' });
+		}
 		return { siteId, removed: true };
 	}
 };
