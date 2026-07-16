@@ -204,7 +204,7 @@
 				<div class="flex h-full w-full items-center justify-center text-2xl">🕊️</div>
 			{/if}
 		</div>
-		<span class="truncate text-sm font-bold text-white transition group-hover/site:text-sky-300 group-hover/site:underline">
+		<span class="truncate text-base font-bold text-amber-400 transition group-hover/site:text-amber-200 group-hover/site:underline">
 			{site.name}
 		</span>
 	</a>
@@ -228,9 +228,9 @@
 		{/if}
 	</div>
 
-	<!-- הסרה -->
+	<!-- הסרה — רק במצב עריכה -->
 	<div class="flex items-center justify-end">
-		{#if hasAdmin}
+		{#if editMode && hasAdmin}
 			<button
 				type="submit"
 				formaction="?/remove"
