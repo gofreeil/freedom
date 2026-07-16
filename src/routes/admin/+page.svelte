@@ -11,7 +11,7 @@
 	// סדר העמודות (מימין לשמאל): תמונת אדמין | שם | תפקיד | אתר | יצירת קשר | הסרה.
 	// כל העמודות מוגבלות ברוחב — השדות צמודים ימינה והשטח העודף נשאר בקצה השמאלי.
 	const GRID_COLS =
-		'grid-template-columns: 73px minmax(160px,300px) minmax(200px,380px) minmax(160px,240px) 100px minmax(44px,auto);';
+		'grid-template-columns: 71px minmax(160px,300px) minmax(200px,380px) minmax(160px,240px) 100px minmax(44px,auto);';
 </script>
 
 <svelte:head><title>ניהול אתרי יוצאים לחירות</title></svelte:head>
@@ -31,7 +31,7 @@
 
 	<!-- טבלה: רשת אחת, ללא שורת כותרות (השינויים בשדות נשמרים אוטומטית) -->
 	<div class="overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.02] p-3">
-		<div class="grid items-center gap-x-2 gap-y-0.5" style={GRID_COLS}>
+		<div class="grid items-center gap-x-2 gap-y-1" style={GRID_COLS}>
 			{#each data.sites as site (site.id)}
 				<SiteAdminRow {site} {editMode} />
 			{/each}

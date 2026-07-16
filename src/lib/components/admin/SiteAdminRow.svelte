@@ -89,7 +89,7 @@
 	}
 
 	const inputCls =
-		'w-full rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-[13px] text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none';
+		'w-full rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[13px] text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none';
 </script>
 
 <form
@@ -138,7 +138,7 @@
 				onclick={pickPhoto}
 				title="העלאת תמונה"
 				aria-label="העלאת תמונת האדמין"
-				class="group relative h-[65px] w-[65px] flex-shrink-0 overflow-hidden rounded-full border border-dashed border-sky-400/60 bg-white/5"
+				class="group relative h-[63px] w-[63px] flex-shrink-0 overflow-hidden rounded-full border border-dashed border-sky-400/60 bg-white/5"
 			>
 				{#if avatar && !avatarBroken}
 					<img src={avatar} alt="" class="h-full w-full object-cover" onerror={() => (avatarBroken = true)} />
@@ -154,7 +154,7 @@
 			</button>
 			<input type="file" accept="image/*" hidden bind:this={fileInput} onchange={onFileChosen} />
 		{:else}
-			<div class="h-[65px] w-[65px] flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
+			<div class="h-[63px] w-[63px] flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
 				{#if avatar && !avatarBroken}
 					<img
 						src={avatar}
@@ -197,7 +197,7 @@
 		title={site.name}
 		class="group/site flex min-w-0 items-center gap-2"
 	>
-		<div class="h-[65px] w-[65px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
+		<div class="h-[63px] w-[63px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
 			{#if site.image && imgOk}
 				<img src={site.image} alt="" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
 			{:else}
