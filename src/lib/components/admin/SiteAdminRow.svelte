@@ -90,6 +90,24 @@
 		if (f) pickedFile = f;
 		input.value = ''; // מאפשר לבחור שוב את אותו קובץ
 	}
+
+	// גרירת קובץ תמונה ישירות אל העיגול (במצב עריכה)
+	let dragOver = $state(false);
+	function onDragOver(e: DragEvent) {
+		e.preventDefault();
+		dragOver = true;
+	}
+	function onDrop(e: DragEvent) {
+		e.preventDefault();
+		dragOver = false;
+		const f = e.dataTransfer?.files?.[0];
+		if (!f || !f.type.startsWith('image/')) return;
+		if (!name.trim()) {
+			status = { type: 'err', msg: 'צריך למלא שם אדמין לפני העלאת תמונה' };
+			return;
+		}
+		pickedFile = f;
+	}
 	async function onCropSave(dataUrl: string) {
 		pickedFile = null;
 		avatarUrl = dataUrl;
@@ -155,9 +173,14 @@
 			<button
 				type="button"
 				onclick={pickPhoto}
-				title="העלאת תמונה"
+				ondragover={onDragOver}
+				ondragleave={() => (dragOver = false)}
+				ondrop={onDrop}
+				title="העלאת תמונה — לחיצה או גרירת קובץ לכאן"
 				aria-label="העלאת תמונת האדמין"
-				class="group relative h-[63px] w-[63px] flex-shrink-0 overflow-hidden rounded-full border border-dashed border-sky-400/60 bg-white/5"
+				class="group relative h-[63px] w-[63px] flex-shrink-0 overflow-hidden rounded-full border border-dashed bg-white/5 {dragOver
+					? 'border-sky-300 bg-sky-400/25'
+					: 'border-sky-400/60'}"
 			>
 				{#if avatar && !avatarBroken}
 					<img src={avatar} alt="" class="h-full w-full object-cover" onerror={() => (avatarBroken = true)} />
