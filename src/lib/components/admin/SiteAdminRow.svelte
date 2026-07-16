@@ -130,25 +130,44 @@
 		<input type="hidden" name="communityId" value={communityId} />
 	{/if}
 
-	<!-- אתר (קישור לאתר עצמו) -->
-	<a
-		href={site.url}
-		target="_blank"
-		rel="noopener"
-		title={site.name}
-		class="group/site flex min-w-0 items-center gap-2 py-1"
-	>
-		<div class="h-8 w-8 flex-shrink-0 overflow-hidden rounded-lg bg-white/5">
-			{#if site.image && imgOk}
-				<img src={site.image} alt="" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
-			{:else}
-				<div class="flex h-full w-full items-center justify-center text-sm">🕊️</div>
-			{/if}
-		</div>
-		<span class="truncate text-sm font-bold text-white transition group-hover/site:text-sky-300 group-hover/site:underline">
-			{site.name}
-		</span>
-	</a>
+	<!-- תמונת האדמין (בצד ימין; בלי padding אנכי — כך העיגול לא מגביה את השורה) -->
+	<div class="flex items-center justify-center">
+		{#if editMode}
+			<button
+				type="button"
+				onclick={pickPhoto}
+				title="העלאת תמונה"
+				aria-label="העלאת תמונת האדמין"
+				class="group relative h-[70px] w-[70px] flex-shrink-0 overflow-hidden rounded-full border border-dashed border-sky-400/60 bg-white/5"
+			>
+				{#if avatar && !avatarBroken}
+					<img src={avatar} alt="" class="h-full w-full object-cover" onerror={() => (avatarBroken = true)} />
+				{:else}
+					<span class="flex h-full w-full items-center justify-center text-lg" aria-hidden="true">👤</span>
+				{/if}
+				<span
+					class="absolute inset-0 flex items-center justify-center rounded-full bg-black/45 text-base opacity-70 transition group-hover:opacity-100"
+					aria-hidden="true"
+				>
+					📷
+				</span>
+			</button>
+			<input type="file" accept="image/*" hidden bind:this={fileInput} onchange={onFileChosen} />
+		{:else}
+			<div class="h-[70px] w-[70px] flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
+				{#if avatar && !avatarBroken}
+					<img
+						src={avatar}
+						alt={name || 'תמונת האדמין'}
+						class="h-full w-full object-cover"
+						onerror={() => (avatarBroken = true)}
+					/>
+				{:else}
+					<div class="flex h-full w-full items-center justify-center text-lg" aria-hidden="true">👤</div>
+				{/if}
+			</div>
+		{/if}
+	</div>
 
 	<!-- שם האדמין -->
 	<input
@@ -170,44 +189,25 @@
 		class={inputCls}
 	/>
 
-	<!-- תמונת האדמין (בלי padding אנכי — כך העיגול גדל בלי להגביה את השורה) -->
-	<div class="flex items-center justify-center">
-		{#if editMode}
-			<button
-				type="button"
-				onclick={pickPhoto}
-				title="העלאת תמונה"
-				aria-label="העלאת תמונת האדמין"
-				class="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full border border-dashed border-sky-400/60 bg-white/5"
-			>
-				{#if avatar && !avatarBroken}
-					<img src={avatar} alt="" class="h-full w-full object-cover" onerror={() => (avatarBroken = true)} />
-				{:else}
-					<span class="flex h-full w-full items-center justify-center text-lg" aria-hidden="true">👤</span>
-				{/if}
-				<span
-					class="absolute inset-0 flex items-center justify-center rounded-full bg-black/45 text-base opacity-70 transition group-hover:opacity-100"
-					aria-hidden="true"
-				>
-					📷
-				</span>
-			</button>
-			<input type="file" accept="image/*" hidden bind:this={fileInput} onchange={onFileChosen} />
-		{:else}
-			<div class="h-20 w-20 flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
-				{#if avatar && !avatarBroken}
-					<img
-						src={avatar}
-						alt={name || 'תמונת האדמין'}
-						class="h-full w-full object-cover"
-						onerror={() => (avatarBroken = true)}
-					/>
-				{:else}
-					<div class="flex h-full w-full items-center justify-center text-lg" aria-hidden="true">👤</div>
-				{/if}
-			</div>
-		{/if}
-	</div>
+	<!-- אתר (קישור לאתר עצמו) -->
+	<a
+		href={site.url}
+		target="_blank"
+		rel="noopener"
+		title={site.name}
+		class="group/site flex min-w-0 items-center gap-2"
+	>
+		<div class="h-[70px] w-[70px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
+			{#if site.image && imgOk}
+				<img src={site.image} alt="" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
+			{:else}
+				<div class="flex h-full w-full items-center justify-center text-2xl">🕊️</div>
+			{/if}
+		</div>
+		<span class="truncate text-sm font-bold text-white transition group-hover/site:text-sky-300 group-hover/site:underline">
+			{site.name}
+		</span>
+	</a>
 
 	<!-- יצירת קשר -->
 	<div class="flex items-center justify-center gap-1">
