@@ -40,6 +40,14 @@
 	let pickedFile = $state<File | null>(null);
 	let formEl: HTMLFormElement;
 	let fileInput: HTMLInputElement;
+	let statusTimer: ReturnType<typeof setTimeout> | undefined;
+
+	// הודעת הצלחה ירוקה נעלמת מעצמה אחרי 2 שניות (שגיאות נשארות)
+	function flashOk(msg: string) {
+		status = { type: 'ok', msg };
+		clearTimeout(statusTimer);
+		statusTimer = setTimeout(() => (status = null), 2000);
+	}
 
 	const hasAdmin = $derived(!!site.admin);
 	// התמונה לתצוגה: מה שהועלה/הוגדר מקומית, אחרת האפקטיבית מהשרת (Gravatar וכו')
@@ -103,11 +111,12 @@
 	use:enhance={({ action }) => {
 		const isRemove = action.search.includes('remove');
 		busy = true;
+		clearTimeout(statusTimer);
 		status = null;
 		return async ({ result, update }) => {
 			busy = false;
 			if (result.type === 'success') {
-				status = { type: 'ok', msg: isRemove ? 'הוסר' : 'נשמר ✓' };
+				flashOk(isRemove ? 'הוסר' : 'נשמר ✓');
 				if (isRemove) {
 					name = '';
 					role = '';
@@ -200,7 +209,7 @@
 		title={site.name}
 		class="group/site flex min-w-0 items-center gap-2"
 	>
-		<div class="h-[63px] w-[63px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
+		<div class="h-[60px] w-[60px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
 			{#if site.image && imgOk}
 				<img src={site.image} alt="" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
 			{:else}
