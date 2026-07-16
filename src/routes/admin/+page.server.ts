@@ -48,8 +48,13 @@ export const actions: Actions = {
 		if (!adminName) return fail(400, { siteId, error: 'צריך למלא שם אדמין' });
 		// אימייל כבר לא מוצג בטופס — ערך קיים עובר כשדה חבוי; אם יש, מוודאים תקינות
 		if (adminEmail && !emailRe.test(adminEmail)) return fail(400, { siteId, error: 'כתובת אימייל לא תקינה' });
-		if (avatarUrl && !/^https?:\/\//i.test(avatarUrl))
-			return fail(400, { siteId, error: 'קישור התמונה חייב להתחיל ב-http/https' });
+		// תמונה: קישור http/https או העלאה מהמחשב (data URL שנוצר בקרופר)
+		const isHttpUrl = /^https?:\/\//i.test(avatarUrl);
+		const isDataImage = /^data:image\/(png|jpe?g|webp);base64,/i.test(avatarUrl);
+		if (avatarUrl && !isHttpUrl && !isDataImage)
+			return fail(400, { siteId, error: 'תמונה לא תקינה' });
+		if (avatarUrl.length > 700_000)
+			return fail(400, { siteId, error: 'התמונה גדולה מדי' });
 
 		await setSiteAdmin(siteId, {
 			adminEmail,

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { FreedomSite } from '$lib/sitesData';
+	import AvatarCropper from './AvatarCropper.svelte';
 
 	interface Admin {
 		adminEmail: string;
@@ -12,25 +13,54 @@
 		updatedBy: string;
 	}
 
-	let { site }: { site: FreedomSite & { admin: Admin | null } } = $props();
+	let {
+		site,
+		editMode = false
+	}: { site: FreedomSite & { admin: Admin | null }; editMode?: boolean } = $props();
 
 	// ערכי הטופס — מקומיים כדי לא לאבד הקלדה בזמן שמירה/שגיאה.
 	// svelte-ignore state_referenced_locally
 	let name = $state(site.admin?.adminName ?? '');
 	// svelte-ignore state_referenced_locally
 	let role = $state(site.admin?.role ?? '');
+	// svelte-ignore state_referenced_locally
+	let avatarUrl = $state(site.admin?.avatarUrl ?? '');
 	let busy = $state(false);
 	let status = $state<{ type: 'ok' | 'err'; msg: string } | null>(null);
 	let imgOk = $state(true);
 	let avatarBroken = $state(false);
+	let pickedFile = $state<File | null>(null);
 	let formEl: HTMLFormElement;
+	let fileInput: HTMLInputElement;
 
 	const hasAdmin = $derived(!!site.admin);
-	const avatar = $derived(site.admin?.avatar ?? '');
+	// התמונה לתצוגה: מה שהועלה/הוגדר מקומית, אחרת האפקטיבית מהשרת (Gravatar וכו')
+	const avatar = $derived(avatarUrl.trim() ? avatarUrl : (site.admin?.avatar ?? ''));
 
 	// שמירה אוטומטית ביציאה משדה שהשתנה (onchange) — אין כפתור "שמור".
 	function autoSave() {
 		if (!name.trim()) return; // בלי שם אין מה לשמור
+		formEl.requestSubmit();
+	}
+
+	// בחירת קובץ תמונה (במצב עריכה)
+	function pickPhoto() {
+		if (!name.trim()) {
+			status = { type: 'err', msg: 'צריך למלא שם אדמין לפני העלאת תמונה' };
+			return;
+		}
+		fileInput.click();
+	}
+	function onFileChosen(e: Event) {
+		const input = e.currentTarget as HTMLInputElement;
+		const f = input.files?.[0];
+		if (f) pickedFile = f;
+		input.value = ''; // מאפשר לבחור שוב את אותו קובץ
+	}
+	function onCropSave(dataUrl: string) {
+		pickedFile = null;
+		avatarUrl = dataUrl;
+		avatarBroken = false;
 		formEl.requestSubmit();
 	}
 
@@ -54,6 +84,7 @@
 				if (isRemove) {
 					name = '';
 					role = '';
+					avatarUrl = '';
 					avatarBroken = false;
 				}
 			} else if (result.type === 'failure') {
@@ -66,9 +97,9 @@
 	}}
 >
 	<input type="hidden" name="siteId" value={site.id} />
-	<!-- שדות שאינם מוצגים יותר — הערכים הקיימים עוברים כמו שהם כדי לא להימחק בשמירה -->
+	<!-- שדות שאינם מוצגים כטקסט — עוברים כערכים חבויים כדי לא להימחק בשמירה -->
 	<input type="hidden" name="adminEmail" value={site.admin?.adminEmail ?? ''} />
-	<input type="hidden" name="avatarUrl" value={site.admin?.avatarUrl ?? ''} />
+	<input type="hidden" name="avatarUrl" value={avatarUrl} />
 
 	<!-- אתר -->
 	<div class="flex min-w-0 items-center gap-2 py-1">
@@ -103,19 +134,42 @@
 	/>
 
 	<!-- תמונת האדמין -->
-	<div class="flex items-center py-1">
-		<div class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
-			{#if avatar && !avatarBroken}
-				<img
-					src={avatar}
-					alt={name || 'תמונת האדמין'}
-					class="h-full w-full object-cover"
-					onerror={() => (avatarBroken = true)}
-				/>
-			{:else}
-				<div class="flex h-full w-full items-center justify-center text-lg" aria-hidden="true">👤</div>
-			{/if}
-		</div>
+	<div class="flex items-center justify-center py-1">
+		{#if editMode}
+			<button
+				type="button"
+				onclick={pickPhoto}
+				title="העלאת תמונה"
+				aria-label="העלאת תמונת האדמין"
+				class="group relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-full border border-dashed border-sky-400/60 bg-white/5"
+			>
+				{#if avatar && !avatarBroken}
+					<img src={avatar} alt="" class="h-full w-full object-cover" onerror={() => (avatarBroken = true)} />
+				{:else}
+					<span class="flex h-full w-full items-center justify-center text-lg" aria-hidden="true">👤</span>
+				{/if}
+				<span
+					class="absolute inset-0 flex items-center justify-center rounded-full bg-black/45 text-base opacity-70 transition group-hover:opacity-100"
+					aria-hidden="true"
+				>
+					📷
+				</span>
+			</button>
+			<input type="file" accept="image/*" hidden bind:this={fileInput} onchange={onFileChosen} />
+		{:else}
+			<div class="h-14 w-14 flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
+				{#if avatar && !avatarBroken}
+					<img
+						src={avatar}
+						alt={name || 'תמונת האדמין'}
+						class="h-full w-full object-cover"
+						onerror={() => (avatarBroken = true)}
+					/>
+				{:else}
+					<div class="flex h-full w-full items-center justify-center text-lg" aria-hidden="true">👤</div>
+				{/if}
+			</div>
+		{/if}
 	</div>
 
 	<!-- הסרה -->
@@ -142,3 +196,7 @@
 		</div>
 	{/if}
 </form>
+
+{#if pickedFile}
+	<AvatarCropper file={pickedFile} onsave={onCropSave} oncancel={() => (pickedFile = null)} />
+{/if}
