@@ -24,8 +24,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 			const a = admins[s.id] ?? null;
 			return {
 				...s,
-				// avatar = התמונה האפקטיבית לתצוגה (מפורשת אם הוגדרה, אחרת מהאימייל)
-				admin: a ? { ...a, avatar: a.avatarUrl?.trim() || gravatarUrl(a.adminEmail) } : null
+				// avatar = התמונה האפקטיבית לתצוגה (מפורשת אם הוגדרה, אחרת מהאימייל אם יש)
+				admin: a
+					? { ...a, avatar: a.avatarUrl?.trim() || (a.adminEmail ? gravatarUrl(a.adminEmail) : '') }
+					: null
 			};
 		})
 	};
@@ -43,13 +45,15 @@ export const actions: Actions = {
 		const avatarUrl = String(form.get('avatarUrl') ?? '').trim();
 
 		if (!getSite(siteId)) return fail(400, { siteId, error: 'אתר לא מוכר' });
-		if (!emailRe.test(adminEmail)) return fail(400, { siteId, error: 'כתובת אימייל לא תקינה' });
+		if (!adminName) return fail(400, { siteId, error: 'צריך למלא שם אדמין' });
+		// אימייל כבר לא מוצג בטופס — ערך קיים עובר כשדה חבוי; אם יש, מוודאים תקינות
+		if (adminEmail && !emailRe.test(adminEmail)) return fail(400, { siteId, error: 'כתובת אימייל לא תקינה' });
 		if (avatarUrl && !/^https?:\/\//i.test(avatarUrl))
 			return fail(400, { siteId, error: 'קישור התמונה חייב להתחיל ב-http/https' });
 
 		await setSiteAdmin(siteId, {
 			adminEmail,
-			adminName: adminName || adminEmail.split('@')[0],
+			adminName,
 			role: role || undefined,
 			avatarUrl: avatarUrl || undefined,
 			updatedAt: new Date().toISOString(),

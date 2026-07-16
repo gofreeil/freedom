@@ -18,17 +18,21 @@
 	// svelte-ignore state_referenced_locally
 	let name = $state(site.admin?.adminName ?? '');
 	// svelte-ignore state_referenced_locally
-	let email = $state(site.admin?.adminEmail ?? '');
-	// svelte-ignore state_referenced_locally
 	let role = $state(site.admin?.role ?? '');
-	// svelte-ignore state_referenced_locally
-	let avatarUrl = $state(site.admin?.avatarUrl ?? '');
 	let busy = $state(false);
 	let status = $state<{ type: 'ok' | 'err'; msg: string } | null>(null);
 	let imgOk = $state(true);
-	let previewBroken = $state(false);
+	let avatarBroken = $state(false);
+	let formEl: HTMLFormElement;
 
 	const hasAdmin = $derived(!!site.admin);
+	const avatar = $derived(site.admin?.avatar ?? '');
+
+	// שמירה אוטומטית ביציאה משדה שהשתנה (onchange) — אין כפתור "שמור".
+	function autoSave() {
+		if (!name.trim()) return; // בלי שם אין מה לשמור
+		formEl.requestSubmit();
+	}
 
 	const inputCls =
 		'w-full rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-[13px] text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none';
@@ -38,6 +42,7 @@
 	method="POST"
 	action="?/assign"
 	style="display: contents"
+	bind:this={formEl}
 	use:enhance={({ action }) => {
 		const isRemove = action.search.includes('remove');
 		busy = true;
@@ -48,10 +53,8 @@
 				status = { type: 'ok', msg: isRemove ? 'הוסר' : 'נשמר ✓' };
 				if (isRemove) {
 					name = '';
-					email = '';
 					role = '';
-					avatarUrl = '';
-					previewBroken = false;
+					avatarBroken = false;
 				}
 			} else if (result.type === 'failure') {
 				status = { type: 'err', msg: (result.data?.error as string) ?? 'הפעולה נכשלה' };
@@ -63,6 +66,9 @@
 	}}
 >
 	<input type="hidden" name="siteId" value={site.id} />
+	<!-- שדות שאינם מוצגים יותר — הערכים הקיימים עוברים כמו שהם כדי לא להימחק בשמירה -->
+	<input type="hidden" name="adminEmail" value={site.admin?.adminEmail ?? ''} />
+	<input type="hidden" name="avatarUrl" value={site.admin?.avatarUrl ?? ''} />
 
 	<!-- אתר -->
 	<div class="flex min-w-0 items-center gap-2 py-1">
@@ -77,57 +83,43 @@
 	</div>
 
 	<!-- שם האדמין -->
-	<input name="adminName" bind:value={name} placeholder="שם" aria-label="שם האדמין" class={inputCls} />
-
-	<!-- אימייל -->
 	<input
-		name="adminEmail"
-		type="email"
-		bind:value={email}
-		required
-		placeholder="אימייל"
-		aria-label="אימייל האדמין"
-		dir="ltr"
-		class="{inputCls} text-right"
+		name="adminName"
+		bind:value={name}
+		onchange={autoSave}
+		placeholder="שם"
+		aria-label="שם האדמין"
+		class={inputCls}
 	/>
 
 	<!-- תפקיד / הערה -->
-	<input name="role" bind:value={role} placeholder="תפקיד / הערה" aria-label="תפקיד או הערה" class={inputCls} />
+	<input
+		name="role"
+		bind:value={role}
+		onchange={autoSave}
+		placeholder="תפקיד / הערה"
+		aria-label="תפקיד או הערה"
+		class={inputCls}
+	/>
 
-	<!-- תמונה -->
-	<div class="flex items-center gap-1.5">
-		<div class="relative h-7 w-7 flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
-			{#if avatarUrl.trim() && !previewBroken}
+	<!-- תמונת האדמין -->
+	<div class="flex items-center py-1">
+		<div class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
+			{#if avatar && !avatarBroken}
 				<img
-					src={avatarUrl}
-					alt=""
-					class="absolute inset-0 h-full w-full object-cover"
-					onerror={() => (previewBroken = true)}
+					src={avatar}
+					alt={name || 'תמונת האדמין'}
+					class="h-full w-full object-cover"
+					onerror={() => (avatarBroken = true)}
 				/>
 			{:else}
-				<span class="absolute inset-0 flex items-center justify-center text-xs" aria-hidden="true">🖼️</span>
+				<div class="flex h-full w-full items-center justify-center text-lg" aria-hidden="true">👤</div>
 			{/if}
 		</div>
-		<input
-			name="avatarUrl"
-			bind:value={avatarUrl}
-			oninput={() => (previewBroken = false)}
-			placeholder="קישור לתמונה"
-			aria-label="קישור לתמונת האדמין"
-			dir="ltr"
-			class="{inputCls} text-right"
-		/>
 	</div>
 
-	<!-- פעולות -->
-	<div class="flex items-center justify-end gap-1.5">
-		<button
-			type="submit"
-			disabled={busy}
-			class="rounded-lg bg-gradient-to-r from-amber-500 to-pink-600 px-3 py-1.5 text-xs font-bold text-white transition hover:opacity-90 disabled:opacity-50"
-		>
-			{busy ? '…' : 'שמור'}
-		</button>
+	<!-- הסרה -->
+	<div class="flex items-center justify-end">
 		{#if hasAdmin}
 			<button
 				type="submit"
