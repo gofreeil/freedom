@@ -11,7 +11,7 @@
 	// סדר העמודות (מימין לשמאל): תמונת אדמין | שם | תפקיד | אתר | יצירת קשר | הסרה.
 	// כל העמודות מוגבלות ברוחב — השדות צמודים ימינה והשטח העודף נשאר בקצה השמאלי.
 	const GRID_COLS =
-		'grid-template-columns: 78px minmax(160px,300px) minmax(200px,380px) minmax(160px,240px) 100px minmax(44px,auto);';
+		'grid-template-columns: 73px minmax(160px,300px) minmax(200px,380px) minmax(160px,240px) 100px minmax(44px,auto);';
 </script>
 
 <svelte:head><title>ניהול אתרי יוצאים לחירות</title></svelte:head>
