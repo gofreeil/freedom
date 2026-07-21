@@ -6,6 +6,7 @@
 	import { get } from "svelte/store";
 	import Header from "$lib/components/Header.svelte";
 	import Footer from "$lib/components/Footer.svelte";
+	import WelcomeScreen from "$lib/components/WelcomeScreen.svelte";
 
 	let { children, data } = $props();
 
@@ -35,6 +36,10 @@
 </svelte:head>
 
 <a href="#main-content" class="skip-link">{tFn("layout.skip_to_main")}</a>
+
+<!-- מסך פתיחה אחרי הרשמה / זיהוי ראשון — גלובלי, מופעל ע"י ?welcome ב-URL -->
+<WelcomeScreen />
+
 <span class="golden-frame golden-frame-left" aria-hidden="true"></span>
 <span class="golden-frame golden-frame-right" aria-hidden="true"></span>
 <div class="site-frame min-h-screen flex flex-col bg-[#0f172a]">
