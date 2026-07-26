@@ -37,8 +37,8 @@
 
 <a href="#main-content" class="skip-link">{tFn("layout.skip_to_main")}</a>
 
-<!-- מסך פתיחה אחרי הרשמה / זיהוי ראשון — גלובלי, מופעל ע"י ?welcome ב-URL -->
-<WelcomeScreen />
+<!-- מסך פתיחה אחרי הרשמה / התחברות — גלובלי, מופעל ע"י ?welcome ב-URL -->
+<WelcomeScreen userName={data.user?.name ?? ''} />
 
 <span class="golden-frame golden-frame-left" aria-hidden="true"></span>
 <span class="golden-frame golden-frame-right" aria-hidden="true"></span>
