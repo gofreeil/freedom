@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { signOut } from '@auth/sveltekit/client';
+	import Seo from '$lib/components/Seo.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
+	import { networkItemListSchema, breadcrumbSchema } from '$lib/seo';
 
 	let { data } = $props();
 
@@ -49,7 +52,13 @@
 	};
 </script>
 
-<svelte:head><title>מפת רשת יוצאים לחירות</title></svelte:head>
+<Seo
+	title="מפת רשת יוצאים לחירות — כל הפלטפורמות של התנועה"
+	description="מפת כל הפלטפורמות ברשת יוצאים לחירות: קהילה בשכונה, בתי הפיוס, הגמ״ח הארצי, פינת האבדות, ועדי שכונות, מבקר רשויות המדינה, דירוג ציבורי, המומחים, משאלי העם, רכישות קבוצתיות, בעלי מקצוע כשירים וחנות החירות — עם קישור ותיאור לכל אתר."
+	path="/map"
+	keywords="רשת יוצאים לחירות, מפת אתרים, פלטפורמות התנועה, gofreeil"
+/>
+<JsonLd data={[networkItemListSchema(), breadcrumbSchema([{ name: 'יוצאים לחירות', path: '/' }, { name: 'מפת הרשת', path: '/map' }])]} />
 
 <div class="mx-auto max-w-6xl px-4 py-8" dir="rtl">
 	<!-- כותרת -->

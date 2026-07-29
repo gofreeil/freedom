@@ -2,6 +2,15 @@
 	import { onMount } from 'svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+	import Seo from '$lib/components/Seo.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
+	import {
+		SITE_DESCRIPTION,
+		websiteSchema,
+		organizationSchema,
+		networkItemListSchema,
+		faqSchema
+	} from '$lib/seo';
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
@@ -37,6 +46,12 @@
 					descriptionKey: 'page.sites.national_gemach.description',
 					href: 'https://gemach.gofreeil.com/',
 					image: '/images/gemach-harzi.webp'
+				},
+				{
+					titleKey: 'page.sites.lost_and_found.title',
+					descriptionKey: 'page.sites.lost_and_found.description',
+					href: 'https://avedot.gofreeil.com/',
+					image: '/images/pinat-haavedot.png'
 				}
 			]
 		},
@@ -530,7 +545,47 @@
 			else clearTimeout(id);
 		};
 	});
+
+	/* ═══════════ SEO ═══════════
+	   gofreeil.com הוא שער הרשת: מכאן גוגל ומנועי ה-AI לומדים מהי "יוצאים
+	   לחירות" ואילו פלטפורמות שייכות לה (Organization + subOrganization
+	   ב-$lib/seo). הטקסטים כאן בעברית במפורש — הם מיועדים לזחלנים. */
+	const SEO_TITLE = 'יוצאים לחירות — התנועה החברתית: קהילה, גמ"חים, פיוס, בעלי מקצוע ורכישות קבוצתיות';
+
+	const faqs = [
+		{
+			q: 'מה זו התנועה "יוצאים לחירות"?',
+			a: 'תנועה חברתית ישראלית שבונה חלופה מעשית בשטח: קהילות שכונתיות תומכות, בתי פיוס לבוררות בסכסוכים, מאגר גמ"חים ארצי, פינת אבדות, אינדקס בעלי מקצוע כשירים, רכישות קבוצתיות שמורידות מחירים, ועדי שכונות, ביקורת ציבורית על הרשויות ומשאלי עם. כל תחום מקבל פלטפורמה משלו, וכולן מחוברות לאותה קהילה.'
+		},
+		{
+			q: 'אילו אתרים יש ברשת?',
+			a: 'קהילה בשכונה, בתי הפיוס (חכמי העדה), הגמ"ח הארצי, פינת האבדות, ועדי שכונות, מבקר רשויות המדינה, דירוג ציבורי, המומחים, משאלי העם, רכישות קבוצתיות, בעלי מקצוע כשירים וחנות החירות.'
+		},
+		{
+			q: 'האם ההשתתפות בתשלום?',
+			a: 'לא. כל הפלטפורמות פתוחות לשימוש חינם. הפעילות מבוססת על התנדבות, והמימון בא מפרסום מקומי ומחנות החירות.'
+		},
+		{
+			q: 'איך מצטרפים ומתחילים?',
+			a: 'נרשמים באתר אחד מהרשת — ההרשמה מזוהה בכל האתרים. אחר כך בוחרים במה להתחיל: לחפש גמ"ח או בעל מקצוע, להצטרף לקבוצת רכישה, לפרסם אבידה, להצטרף לוועד השכונה או לפתוח תיק בבית הפיוס.'
+		}
+	];
+
+	const schemas = [
+		websiteSchema(),
+		organizationSchema(),
+		networkItemListSchema(),
+		faqSchema(faqs)
+	];
 </script>
+
+<Seo
+	title={SEO_TITLE}
+	description={SITE_DESCRIPTION}
+	path="/"
+	keywords="יוצאים לחירות, תנועה חברתית, קהילה בשכונה, גמ״ח, בתי פיוס, בוררות, בעלי מקצוע, רכישות קבוצתיות, ועדי שכונות, פינת האבדות, משאלי עם, gofreeil"
+/>
+<JsonLd data={schemas} />
 
 <!-- ה-hero-stage תוחם את וידאו הרקע למסך הראשון בלבד (כותרת+וידאו+מונה) ובתוך רוחב המסגרת.
      position:relative על ה-stage + position:absolute על הוידאו => הוידאו ממלא רק את האזור הזה, ונגלל איתו.

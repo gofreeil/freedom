@@ -1,3 +1,44 @@
-# allow crawling everything by default
+# יוצאים לחירות — https://gofreeil.com
+# שער הרשת. סריקה מלאה של הדפים הציבוריים,
+# חסימה של אזורים אישיים/ניהוליים.
+
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin
+Disallow: /auth/
+Disallow: /login
+Disallow: /register
+Disallow: /profile
+
+# בוטים של AI (ChatGPT, Claude, Perplexity, Gemini) — מורשים לסרוק ולצטט
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://gofreeil.com/sitemap.xml

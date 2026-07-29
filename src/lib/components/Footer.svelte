@@ -1,6 +1,7 @@
 <script lang="ts">
     import { t, locale } from "svelte-i18n";
     import { get } from "svelte/store";
+    import { OTHER_NETWORK_SITES } from "$lib/seo";
     let _loc = $state(get(locale));
     $effect(() => locale.subscribe(l => (_loc = l)));
     const tFn = (k: string) => { void _loc; return get(t)(k); };
@@ -8,6 +9,30 @@
 
 <footer class="bg-[#0d1117]/50 border-t border-white/10 pt-2 md:pt-3 pb-0 md:pb-1 mt-1 md:mt-0">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <!-- רשת "יוצאים לחירות": קישורי טקסט אמיתיים לכל אתרי הרשת.
+             באתר האם זה גם הצומת שממנו גוגל ומנועי ה-AI לומדים אילו אתרים
+             שייכים למותג (יחד עם subOrganization ב-JSON-LD), וגם שער מעשי
+             שמנווט את המבקרים אל הפלטפורמה שהם צריכים. -->
+        <nav aria-labelledby="network-links-title" class="border-b border-white/10 pb-2 mb-2">
+            <h2 id="network-links-title" class="mb-1.5 text-xs font-black tracking-wide text-yellow-500/90 text-center md:text-right">
+                אתרי הרשת
+            </h2>
+            <ul class="flex flex-wrap items-center justify-center md:justify-start gap-x-3 gap-y-1 text-[11px] md:text-xs font-semibold text-gray-400">
+                {#each OTHER_NETWORK_SITES as site (site.url)}
+                    <li>
+                        <!-- לשונית חדשה, כמו כל קישור-חוץ באתר — הביקור כאן לא נקטע -->
+                        <a
+                            href={site.url}
+                            title={site.description}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="hover:text-white transition-colors"
+                        >{site.name}</a>
+                    </li>
+                {/each}
+            </ul>
+        </nav>
+
         <!-- Desktop: title centered above -->
         <a
             href="https://gofreeil.com/"

@@ -56,6 +56,14 @@ export const SITES: FreedomSite[] = [
 		category: 'קהילה'
 	},
 	{
+		id: 'lost_and_found',
+		name: 'פינת האבדות',
+		description: 'לוח אבידות ומציאות ארצי — מחזירים אבידה לבעליה.',
+		url: 'https://avedot.gofreeil.com/',
+		image: '/images/pinat-haavedot.png',
+		category: 'קהילה'
+	},
+	{
 		id: 'neighborhood_committees',
 		name: 'ועדי שכונות',
 		description: 'ועדי שכונות מאוחדים, נאבקים על זכויות העם מול הרשויות.',

@@ -66,6 +66,10 @@ register('he', () => Promise.resolve({
                 title: 'הגמ"ח הארצי',
                 description: "מנגישים את הגמחים בארץ, תורמים ומחזקים איש את רעהו.",
             },
+            lost_and_found: {
+                title: "פינת האבדות",
+                description: "לוח אבידות ומציאות ארצי — מפרסמים מה שאבד או נמצא, ומחזירים אבידה לבעליה.",
+            },
             neighborhood_committees: {
                 title: "ועדי שכונות",
                 description: "וועדי שכונות מאוחדים, נאבקים על זכויות העם מול הרשויות, מקדמים עצמאות, פרטיות וחירות כלכלית.",
@@ -275,6 +279,10 @@ register('en', () => Promise.resolve({
                 title: "National Free-Loan Fund",
                 description: "All free-loan funds under one roof.",
             },
+            lost_and_found: {
+                title: "Lost & Found Corner",
+                description: "A nationwide lost-and-found board - post what you lost or found and return items to their owners.",
+            },
             neighborhood_committees: {
                 title: "Neighborhood Committees",
                 description: "The people's governance revolution over institutions - learn and join.",
@@ -483,6 +491,10 @@ register('ru', () => Promise.resolve({
             national_gemach: {
                 title: "Национальный фонд беспроцентной помощи",
                 description: "Все фонды взаимопомощи под одной крышей.",
+            },
+            lost_and_found: {
+                title: "Уголок находок",
+                description: "Общенациональная доска находок и потерь - публикуйте потерянное или найденное и возвращайте вещи владельцам.",
             },
             neighborhood_committees: {
                 title: "Районные комитеты",

@@ -6,15 +6,10 @@
 		<link rel="icon" type="image/png" href="/images/ad_neighborhoods.png" />
 		<link rel="apple-touch-icon" href="/images/ad_neighborhoods.png" />
 		<link rel="shortcut icon" href="/images/ad_neighborhoods.png" />
-		<!-- Open Graph / WhatsApp sharing -->
-		<meta property="og:type" content="website" />
-		<meta property="og:title" content="יוצאים לחירות" />
-		<meta property="og:description" content="מתקדמים לעולם סולידרי, אחראי וחופשי" />
-		<meta property="og:image" content="/images/ad_neighborhoods.png" />
-		<meta name="twitter:card" content="summary" />
-		<meta name="twitter:title" content="יוצאים לחירות" />
-		<meta name="twitter:description" content="מתקדמים לעולם סולידרי, אחראי וחופשי" />
-		<meta name="twitter:image" content="/images/ad_neighborhoods.png" />
+		<!-- תגי Open Graph / Twitter מוגדרים פר-דף ברכיב <Seo> ($lib/components/Seo.svelte)
+		     ולא כאן. שתי סיבות: (1) תג גלובלי מקדים את התג הפר-דפי ב-HTML, וכל שיתוף
+		     היה מציג את כותרת דף הבית; (2) og:image חייב להיות כתובת מוחלטת — הנתיב
+		     היחסי שהיה כאן פשוט לא נטען ע"י פייסבוק/וואטסאפ. -->
 		<!-- preload ל-LCP assets: ה-poster של רקע הוידאו וה-thumbnail של YouTube מופיעים על המסך הראשון.
 		     preconnect ל-i.ytimg.com מקצר את ה-handshake לתמונה הזו. -->
 		<link rel="preload" as="image" href="/images/bg-poster.jpg" fetchpriority="high" />
