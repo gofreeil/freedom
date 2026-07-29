@@ -775,7 +775,7 @@
 							href={site.href}
 							target={site.href ? '_blank' : undefined}
 							rel={site.href ? 'noopener noreferrer' : undefined}
-							onclick={(e) => onBannerClick(e, site)}
+							onclick={(e: MouseEvent) => onBannerClick(e, site)}
 							class="fx-banner fx-lift group relative block overflow-hidden rounded-2xl border border-purple-500/20 bg-white/5
 							       transition-colors hover:border-purple-500/50 hover:bg-white/10
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}"
