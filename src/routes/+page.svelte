@@ -46,13 +46,10 @@
 					descriptionKey: 'page.sites.national_gemach.description',
 					href: 'https://gemach.gofreeil.com/',
 					image: '/images/gemach-harzi.webp'
-				},
-				{
-					titleKey: 'page.sites.lost_and_found.title',
-					descriptionKey: 'page.sites.lost_and_found.description',
-					href: 'https://avedot.gofreeil.com/',
-					image: '/images/pinat-haavedot.png'
 				}
+				// "פינת האבדות" (avedot.gofreeil.com) מוסתר מדף הבית בלבד.
+				// האתר עצמו נשאר חלק מהרשת — מוצג ב-/map, בפוטר ובפאנל האדמין,
+				// ומופיע בסכמות ה-SEO (מקור האמת: $lib/sitesData).
 			]
 		},
 		{
