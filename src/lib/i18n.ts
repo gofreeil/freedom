@@ -121,7 +121,7 @@ register('he', () => Promise.resolve({
 
     // ----- Sidebar (AdsSidebar) -----
     sidebar: {
-        aria_label: "פרסומות ושותפים",
+        aria_label: "אתרי יוצאים לחירות",
         heading: "מתקדמים לחברה מתוקנת ועצמאית",
         opens_new_window: " (נפתח בחלון חדש)",
     },
@@ -334,7 +334,7 @@ register('en', () => Promise.resolve({
 
     // ----- Sidebar -----
     sidebar: {
-        aria_label: "Ads and partners",
+        aria_label: "Yotzim LaHerut network sites",
         heading: "Advancing toward a just and independent society",
         opens_new_window: " (opens in a new window)",
     },
@@ -547,7 +547,7 @@ register('ru', () => Promise.resolve({
 
     // ----- Sidebar -----
     sidebar: {
-        aria_label: "Реклама и партнёры",
+        aria_label: "Сайты сети «Йоцим ла-Херут»",
         heading: "Идём к справедливому и независимому обществу",
         opens_new_window: " (открывается в новом окне)",
     },
