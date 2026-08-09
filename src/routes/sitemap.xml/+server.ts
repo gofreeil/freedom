@@ -12,6 +12,7 @@ export const prerender = false;
 export const GET: RequestHandler = async ({ setHeaders }) => {
     const urls = [
         { loc: `${SITE_URL}/`, changefreq: 'weekly', priority: '1.0' },
+        { loc: `${SITE_URL}/about`, changefreq: 'monthly', priority: '0.8' },
         { loc: `${SITE_URL}/map`, changefreq: 'monthly', priority: '0.7' },
     ];
 

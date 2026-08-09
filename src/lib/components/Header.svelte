@@ -179,8 +179,7 @@
                     </a>
 
                     <div class="flex items-center gap-1.5">
-                        <!-- כפתור אודות - מובייל (מוסתר זמנית) -->
-                        {#if false}
+                        <!-- כפתור אודות - מובייל -->
                         <button
                             onclick={() => goto("/about")}
                             class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
@@ -188,7 +187,6 @@
                         >
                             <span class="text-xl font-bold text-white leading-none">ℹ</span>
                         </button>
-                        {/if}
 
                         <!-- כפתור דגל שפה - מובייל -->
                         <div class="relative lang-dropdown-container">
@@ -292,8 +290,7 @@
                         <span class="hidden sm:inline">התחברות</span>
                     </a>
                 {/if}
-                <!-- כפתור אודות עם תצוגה מקדימה (מוסתר זמנית) -->
-                {#if false}
+                <!-- כפתור אודות עם תצוגה מקדימה -->
                 <div class="relative" id="about-btn-wrapper">
                     <button
                         class="relative flex items-center rounded-lg px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105 hover:tracking-wide"
@@ -320,7 +317,6 @@
                                filter: drop-shadow(0 0 40px rgba(0,0,0,0.95)) drop-shadow(0 0 80px rgba(0,0,0,0.7));"
                     />
                 </div>
-                {/if}
                 <!-- Language Dropdown -->
                 <div class="lang-dropdown-container relative">
                     <button

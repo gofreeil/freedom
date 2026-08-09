@@ -135,6 +135,26 @@ export function networkItemListSchema() {
     };
 }
 
+/**
+ * AboutPage — דף "אודות".
+ * `about` מצביע ל-Organization כדי שגוגל יקשור את תוכן הדף לישות המותג,
+ * ולא יראה בו עוד עמוד תוכן מנותק.
+ */
+export function aboutPageSchema() {
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'AboutPage',
+        '@id': `${SITE_URL}/about#webpage`,
+        url: canonical('/about'),
+        name: `אודות ${SITE_NAME}`,
+        description: SITE_DESCRIPTION,
+        inLanguage: 'he-IL',
+        isPartOf: { '@id': `${SITE_URL}/#website` },
+        about: { '@id': `${SITE_URL}/#organization` },
+        primaryImageOfPage: { '@type': 'ImageObject', url: SITE_LOGO },
+    };
+}
+
 /** פירורי לחם — מסלול ניווט שגוגל מציג בתוצאות */
 export function breadcrumbSchema(items: Array<{ name: string; path: string }>) {
     return {
