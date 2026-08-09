@@ -859,7 +859,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="banner-caption px-6 py-3 bg-amber-50">
+							<div class="banner-caption px-6 py-3">
 								<p class="text-center text-base font-black leading-tight text-slate-900">{tFn(site.titleKey)}</p>
 							</div>
 						</svelte:element>
@@ -1101,6 +1101,36 @@
 	   הוא יושב שם תמיד; הענן הוא זה שמתעבה ומגלה אותו דרך opacity של ה-overlay. */
 	.banner-text-inner {
 		opacity: 1;
+	}
+
+	/* ---- פס הכותרת: קלף ולא צבע חלק ----
+	   שלוש שכבות שיוצרות יחד נייר ישן, כולן בעוצמה נמוכה במכוון כדי
+	   שהכתמים יורגשו ולא ייראו:
+	   1. גרעיניות — feTurbulence כ-data URI, נייר במקום משטח מלוטש.
+	   2. כתמי יושן — אליפסות רכות בגדלים ובמיקומים לא-סדירים, כך שהעין
+	      לא תזהה חזרתיות בין הבאנרים.
+	   3. הכהיה בשוליים — קלף נשחק בקצוות יותר מאשר במרכז.
+	   background-color מוגדר כאן (ולא כ-bg-* של Tailwind) כדי שכל
+	   השכבות יישבו במקום אחד. */
+	.banner-caption {
+		background-color: #f7efdb;
+		background-image:
+			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23p)' opacity='0.35'/%3E%3C/svg%3E"),
+			radial-gradient(ellipse 30% 120% at 9% 34%, rgba(124, 96, 52, 0.13) 0%, rgba(124, 96, 52, 0) 70%),
+			radial-gradient(ellipse 22% 150% at 31% 74%, rgba(107, 82, 44, 0.1) 0%, rgba(107, 82, 44, 0) 72%),
+			radial-gradient(ellipse 26% 105% at 54% 22%, rgba(139, 108, 60, 0.095) 0%, rgba(139, 108, 60, 0) 68%),
+			radial-gradient(ellipse 19% 135% at 74% 66%, rgba(112, 86, 46, 0.115) 0%, rgba(112, 86, 46, 0) 72%),
+			radial-gradient(ellipse 28% 115% at 93% 40%, rgba(128, 99, 55, 0.105) 0%, rgba(128, 99, 55, 0) 70%),
+			linear-gradient(
+				to bottom,
+				rgba(120, 92, 50, 0.11) 0%,
+				rgba(120, 92, 50, 0) 26%,
+				rgba(120, 92, 50, 0) 74%,
+				rgba(120, 92, 50, 0.13) 100%
+			);
+		background-size: 140px 140px, auto, auto, auto, auto, auto, auto;
+		/* multiply משאיר את הגרעיניות כהצללה של הקלף במקום שכבת אפור מעליו */
+		background-blend-mode: multiply, normal, normal, normal, normal, normal, normal;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
