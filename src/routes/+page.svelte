@@ -859,8 +859,8 @@
 									</div>
 								</div>
 							</div>
-							<div class="banner-caption px-6 py-3 bg-black">
-								<p class="text-center text-base font-black leading-tight text-white">{tFn(site.titleKey)}</p>
+							<div class="banner-caption px-6 py-3 bg-amber-50">
+								<p class="text-center text-base font-black leading-tight text-slate-900">{tFn(site.titleKey)}</p>
 							</div>
 						</svelte:element>
 					</div>
