@@ -15,17 +15,13 @@
 		<link rel="preload" as="image" href="/images/bg-poster.jpg" fetchpriority="high" />
 		<link rel="preconnect" href="https://i.ytimg.com" crossorigin />
 		<link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
-		<!-- פונט Assistant - preconnect מקצר את ה-FOUT (פונט סריף עברי בזק לפני שהפונט הסופי נטען).
-		     display=optional: אם הפונט לא נטען ב-100ms, נשאר ב-fallback - אין החלפה צורמת באמצע הצפייה.
-		     preload של ה-CSS עם as=style + onload swap מטעין במקביל ולא חוסם render. -->
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=optional" onload="this.onload=null;this.rel='stylesheet'" />
-		<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=optional" /></noscript>
+		<!-- הגופן Heebo מתארח אצלנו (@font-face ב-app.css, הקבצים ב-static/fonts).
+		     ה-preconnect וה-preload לגוגל-פונטס הוסרו: הם היו בקשה לשרת חיצוני עבור
+		     גופן שכבר אינו בשימוש, ועוד handshake חוסם-רינדור ב-critical path. -->
 		<!-- inline fallback - חל מיד לפני שכל CSS חיצוני נטען. כך נמנע הבזק של פונט סריף ברירת מחדל של הדפדפן. -->
 		<style>
 			html, body {
-				font-family: 'Assistant', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+				font-family: 'Heebo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
 				background-color: #070b14;
 			}
 		</style>
