@@ -91,7 +91,12 @@
 					</a>
 					<button
 						type="button"
-						onclick={() => signOut({ callbackUrl: '/' })}
+						onclick={async () => {
+							// מוחק קודם את עוגיית ה-SSO המשותפת (httpOnly - רק השרת יכול),
+							// אחרת אתרי-אח ממשיכים לזהות את המשתמש אחרי ההתנתקות
+							try { await fetch('/api/logout', { method: 'POST' }); } catch { /* ignore */ }
+							signOut({ callbackUrl: '/' });
+						}}
 						class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-gray-300 transition hover:bg-white/10"
 					>
 						התנתקות

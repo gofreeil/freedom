@@ -7,12 +7,26 @@ import {
 	strapiLogin,
 	getStrapiMe,
 	getOrCreateStrapiJwt,
+	jwtExpSeconds,
 	readCookie,
 	bestStrapiName,
 	friendlyName
 } from '$lib/server/strapiAuth';
 
 const AUTH_SECRET          = process.env.AUTH_SECRET          ?? '';
+
+// קירור בין ניסיונות רענון כושלים (לפי אימייל): אם אי-אפשר להנפיק טוקן חדש
+// (למשל STRAPI_TOKEN לא מוגדר), לא מפציצים את ה-Strapi בכל בקשה — מנסים שוב
+// רק אחרי רבע שעה. הצלחה מנקה את הקירור.
+const refreshCooldown = new Map<string, number>();
+const REFRESH_RETRY_MS = 15 * 60 * 1000;
+
+// מטמון טוקן שהונפק הרגע (לפי אימייל): ה-jwt callback רץ בכל קריאת auth() —
+// hook + layout + page באותה בקשה — וכל אחת מפענחת את העוגייה *הישנה* של הבקשה,
+// כך שהטוקן שרוענן בקריאה הראשונה לא נראה בבאות. בלי המטמון, אותה בקשה הייתה
+// מנפיקה את אותו טוקן 2-3 פעמים מול ה-Strapi.
+const freshJwtCache = new Map<string, { jwt: string; at: number }>();
+const FRESH_REUSE_MS = 60 * 1000;
 const AUTH_GOOGLE_ID       = process.env.AUTH_GOOGLE_ID       ?? '';
 const AUTH_GOOGLE_SECRET   = process.env.AUTH_GOOGLE_SECRET   ?? '';
 const AUTH_FACEBOOK_ID     = process.env.AUTH_FACEBOOK_ID     ?? '';
@@ -113,6 +127,10 @@ export const { handle, signIn, signOut } = !AUTH_SECRET
 					const tempId = `${account.provider}_${account.providerAccountId}`;
 					const jwt = await getOrCreateStrapiJwt(user.email, tempId, AUTH_SECRET);
 					if (jwt) (user as { strapiJwt?: string }).strapiJwt = jwt;
+					// מזהה יציב כמו באתר הקהילה: user.id = ה-seed שאיתו הונפק החשבון ב-Strapi.
+					// ברירת המחדל של Auth.js היא UUID אקראי חדש בכל התחברות — הרענון היומי
+					// (jwt callback) היה מנסה seed שלא תואם ונכשל תמיד.
+					user.id = tempId;
 					return true;
 				},
 				async jwt({ token, user, account }) {
@@ -124,6 +142,41 @@ export const { handle, signIn, signOut } = !AUTH_SECRET
 					}
 					if (user && (user as { strapiJwt?: string }).strapiJwt) {
 						token.strapiJwt = (user as { strapiJwt?: string }).strapiJwt;
+					}
+					// ריפוי-עצמי + רענון פג-תוקף: מוודאים ש-strapiJwt קיים *ותקף*. בלעדיו
+					// (או כשהוא פג) העוגייה המשותפת gofreeil-auth נשתלת עם טוקן מת — אתר
+					// אחות יאמת אותו מול Strapi, יקבל 401 ויציג "לא רשום" למרות שהמשתמש
+					// מחובר כאן מצוין. מפענחים את ה-exp מקומית (בלי רשת); אם חסר / פג /
+					// עומד לפוג תוך 3 ימים — מושכים טוקן חדש. אותו דפוס כמו באתר הקהילה.
+					{
+						const REFRESH_BUFFER_MS = 3 * 24 * 60 * 60 * 1000; // 3 ימים לפני פג-תוקף
+						const exp = jwtExpSeconds(token.strapiJwt);
+						const needsFresh =
+							!token.strapiJwt || exp === null || exp * 1000 < Date.now() + REFRESH_BUFFER_MS;
+						const emailKey = typeof token.email === 'string' ? token.email : '';
+						const coolUntil = refreshCooldown.get(emailKey) ?? 0;
+						const cached = freshJwtCache.get(emailKey);
+						if (needsFresh && cached && Date.now() - cached.at < FRESH_REUSE_MS) {
+							// טוקן שהונפק הרגע בקריאת auth() קודמת של אותה בקשה — בלי רשת
+							token.strapiJwt = cached.jwt;
+						} else if (needsFresh && emailKey && token.dbUserId && Date.now() >= coolUntil) {
+							try {
+								const fresh = await getOrCreateStrapiJwt(
+									emailKey,
+									token.dbUserId as string,
+									AUTH_SECRET
+								);
+								if (fresh) {
+									token.strapiJwt = fresh;
+									freshJwtCache.set(emailKey, { jwt: fresh, at: Date.now() });
+									refreshCooldown.delete(emailKey);
+								} else {
+									refreshCooldown.set(emailKey, Date.now() + REFRESH_RETRY_MS);
+								}
+							} catch {
+								refreshCooldown.set(emailKey, Date.now() + REFRESH_RETRY_MS);
+							}
+						}
 					}
 					return token;
 				},

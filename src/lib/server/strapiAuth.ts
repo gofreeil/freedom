@@ -44,6 +44,20 @@ export function friendlyName(rawName: string | null | undefined, email: string |
 		.join(' ');
 }
 
+/** מפענח מקומית (בלי רשת) את שדה ה-exp מ-JWT של Strapi. null אם לא ניתן לפענוח. */
+export function jwtExpSeconds(jwt: unknown): number | null {
+	if (typeof jwt !== 'string') return null;
+	try {
+		const part = jwt.split('.')[1];
+		if (!part) return null;
+		const json = Buffer.from(part.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
+		const payload = JSON.parse(json);
+		return typeof payload?.exp === 'number' ? payload.exp : null;
+	} catch {
+		return null;
+	}
+}
+
 /** קריאת ערך עוגייה מתוך כותרת Cookie גולמית */
 export function readCookie(cookieHeader: string | null | undefined, name: string): string | null {
 	if (!cookieHeader) return null;
@@ -62,7 +76,8 @@ export async function strapiLogin(identifier: string, password: string): Promise
 	const res = await fetch(STRAPI_URL + '/api/auth/local', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ identifier, password })
+		body: JSON.stringify({ identifier, password }),
+		signal: AbortSignal.timeout(10_000)
 	});
 	if (!res.ok) throw new Error('login failed');
 	return res.json();
@@ -73,7 +88,8 @@ export async function strapiRegister(username: string, email: string, password: 
 	const res = await fetch(STRAPI_URL + '/api/auth/local/register', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ username, email, password })
+		body: JSON.stringify({ username, email, password }),
+		signal: AbortSignal.timeout(10_000)
 	});
 	if (!res.ok) {
 		const text = await res.text();
@@ -87,7 +103,8 @@ export async function getStrapiMe(jwt: string): Promise<StrapiUser | null> {
 	if (!jwt) return null;
 	try {
 		const res = await fetch(STRAPI_URL + '/api/users/me', {
-			headers: { Authorization: `Bearer ${jwt}` }
+			headers: { Authorization: `Bearer ${jwt}` },
+			signal: AbortSignal.timeout(10_000)
 		});
 		if (!res.ok) return null;
 		return (await res.json()) as StrapiUser;
@@ -96,9 +113,52 @@ export async function getStrapiMe(jwt: string): Promise<StrapiUser | null> {
 	}
 }
 
+// טוקן שרת מול ה-Strapi המשותף (Full Access). סוד — נקרא מ-env בלבד, לעולם לא
+// נכתב בקוד/גיט ולעולם לא מגיע לדפדפן. בלעדיו מסלול ההנפקה מהבאקאנד כבוי בשקט.
+const STRAPI_TOKEN = process.env.STRAPI_TOKEN ?? '';
+
 /**
- * מחזיר JWT של ה-Strapi המשותף למשתמש OAuth (Google/Facebook) — יוצר חשבון
- * דטרמיניסטי לפי stableId, כך שאותו משתמש יזוהה תמיד ברשימה המאוחדת.
+ * הנפקת JWT ישירות מהבאקאנד (POST /api/sso/issue-jwt, מאומת ב-STRAPI_TOKEN) —
+ * עבור משתמש קיים שאין לו סיסמה דטרמיניסטית תואמת (OAuth/מיזוג/חשבון ישן).
+ * זו הדרך היחידה שעובדת למשתמשים כאלה: איפוס-סיסמה דרך REST ב-Strapi 5 מחזיר
+ * 200 אך login עוקב נכשל 400. מחזיר null אם אין STRAPI_TOKEN / הנתיב לא פרוס / כשל.
+ */
+let warnedNoStrapiToken = false;
+
+export async function issueSsoJwtViaBackend(email: string): Promise<string | null> {
+	if (!STRAPI_TOKEN) {
+		// אזהרה חד-פעמית ולא שקט: בלי הטוקן, רענון JWT למשתמשים קיימים (OAuth/מיזוג)
+		// ייכשל תמיד — והעוגייה המשותפת תישאר בלי טוקן חי.
+		if (!warnedNoStrapiToken) {
+			warnedNoStrapiToken = true;
+			console.warn('[strapiAuth] STRAPI_TOKEN לא מוגדר בסביבה — הנפקת JWT מהבאקאנד כבויה, רענון טוקנים למשתמשים קיימים ייכשל');
+		}
+		return null;
+	}
+	try {
+		const res = await fetch(STRAPI_URL + '/api/sso/issue-jwt', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${STRAPI_TOKEN}`
+			},
+			body: JSON.stringify({ email }),
+			signal: AbortSignal.timeout(10_000)
+		});
+		if (!res.ok) return null;
+		const data = (await res.json()) as { jwt?: string };
+		return data?.jwt ?? null;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * מחזיר JWT של ה-Strapi המשותף למשתמש ברשימה המאוחדת, בלי סיסמה שהמשתמש מקליד.
+ * שלושה מסלולים, מהזול ליקר (אותו דפוס כמו באתר הקהילה):
+ *   1. login עם seed דטרמיניסטי — עובד אם החשבון נוצר תחת אותו stableId.
+ *   2. register — עובד אם האימייל עדיין לא קיים ב-Strapi.
+ *   3. הנפקה ישירה מהבאקאנד — משתמש קיים בלי סיסמה תואמת (דורש STRAPI_TOKEN).
  */
 export async function getOrCreateStrapiJwt(email: string | null | undefined, stableId: string, secret: string): Promise<string | null> {
 	if (!email) return null;
@@ -112,7 +172,7 @@ export async function getOrCreateStrapiJwt(email: string | null | undefined, sta
 			const { jwt } = await strapiRegister(username, email, password);
 			return jwt;
 		} catch {
-			return null;
+			return issueSsoJwtViaBackend(email);
 		}
 	}
 }
