@@ -853,10 +853,10 @@
 									class="banner-text-overlay absolute inset-0 flex items-center justify-center px-6 text-center {revealedBanners[site.titleKey] ? 'is-revealed' : ''}"
 								>
 									<div class="banner-text-inner">
-										<p class="text-xl lg:text-2xl font-black leading-tight text-white">
+										<p class="text-xl lg:text-2xl font-black leading-tight text-black">
 											{tFn(site.titleKey)}
 										</p>
-										<p class="mt-2 text-sm md:text-xs lg:text-sm font-bold leading-snug text-slate-100/95">
+										<p class="mt-2 text-sm md:text-xs lg:text-sm font-bold leading-snug text-black/80">
 											{tFn(site.descriptionKey)}
 										</p>
 									</div>
@@ -1036,21 +1036,26 @@
 			filter 1.8s cubic-bezier(0.22, 1, 0.36, 1);
 		will-change: transform, filter;
 	}
+	/* בלי הכהיה - מתחת לוילון הלבן התמונה נשארת בהירה וחיה, רק מטושטשת */
 	.fx-banner:hover .banner-img,
 	.banner-media:has(.banner-text-overlay.is-revealed) .banner-img {
 		transform: scale(1.08);
-		filter: blur(4px) brightness(0.7) saturate(0.85);
+		filter: blur(5px) brightness(1.05) saturate(0.9);
 	}
 
+	/* הערפל בהיר - הסתה אל לבן (זכוכית חלבית) עם מלל שחור, ולא כהה -
+	   כדי שהבאנר בריחוף לא ייבלע ברקע הכהה של האתר וייראה "שקוף".
+	   שני גווני לבן (טהור + אפרפר קריר) שומרים על תחושת ענן בתנועת השכבות,
+	   והאלפא מרוסן כך שמקצת התמונה המטושטשת עדיין מבצבצת מבעד ללבן. */
 	.banner-text-overlay {
 		opacity: 0;
 		pointer-events: none;
 		background:
-			radial-gradient(ellipse 65% 55% at 18% 22%, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0) 72%),
-			radial-gradient(ellipse 55% 50% at 82% 28%, rgba(30, 41, 59, 0.92) 0%, rgba(30, 41, 59, 0) 72%),
-			radial-gradient(ellipse 70% 60% at 30% 82%, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0) 72%),
-			radial-gradient(ellipse 60% 55% at 80% 78%, rgba(30, 41, 59, 0.92) 0%, rgba(30, 41, 59, 0) 72%),
-			radial-gradient(ellipse 90% 80% at 50% 50%, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.55) 100%);
+			radial-gradient(ellipse 65% 55% at 18% 22%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 72%),
+			radial-gradient(ellipse 55% 50% at 82% 28%, rgba(238, 242, 247, 0.85) 0%, rgba(238, 242, 247, 0) 72%),
+			radial-gradient(ellipse 70% 60% at 30% 82%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 72%),
+			radial-gradient(ellipse 60% 55% at 80% 78%, rgba(238, 242, 247, 0.85) 0%, rgba(238, 242, 247, 0) 72%),
+			radial-gradient(ellipse 90% 80% at 50% 50%, rgba(250, 251, 253, 0.85) 0%, rgba(250, 251, 253, 0.55) 100%);
 		background-size:
 			170% 170%,
 			170% 170%,
@@ -1073,7 +1078,7 @@
 	}
 	.fx-banner:hover .banner-text-overlay,
 	.banner-text-overlay.is-revealed {
-		opacity: 0.9; /* 10% שקיפות - התמונה שמאחור כמעט נראית */
+		opacity: 0.85; /* התמונה המטושטשת שמאחור עדיין נראית מבעד ללבן */
 		background-position:
 			18% 22%,
 			82% 28%,
