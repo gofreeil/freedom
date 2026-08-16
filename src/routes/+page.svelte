@@ -1058,31 +1058,36 @@
 		filter: blur(5px) brightness(1.05) saturate(0.9);
 	}
 
-	/* הערפל בהיר - הסתה אל לבן (זכוכית חלבית) עם מלל שחור, ולא כהה -
-	   כדי שהבאנר בריחוף לא ייבלע ברקע הכהה של האתר וייראה "שקוף".
-	   שני גווני לבן (טהור + אפרפר קריר) שומרים על תחושת ענן בתנועת השכבות,
-	   והאלפא מרוסן כך שמקצת התמונה המטושטשת עדיין מבצבצת מבעד ללבן. */
+	/* הערפל בגוון קלף - קרם מחוספס ולא לבן בוהק, עם מלל שחור.
+	   שכבה ראשונה: גרעיניות נייר (feTurbulence, כמו פס הכותרת) ב-multiply -
+	   נותנת את החספוס. אחריה ענני קרם בשני גוונים חמים לתנועת השכבות,
+	   והאלפא מרוסן כך שהתמונה המטושטשת מבצבצת היטב מבעד לקלף. */
 	.banner-text-overlay {
 		opacity: 0;
 		pointer-events: none;
 		background:
-			radial-gradient(ellipse 65% 55% at 18% 22%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 72%),
-			radial-gradient(ellipse 55% 50% at 82% 28%, rgba(238, 242, 247, 0.85) 0%, rgba(238, 242, 247, 0) 72%),
-			radial-gradient(ellipse 70% 60% at 30% 82%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 72%),
-			radial-gradient(ellipse 60% 55% at 80% 78%, rgba(238, 242, 247, 0.85) 0%, rgba(238, 242, 247, 0) 72%),
-			radial-gradient(ellipse 90% 80% at 50% 50%, rgba(250, 251, 253, 0.85) 0%, rgba(250, 251, 253, 0.55) 100%);
+			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23p)' opacity='0.28'/%3E%3C/svg%3E"),
+			radial-gradient(ellipse 65% 55% at 18% 22%, rgba(247, 239, 219, 0.9) 0%, rgba(247, 239, 219, 0) 72%),
+			radial-gradient(ellipse 55% 50% at 82% 28%, rgba(238, 227, 200, 0.85) 0%, rgba(238, 227, 200, 0) 72%),
+			radial-gradient(ellipse 70% 60% at 30% 82%, rgba(247, 239, 219, 0.9) 0%, rgba(247, 239, 219, 0) 72%),
+			radial-gradient(ellipse 60% 55% at 80% 78%, rgba(238, 227, 200, 0.85) 0%, rgba(238, 227, 200, 0) 72%),
+			radial-gradient(ellipse 90% 80% at 50% 50%, rgba(244, 235, 212, 0.82) 0%, rgba(244, 235, 212, 0.5) 100%);
 		background-size:
+			140px 140px,
 			170% 170%,
 			170% 170%,
 			170% 170%,
 			170% 170%,
 			140% 140%;
 		background-position:
+			0 0,
 			40% 40%,
 			60% 40%,
 			40% 60%,
 			60% 60%,
 			50% 50%;
+		/* multiply רק על שכבת הגרעיניות - היא צובעת את הקרם שמתחתיה כחספוס נייר */
+		background-blend-mode: multiply, normal, normal, normal, normal, normal;
 		backdrop-filter: blur(0px) saturate(1);
 		-webkit-backdrop-filter: blur(0px) saturate(1);
 		transition:
@@ -1093,8 +1098,9 @@
 	}
 	.fx-banner:hover .banner-text-overlay,
 	.banner-text-overlay.is-revealed {
-		opacity: 0.85; /* התמונה המטושטשת שמאחור עדיין נראית מבעד ללבן */
+		opacity: 0.8; /* התמונה המטושטשת שמאחור נראית מבעד לקלף */
 		background-position:
+			0 0,
 			18% 22%,
 			82% 28%,
 			30% 82%,
