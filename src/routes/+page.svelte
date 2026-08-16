@@ -21,6 +21,11 @@
 		descriptionKey: string;
 		href?: string;
 		image?: string;
+		/* מידות מקוריות של התמונה - נכתבות כ-width/height על ה-img כדי שהדפדפן
+		   ישריין את הגובה לפני הטעינה ולא תהיה קפיצת פריסה (CLS).
+		   נחוץ רק לבאנרים בגובה אוטומטי (טור הקהילה); לשאר יש גובה קבוע ב-CSS. */
+		w?: number;
+		h?: number;
 		comingSoon?: boolean;
 		mobileHide?: boolean;
 	}
@@ -33,19 +38,25 @@
 					titleKey: 'page.sites.community_neighborhood.title',
 					descriptionKey: 'page.sites.community_neighborhood.description',
 					href: 'https://community.gofreeil.com/',
-					image: '/images/community-neighborhood.webp'
+					image: '/images/community-neighborhood.webp',
+					w: 1600,
+					h: 1067
 				},
 				{
 					titleKey: 'page.sites.courts_reconciliation.title',
 					descriptionKey: 'page.sites.courts_reconciliation.description',
 					href: 'https://chachmim.gofreeil.com/',
-					image: '/images/bati-hapius.webp'
+					image: '/images/bati-hapius.webp',
+					w: 1024,
+					h: 1024
 				},
 				{
 					titleKey: 'page.sites.national_gemach.title',
 					descriptionKey: 'page.sites.national_gemach.description',
 					href: 'https://gemach.gofreeil.com/',
-					image: '/images/gemach-harzi.webp'
+					image: '/images/gemach-harzi.webp',
+					w: 1536,
+					h: 1024
 				}
 				// "פינת האבדות" (avedot.gofreeil.com) מוסתר מדף הבית בלבד.
 				// האתר עצמו נשאר חלק מהרשת — מוצג ב-/map, בפוטר ובפאנל האדמין,
@@ -837,6 +848,8 @@
 									<img
 										src={site.image}
 										alt={tFn(site.titleKey)}
+										width={site.w}
+										height={site.h}
 										class="banner-img {i === 0 ? 'h-auto' : 'h-full'} w-full object-cover transition-transform"
 										decoding="async"
 										loading="lazy"
@@ -897,7 +910,9 @@
 			<img
 				src="/images/news.webp"
 				alt={tFn("page.news_block.image_alt")}
-				class="w-full rounded-2xl"
+				width="1400"
+				height="528"
+				class="w-full rounded-2xl h-auto"
 				loading="lazy"
 				decoding="async"
 			/>
