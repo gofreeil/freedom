@@ -278,13 +278,13 @@
                         class="flex items-center gap-2 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm font-bold text-white transition-colors"
                         title={user.isSuperAdmin ? "ניהול אתרי הרשת" : "מפת הרשת שלי"}
                     >
-                        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-linear-to-br/oklch from-amber-500 via-red-500 to-pink-600 text-xs">{user.isSuperAdmin ? '🛡️' : '👤'}</span>
+                        <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">{user.isSuperAdmin ? '🛡️' : '👤'}</span>
                         <span class="hidden sm:inline max-w-[120px] truncate">{user.isSuperAdmin ? 'ניהול הרשת' : (user.name || user.email)}</span>
                     </a>
                 {:else}
                     <a
                         href="/login"
-                        class="flex items-center gap-1.5 rounded-lg bg-linear-to-r/oklch from-amber-500 via-red-500 to-pink-600 hover:from-amber-400 hover:via-red-400 hover:to-pink-500 px-3 py-2 text-sm font-bold text-white transition-all"
+                        class="login-grad flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-bold text-white transition-all hover:brightness-110"
                     >
                         <span>🕊️</span>
                         <span class="hidden sm:inline">התחברות</span>

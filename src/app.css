@@ -126,6 +126,14 @@ select option:checked {
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
+/* גרדיאנט כפתורי ההתחברות: ענבר→ורוד דגום ב-oklch עם ריכוך בקצוות (ease-in-out),
+   כדי שהמעבר יתפרס בהדרגה בלי קו חיתוך בקצה */
+.login-grad {
+    background-image: linear-gradient(to right,
+        #f59e0b 0%, #f49e0b 10%, #f69b06 20%, #f89107 30%, #f97f19 40%,
+        #f6613a 50%, #ec4458 60%, #e5326b 70%, #df2a73 80%, #db2676 90%, #db2777 100%);
+}
+
 /* Mobile-specific styles for benefit buttons */
 @media (max-width: 640px) {
     .benefit-button {
