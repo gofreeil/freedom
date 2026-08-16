@@ -876,7 +876,7 @@
 								</div>
 							</div>
 							<div class="banner-caption px-6 py-3">
-								<p class="text-center text-base font-black leading-tight text-slate-900">{tFn(site.titleKey)}</p>
+								<p class="text-center text-base font-black leading-tight text-amber-950">{tFn(site.titleKey)}</p>
 							</div>
 						</svelte:element>
 					</div>
@@ -1132,9 +1132,10 @@
 		opacity: 1;
 	}
 
-	/* ---- פס הכותרת: קלף ולא צבע חלק ----
-	   שלוש שכבות שיוצרות יחד נייר ישן, כולן בעוצמה נמוכה במכוון כדי
-	   שהכתמים יורגשו ולא ייראו:
+	/* ---- פס הכותרת: לוחית זהב-ענבר על השלט ----
+	   הפס הוא הקישור עצמו, לכן הוא בולט מגוף הקלף הקרמי: זהב חם
+	   בגוון הענבר של המותג. שכבות המרקם נשארות — אותה גרעיניות
+	   וכתמי יושן של הקלף, רק על בסיס צבע אחר:
 	   1. גרעיניות — feTurbulence כ-data URI, נייר במקום משטח מלוטש.
 	   2. כתמי יושן — אליפסות רכות בגדלים ובמיקומים לא-סדירים, כך שהעין
 	      לא תזהה חזרתיות בין הבאנרים.
@@ -1142,7 +1143,8 @@
 	   background-color מוגדר כאן (ולא כ-bg-* של Tailwind) כדי שכל
 	   השכבות יישבו במקום אחד. */
 	.banner-caption {
-		background-color: #f7efdb;
+		background-color: #e9b04a;
+		transition: background-color 0.3s ease;
 		background-image:
 			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23p)' opacity='0.35'/%3E%3C/svg%3E"),
 			radial-gradient(ellipse 30% 120% at 9% 34%, rgba(124, 96, 52, 0.13) 0%, rgba(124, 96, 52, 0) 70%),
@@ -1160,6 +1162,23 @@
 		background-size: 140px 140px, auto, auto, auto, auto, auto, auto;
 		/* multiply משאיר את הגרעיניות כהצללה של הקלף במקום שכבת אפור מעליו */
 		background-blend-mode: multiply, normal, normal, normal, normal, normal, normal;
+	}
+
+	/* משוב ריחוף על הקישור: הלוחית מתבהרת והכותרת מקבלת קו תחתון —
+	   הסימן המוסכם של קישור. מופעל מריחוף על כל הבאנר (כולו עטוף ב-<a>),
+	   כך שגם ריחוף על התמונה מאיר את הלוחית ומסגיר שהכול לחיץ. */
+	.banner-caption p {
+		transition: text-decoration-color 0.3s ease;
+		text-decoration: underline;
+		text-decoration-color: transparent;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 4px;
+	}
+	.fx-banner:hover .banner-caption {
+		background-color: #f8c766;
+	}
+	.fx-banner:hover .banner-caption p {
+		text-decoration-color: currentColor;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
