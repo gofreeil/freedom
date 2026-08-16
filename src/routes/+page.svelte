@@ -856,6 +856,9 @@
 										<p class="text-xl lg:text-2xl font-black leading-tight text-white">
 											{tFn(site.titleKey)}
 										</p>
+										<p class="mt-2 text-sm md:text-xs lg:text-sm font-bold leading-snug text-slate-100/95">
+											{tFn(site.descriptionKey)}
+										</p>
 									</div>
 								</div>
 							</div>
