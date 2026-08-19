@@ -105,7 +105,7 @@ export const SITES: FreedomSite[] = [
 	},
 	{
 		id: 'purchasing_group',
-		name: 'קבוצות רכישה',
+		name: 'רכישות קבוצתיות',
 		description: 'הצטרפות לקבוצת הרכישה והוזלת ההוצאות.',
 		url: 'https://groups.gofreeil.com/',
 		image: '/images/whatsapp_cta.webp',

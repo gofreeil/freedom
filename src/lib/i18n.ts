@@ -91,7 +91,7 @@ register('he', () => Promise.resolve({
                 description: "מצביעים ומביעים את דעת הקהל בסוגיות הארציות!",
             },
             purchasing_group: {
-                title: "קבוצת רכישה",
+                title: "רכישות קבוצתיות",
                 description: "הצטרף לקבוצת הרכישה שלנו והוזל מיד את ההוצאות!",
             },
             group_investments: {
@@ -196,7 +196,7 @@ register('he', () => Promise.resolve({
             hover: "הבע דעתך על הסוגיות האקטואליות",
         },
         purchasing_group: {
-            title: "קבוצת רכישה",
+            title: "רכישות קבוצתיות",
             description: "הוזל את ההוצאות שלך",
             cta: "הצטרף לקבוצת הרכישה שלנו והוזל מיד את ההוצאות!",
         },
