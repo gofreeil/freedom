@@ -13,7 +13,8 @@
              באתר האם זה גם הצומת שממנו גוגל ומנועי ה-AI לומדים אילו אתרים
              שייכים למותג (יחד עם subOrganization ב-JSON-LD), וגם שער מעשי
              שמנווט את המבקרים אל הפלטפורמה שהם צריכים. -->
-        <nav aria-labelledby="network-links-title" class="border-b border-white/10 pb-2 mb-2">
+        <!-- מוסתרת בנייד (hidden md:block): הקישורים נשארים ב-HTML כך שגוגל ומנועי ה-AI ממשיכים לראות אותם, והרצועה עצמה מוצגת רק בדסקטופ. -->
+        <nav aria-labelledby="network-links-title" class="hidden md:block border-b border-white/10 pb-2 mb-2">
             <h2 id="network-links-title" class="mb-1.5 text-xs font-black tracking-wide text-yellow-500/90 text-center md:text-right">
                 אתרי הרשת
             </h2>
