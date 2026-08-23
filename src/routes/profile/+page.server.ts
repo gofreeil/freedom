@@ -7,6 +7,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (!session?.user) throw redirect(302, '/login?redirect=/profile');
 	// סופר-אדמין: האזור האישי הוא פאנל ניהול אתרי הרשת
 	if (isSuperAdmin(session.user.email)) throw redirect(302, '/admin');
-	// שאר המשתמשים: האזור האישי הוא מפת הרשת (מה כבר מכירים / עדיין לא)
-	throw redirect(302, '/map');
+	// שאר המשתמשים: אין אזור אישי בשער — חוזרים לדף הבית
+	throw redirect(302, '/');
 };

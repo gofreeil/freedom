@@ -1,7 +1,7 @@
 <script lang="ts">
 	// ============================================================
 	// /about — דף האודות של שער הרשת.
-	// כתוב בעברית ישירות (כמו /map) ולא דרך i18n: זהו טקסט מותג ארוך,
+	// כתוב בעברית ישירות ולא דרך i18n: זהו טקסט מותג ארוך,
 	// והתחזוקה שלו בשלוש שפות ב-i18n.ts הייתה יקרה מהתועלת.
 	//
 	// רשימת הפלטפורמות נגזרת מ-sitesData.ts (מקור האמת של הרשת) — כך
@@ -275,15 +275,6 @@
 				</ul>
 			</div>
 		{/each}
-
-		<div class="text-center">
-			<a
-				href="/map"
-				class="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 py-2.5 text-sm font-bold text-gray-200 transition hover:bg-white/10"
-			>
-				🗺️ למפת הרשת המלאה
-			</a>
-		</div>
 	</section>
 
 	<!-- ═══════ שאלות נפוצות ═══════ -->

@@ -1,5 +1,5 @@
 // ============================================================
-// sitemap.xml — מפת האתר של שער הרשת. האתר עצמו קטן (שער + מפת רשת),
+// sitemap.xml — מפת האתר של שער הרשת. האתר עצמו קטן (שער + אודות),
 // והערך העיקרי הוא הצהרה על הדפים הציבוריים לגוגל.
 // אתרי הרשת עצמם מפרסמים כל אחד sitemap משלו בדומיין שלו.
 // ============================================================
@@ -13,7 +13,6 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
     const urls = [
         { loc: `${SITE_URL}/`, changefreq: 'weekly', priority: '1.0' },
         { loc: `${SITE_URL}/about`, changefreq: 'monthly', priority: '0.8' },
-        { loc: `${SITE_URL}/map`, changefreq: 'monthly', priority: '0.7' },
     ];
 
     const xml =

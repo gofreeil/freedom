@@ -1,6 +1,6 @@
 <script lang="ts">
 	// דף זה הוא נתב בלבד: ה-load שבצד השרת תמיד מפנה —
-	// סופר-אדמין → /admin, שאר המשתמשים → /map. הרכיב הזה כמעט ולא מוצג.
+	// סופר-אדמין → /admin, שאר המשתמשים → דף הבית. הרכיב הזה כמעט ולא מוצג.
 </script>
 
 <svelte:head><title>האזור האישי</title><meta name="robots" content="noindex" /></svelte:head>

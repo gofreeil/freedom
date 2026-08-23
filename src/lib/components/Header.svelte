@@ -3,9 +3,17 @@
 	import { get } from 'svelte/store';
     import { goto, beforeNavigate } from "$app/navigation";
     import { onMount } from "svelte";
+    import { signOut } from '@auth/sveltekit/client';
 
     // משתמש מחובר (מגיע מ-+layout.server דרך +layout.svelte); null = אנונימי
     let { user = null }: { user?: { name: string; email: string; isSuperAdmin?: boolean } | null } = $props();
+
+    // התנתקות: קודם מוחקים את עוגיית ה-SSO המשותפת (httpOnly — רק השרת יכול),
+    // אחרת אתרי-אח ממשיכים לזהות את המשתמש אחרי היציאה
+    async function logout() {
+        try { await fetch('/api/logout', { method: 'POST' }); } catch { /* ignore */ }
+        signOut({ callbackUrl: '/' });
+    }
 
     let languages = [
         { name: "עברית", code: "he", flag: "il" },
@@ -273,14 +281,32 @@
 <div class="flex items-center gap-2">
                 <!-- התחברות / אזור אישי -->
                 {#if user}
-                    <a
-                        href={user.isSuperAdmin ? "/admin" : "/map"}
-                        class="flex items-center gap-2 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm font-bold text-white transition-colors"
-                        title={user.isSuperAdmin ? "ניהול אתרי הרשת" : "מפת הרשת שלי"}
+                    {#if user.isSuperAdmin}
+                        <a
+                            href="/admin"
+                            class="flex items-center gap-2 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm font-bold text-white transition-colors"
+                            title="ניהול אתרי הרשת"
+                        >
+                            <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">🛡️</span>
+                            <span class="hidden sm:inline max-w-[120px] truncate">צוות הנהלה</span>
+                        </a>
+                    {:else}
+                        <span
+                            class="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-bold text-white"
+                            title={user.email}
+                        >
+                            <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">👤</span>
+                            <span class="hidden sm:inline max-w-[120px] truncate">{user.name || user.email}</span>
+                        </span>
+                    {/if}
+                    <button
+                        type="button"
+                        onclick={logout}
+                        class="rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 px-3 py-2 text-sm font-bold text-gray-300 transition-colors"
+                        title="התנתקות"
                     >
-                        <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">{user.isSuperAdmin ? '🛡️' : '👤'}</span>
-                        <span class="hidden sm:inline max-w-[120px] truncate">{user.isSuperAdmin ? 'ניהול הרשת' : (user.name || user.email)}</span>
-                    </a>
+                        יציאה
+                    </button>
                 {:else}
                     <a
                         href="/login"
