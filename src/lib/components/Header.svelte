@@ -49,7 +49,7 @@
         if (preview && btnWrapper) {
             btnWrapper.addEventListener('mouseenter', () => {
                 const rect = btnWrapper.getBoundingClientRect();
-                const imgW = 700;
+                const imgW = 340;
                 let left = rect.left + rect.width / 2 - imgW / 2;
                 if (left < 8) left = 8;
                 if (left + imgW > window.innerWidth - 8) left = window.innerWidth - imgW - 8;
@@ -311,7 +311,7 @@
                     <img
                         src="/images/ad_neighborhoods.webp"
                         alt={tFn("welcome")}
-                        style="width:580px; border-radius:24px;
+                        style="width:340px; border-radius:18px;
                                -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
                                mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
                                filter: drop-shadow(0 0 40px rgba(0,0,0,0.95)) drop-shadow(0 0 80px rgba(0,0,0,0.7));"

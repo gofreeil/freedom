@@ -1,10 +1,45 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import SiteAdminRow from '$lib/components/admin/SiteAdminRow.svelte';
 
 	let { data } = $props();
 
-	// מצב עריכה: מאפשר להעלות ולמרכז תמונות אדמינים בלחיצה על העיגול
+	// מצב עריכה: מאפשר להעלות ולמרכז תמונות אדמינים בלחיצה על העיגול,
+	// ומציג את חיצי הסידור שמזיזים אתר מעלה/מטה ברשימה.
 	let editMode = $state(false);
+
+	// סדר האתרים — נשמר בדפדפן של הסופר-אדמין (סידור אישי, לא משנה את הרשת עצמה).
+	const ORDER_KEY = 'admin:sitesOrder';
+	let order = $state<string[]>([]);
+
+	// הרשימה המסודרת: אתרים שלא מופיעים בסדר השמור נשארים בסופה לפי הסדר המקורי
+	// (Array.sort יציב — ערכי Infinity זהים לא מחליפים מקום).
+	const sites = $derived.by(() => {
+		if (!order.length) return data.sites;
+		const pos = new Map(order.map((id, i) => [id, i]));
+		return [...data.sites].sort(
+			(a, b) => (pos.get(a.id) ?? Infinity) - (pos.get(b.id) ?? Infinity)
+		);
+	});
+
+	onMount(() => {
+		try {
+			const saved = JSON.parse(localStorage.getItem(ORDER_KEY) ?? "[]");
+			if (Array.isArray(saved)) order = saved.filter((id) => typeof id === 'string');
+		} catch {}
+	});
+
+	/** הזזת אתר צעד אחד מעלה (‎-1) או מטה (1), ושמירת הסדר החדש */
+	function move(index: number, dir: -1 | 1) {
+		const next = sites.map((s) => s.id);
+		const to = index + dir;
+		if (to < 0 || to >= next.length) return;
+		[next[index], next[to]] = [next[to], next[index]];
+		order = next;
+		try {
+			localStorage.setItem(ORDER_KEY, JSON.stringify(next));
+		} catch {}
+	}
 
 	// תבנית העמודות המשותפת לכותרת ולשורות (form עם display:contents מזרים
 	// את התאים ישירות לרשת הזו — כך כל השורות מיושרות לעמודות זהות).
@@ -32,8 +67,14 @@
 	<!-- טבלה: רשת אחת, ללא שורת כותרות (השינויים בשדות נשמרים אוטומטית) -->
 	<div class="overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.02] p-3">
 		<div class="grid items-center gap-x-2 gap-y-1" style={GRID_COLS}>
-			{#each data.sites as site (site.id)}
-				<SiteAdminRow {site} {editMode} />
+			{#each sites as site, i (site.id)}
+				<SiteAdminRow
+					{site}
+					{editMode}
+					canUp={i > 0}
+					canDown={i < sites.length - 1}
+					onmove={(dir) => move(i, dir)}
+				/>
 			{/each}
 		</div>
 	</div>

@@ -18,8 +18,19 @@
 
 	let {
 		site,
-		editMode = false
-	}: { site: FreedomSite & { admin: Admin | null }; editMode?: boolean } = $props();
+		editMode = false,
+		canUp = false,
+		canDown = false,
+		onmove
+	}: {
+		site: FreedomSite & { admin: Admin | null };
+		editMode?: boolean;
+		/** האם אפשר להזיז את השורה מעלה/מטה (כבוי בקצות הרשימה) */
+		canUp?: boolean;
+		canDown?: boolean;
+		/** שינוי מיקום השורה ברשימה (‎-1 מעלה, 1 מטה) */
+		onmove?: (dir: -1 | 1) => void;
+	} = $props();
 
 	// ערכי הטופס — מקומיים כדי לא לאבד הקלדה בזמן שמירה/שגיאה.
 	// svelte-ignore state_referenced_locally
@@ -116,6 +127,10 @@
 		await tick();
 		formEl.requestSubmit();
 	}
+
+	// חיצי סידור — כפתורים זעירים בעמודה השמאלית
+	const moveBtnCls =
+		'flex h-[15px] w-6 items-center justify-center rounded border border-white/10 bg-white/5 text-[9px] leading-none text-gray-300 transition hover:border-sky-400/60 hover:bg-white/15 hover:text-sky-300 disabled:cursor-default disabled:opacity-20 disabled:hover:border-white/10 disabled:hover:bg-white/5 disabled:hover:text-gray-300';
 
 	const inputCls =
 		'w-full rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[13px] text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none';
@@ -270,8 +285,33 @@
 		{/if}
 	</div>
 
-	<!-- הסרה — רק במצב עריכה -->
-	<div class="flex items-center justify-end">
+	<!-- סידור השורה + הסרה — רק במצב עריכה -->
+	<div class="flex items-center justify-end gap-1.5">
+		{#if editMode}
+			<!-- חיצים לשינוי מיקום האתר ברשימה -->
+			<span class="flex flex-col gap-0.5">
+				<button
+					type="button"
+					onclick={() => onmove?.(-1)}
+					disabled={!canUp}
+					title="העלאת האתר למעלה"
+					aria-label="העלאת האתר למעלה"
+					class={moveBtnCls}
+				>
+					▲
+				</button>
+				<button
+					type="button"
+					onclick={() => onmove?.(1)}
+					disabled={!canDown}
+					title="הורדת האתר למטה"
+					aria-label="הורדת האתר למטה"
+					class={moveBtnCls}
+				>
+					▼
+				</button>
+			</span>
+		{/if}
 		{#if editMode && hasAdmin}
 			<button
 				type="submit"
