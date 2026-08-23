@@ -62,3 +62,44 @@ export async function setSiteAdmin(jwt: string, siteId: string, admin: SiteAdmin
 export async function removeSiteAdmin(jwt: string, siteId: string): Promise<void> {
 	await putSiteAdmin(jwt, siteId, null);
 }
+
+// ============================================================
+// תצוגה ציבורית — כרטיסיית "ניהול הרשת" בדף /about.
+// נקודת קצה פתוחה (GET /api/site-admins/public) שמחזירה רק שדות תצוגה
+// ויצירת קשר. את המפה המלאה (כולל communityId ונתוני ביקורת) אפשר לקרוא
+// רק עם JWT של סופר-אדמין, דרך getSiteAdmins.
+// ============================================================
+
+export interface PublicSiteAdmin {
+	adminName: string;
+	role?: string;
+	adminEmail?: string;
+	phone?: string;
+	avatarUrl?: string;
+}
+
+export type PublicSiteAdminsMap = Record<string, PublicSiteAdmin>;
+
+// מטמון קצר בזיכרון השרת: הדף פתוח לכולם והנתונים משתנים לעיתים רחוקות —
+// אין טעם לפנות ל-Strapi בכל טעינה. גם משמש כרשת ביטחון אם Strapi נופל רגעית.
+const CACHE_TTL_MS = 60_000;
+let cache: { at: number; data: PublicSiteAdminsMap } | null = null;
+
+/** קריאת המינויים לתצוגה ציבורית (ממוטמן ל-60 שניות). זורק רק אם אין גם מטמון. */
+export async function getPublicSiteAdmins(): Promise<PublicSiteAdminsMap> {
+	if (cache && Date.now() - cache.at < CACHE_TTL_MS) return cache.data;
+	try {
+		const res = await fetch(`${STRAPI_URL}/api/site-admins/public`, {
+			signal: AbortSignal.timeout(10_000)
+		});
+		if (!res.ok) throw new Error(`site-admins public GET failed: ${res.status}`);
+		const json = (await res.json()) as { data?: PublicSiteAdminsMap };
+		const data = json.data && typeof json.data === 'object' ? json.data : {};
+		cache = { at: Date.now(), data };
+		return data;
+	} catch (e) {
+		// מטמון ישן עדיף על כרטיסייה ריקה
+		if (cache) return cache.data;
+		throw e;
+	}
+}
