@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import SiteAdminRow from '$lib/components/admin/SiteAdminRow.svelte';
+	import { SITE_ROWS_GRID_COLS } from '$lib/components/admin/sitesGrid';
 
 	let { data } = $props();
 
@@ -41,12 +42,9 @@
 		} catch {}
 	}
 
-	// תבנית העמודות המשותפת לכותרת ולשורות (form עם display:contents מזרים
-	// את התאים ישירות לרשת הזו — כך כל השורות מיושרות לעמודות זהות).
-	// סדר העמודות (מימין לשמאל): תמונת אדמין | שם | תפקיד | אתר | יצירת קשר | הסרה.
-	// כל העמודות מוגבלות ברוחב — השדות צמודים ימינה והשטח העודף נשאר בקצה השמאלי.
-	const GRID_COLS =
-		'grid-template-columns: 84px minmax(90px,135px) minmax(295px,525px) minmax(160px,240px) 100px minmax(44px,auto);';
+	// תבנית העמודות (form עם display:contents מזרים את התאים ישירות לרשת הזו —
+	// כך כל השורות מיושרות לעמודות זהות). משותפת עם התצוגה הציבורית ב-/about.
+	const GRID_COLS = SITE_ROWS_GRID_COLS;
 </script>
 
 <svelte:head><title>ניהול אתרי יוצאים לחירות</title></svelte:head>

@@ -1,14 +1,18 @@
 <script lang="ts">
 	// ============================================================
-	// "ניהול הרשת" — מי אחראי על כל אתר ברשת, לתצוגה בכרטיסייה שבדף /about.
+	// "ניהול הרשת" — מי אחראי על כל אתר ברשת, בכרטיסייה שבדף /about.
 	// פתוח לכולם וקריאה בלבד; העריכה נשארת בפאנל הסופר-אדמין (/admin).
 	//
+	// התצוגה זהה לזו של הפאנל: שורה אחת לכל אתר, באותה רשת עמודות ובאותם
+	// גדלים (SITE_ROWS_GRID_COLS) — רק בלי שדות עריכה וכפתורי סידור/הסרה.
+	//
 	// הנתונים נמשכים מ-/api/network-admins בפתיחת הכרטיסייה (ולא ב-load של
-	// הדף) — תמונות האדמינים נשמרות כ-data URL, ואין סיבה להעמיס אותן על כל
+	// הדף) — תמונות האדמינים שמורות כ-data URL, ואין סיבה להעמיס אותן על כל
 	// מי שנכנס לאודות.
 	// ============================================================
 	import { onMount } from 'svelte';
 	import { SITES } from '$lib/sitesData';
+	import { SITE_ROWS_GRID_COLS } from '$lib/components/admin/sitesGrid';
 
 	let { canEdit = false }: { canEdit?: boolean } = $props();
 
@@ -22,19 +26,27 @@
 
 	let admins = $state<Record<string, PublicAdmin> | null>(null);
 	let error = $state('');
-	let broken = $state<Record<string, boolean>>({});
+	let brokenAvatar = $state<Record<string, boolean>>({});
+	let brokenImage = $state<Record<string, boolean>>({});
 
 	// חנות החירות אינה חלק מהניהול (כמו בפאנל הסופר-אדמין)
 	const managed = SITES.filter((s) => s.id !== 'freedom_store');
 
-	const staffed = $derived(
-		admins ? managed.filter((s) => admins?.[s.id]?.name?.trim()) : []
-	);
-	const vacant = $derived(
-		admins ? managed.filter((s) => !admins?.[s.id]?.name?.trim()) : []
-	);
+	// סדר האתרים — אותו סידור אישי ששמור בדפדפן מהפאנל, כדי שהרשימה תיראה
+	// אותו דבר בשני המקומות. למי שלא סידר (כלומר כל שאר המבקרים) — סדר sitesData.
+	const ORDER_KEY = 'admin:sitesOrder';
+	let order = $state<string[]>([]);
+	const sites = $derived.by(() => {
+		if (!order.length) return managed;
+		const pos = new Map(order.map((id, i) => [id, i]));
+		return [...managed].sort((a, b) => (pos.get(a.id) ?? Infinity) - (pos.get(b.id) ?? Infinity));
+	});
 
 	onMount(async () => {
+		try {
+			const saved = JSON.parse(localStorage.getItem(ORDER_KEY) ?? '[]');
+			if (Array.isArray(saved)) order = saved.filter((id) => typeof id === 'string');
+		} catch {}
 		try {
 			const res = await fetch('/api/network-admins');
 			if (!res.ok) throw new Error(String(res.status));
@@ -51,8 +63,8 @@
 		return `https://wa.me/${digits.startsWith('0') ? '972' + digits.slice(1) : digits}`;
 	}
 
-	const contactCls =
-		'inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-sm transition hover:bg-white/15';
+	const contactBtnCls =
+		'flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-sm transition hover:bg-white/15';
 </script>
 
 <section>
@@ -70,92 +82,97 @@
 	{:else if !admins}
 		<p class="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-gray-400">טוען…</p>
 	{:else}
-		{#if staffed.length}
-			<ul class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-				{#each staffed as site (site.id)}
+		<!-- אותה טבלה של הפאנל: רשת אחת, שורה לכל אתר, ללא שורת כותרות -->
+		<div class="overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.02] p-3">
+			<div class="grid items-center gap-x-2 gap-y-1" style={SITE_ROWS_GRID_COLS}>
+				{#each sites as site (site.id)}
 					{@const admin = admins[site.id]}
-					<li
-						class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 shadow-lg transition hover:border-amber-400/30 hover:bg-white/[0.06]"
-					>
-						<!-- תמונת האחראי -->
+
+					<!-- תמונת האחראי -->
+					<div class="flex items-center justify-center">
 						<div
-							class="h-[68px] w-[68px] flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5"
+							class="h-[76px] w-[76px] flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5"
 						>
-							{#if admin.avatar && !broken[site.id]}
+							{#if admin?.avatar && !brokenAvatar[site.id]}
 								<img
 									src={admin.avatar}
 									alt={admin.name}
 									loading="lazy"
 									class="h-full w-full object-cover"
-									onerror={() => (broken = { ...broken, [site.id]: true })}
+									onerror={() => (brokenAvatar = { ...brokenAvatar, [site.id]: true })}
 								/>
 							{:else}
-								<div class="flex h-full w-full items-center justify-center text-xl" aria-hidden="true">👤</div>
+								<div class="flex h-full w-full items-center justify-center text-lg" aria-hidden="true">👤</div>
 							{/if}
 						</div>
+					</div>
 
-						<div class="min-w-0 flex-1">
-							<div class="truncate text-[15px] font-black text-amber-400">{admin.name}</div>
-							{#if admin.role}
-								<div class="truncate text-xs text-gray-400">{admin.role}</div>
+					<!-- שם האחראי -->
+					<div class="truncate px-2.5 py-2.5 text-[15px] font-bold text-amber-400">
+						{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">טרם מונה</span>{/if}
+					</div>
+
+					<!-- תפקיד / הערה -->
+					<div class="px-2.5 py-2.5 text-[13px] leading-snug text-gray-300">{admin?.role ?? ''}</div>
+
+					<!-- אתר (קישור לאתר עצמו) -->
+					<a
+						href={site.url}
+						target="_blank"
+						rel="noopener noreferrer"
+						title={site.name}
+						class="group/site flex min-w-0 items-center gap-2"
+					>
+						<div class="h-[70px] w-[70px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
+							{#if site.image && !brokenImage[site.id]}
+								<img
+									src={site.image}
+									alt=""
+									loading="lazy"
+									class="h-full w-full object-cover"
+									onerror={() => (brokenImage = { ...brokenImage, [site.id]: true })}
+								/>
+							{:else}
+								<div class="flex h-full w-full items-center justify-center text-2xl">🕊️</div>
 							{/if}
+						</div>
+						<span
+							class="truncate text-sm font-bold text-white transition group-hover/site:text-sky-300 group-hover/site:underline"
+						>
+							{site.name}
+						</span>
+					</a>
+
+					<!-- יצירת קשר -->
+					<div class="flex items-center justify-center gap-1">
+						{#if admin?.phone}
 							<a
-								href={site.url}
+								href={waHref(admin.phone)}
 								target="_blank"
 								rel="noopener noreferrer"
-								class="mt-1 inline-flex items-center gap-1.5 text-sm font-bold text-white transition hover:text-sky-300 hover:underline"
+								title="וואטסאפ ל{admin.name}"
+								aria-label="וואטסאפ ל{admin.name}"
+								class={contactBtnCls}>💬</a
 							>
-								{#if site.image}
-									<img src={site.image} alt="" loading="lazy" class="h-5 w-5 rounded object-cover" />
-								{/if}
-								{site.name}
-							</a>
-						</div>
+						{/if}
+						{#if admin?.email}
+							<a
+								href="mailto:{admin.email}"
+								title="אימייל ל{admin.name}"
+								aria-label="אימייל ל{admin.name}"
+								class={contactBtnCls}>📧</a
+							>
+						{/if}
+					</div>
 
-						<!-- יצירת קשר -->
-						<div class="flex flex-shrink-0 flex-col gap-1.5">
-							{#if admin.phone}
-								<a
-									href={waHref(admin.phone)}
-									target="_blank"
-									rel="noopener noreferrer"
-									title="וואטסאפ ל{admin.name}"
-									aria-label="וואטסאפ ל{admin.name}"
-									class={contactCls}>💬</a
-								>
-							{/if}
-							{#if admin.email}
-								<a
-									href="mailto:{admin.email}"
-									title="אימייל ל{admin.name}"
-									aria-label="אימייל ל{admin.name}"
-									class={contactCls}>📧</a
-								>
-							{/if}
-						</div>
-					</li>
+					<!-- עמודת הפעולות של הפאנל — ריקה כאן, שומרת על יישור זהה -->
+					<div></div>
 				{/each}
-			</ul>
-		{:else}
-			<p class="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-gray-400">
-				עדיין לא מונו אחראים לאתרי הרשת.
-			</p>
-		{/if}
-
-		{#if vacant.length}
-			<div class="mt-4 rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-				<h3 class="mb-1.5 text-sm font-black text-gray-300">אתרים שממתינים לאחראי</h3>
-				<p class="text-sm leading-relaxed text-gray-500">
-					{vacant.map((s) => s.name).join(' · ')}
-				</p>
-				<p class="mt-2 text-xs text-gray-500">
-					רוצים להוביל אחד מהם? כתבו לנו — נשמח לצרף אתכם.
-				</p>
 			</div>
-		{/if}
+		</div>
 
 		{#if canEdit}
-			<div class="mt-4">
+			<div class="mt-3">
 				<a
 					href="/admin"
 					class="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
