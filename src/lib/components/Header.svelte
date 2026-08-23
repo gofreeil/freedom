@@ -3,17 +3,9 @@
 	import { get } from 'svelte/store';
     import { goto, beforeNavigate } from "$app/navigation";
     import { onMount } from "svelte";
-    import { signOut } from '@auth/sveltekit/client';
 
     // משתמש מחובר (מגיע מ-+layout.server דרך +layout.svelte); null = אנונימי
     let { user = null }: { user?: { name: string; email: string; isSuperAdmin?: boolean } | null } = $props();
-
-    // התנתקות: קודם מוחקים את עוגיית ה-SSO המשותפת (httpOnly — רק השרת יכול),
-    // אחרת אתרי-אח ממשיכים לזהות את המשתמש אחרי היציאה
-    async function logout() {
-        try { await fetch('/api/logout', { method: 'POST' }); } catch { /* ignore */ }
-        signOut({ callbackUrl: '/' });
-    }
 
     let languages = [
         { name: "עברית", code: "he", flag: "il" },
@@ -299,14 +291,6 @@
                             <span class="hidden sm:inline max-w-[120px] truncate">{user.name || user.email}</span>
                         </span>
                     {/if}
-                    <button
-                        type="button"
-                        onclick={logout}
-                        class="rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 px-3 py-2 text-sm font-bold text-gray-300 transition-colors"
-                        title="התנתקות"
-                    >
-                        יציאה
-                    </button>
                 {:else}
                     <a
                         href="/login"
