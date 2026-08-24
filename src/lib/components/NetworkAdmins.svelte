@@ -196,6 +196,17 @@
 				{#each sites as site (site.id)}
 					{@const admin = admins[site.id]}
 
+					<!-- שם האתר — שורה משלו מעל שורת הפרטים, מיושר לשמאל ובכחול -->
+					<a
+						href={site.url}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="mt-2 truncate text-left text-sm font-bold text-sky-400 transition first:mt-0 hover:text-sky-300 hover:underline"
+						style="grid-column: 1 / -1;"
+					>
+						{site.name}
+					</a>
+
 					{@render avatar(site, admin, 'mx-auto h-[86px] w-[86px]', 'text-lg')}
 
 					<!-- שם האחראי — באותה מסגרת של שדה השם בפאנל -->
@@ -212,14 +223,9 @@
 						target="_blank"
 						rel="noopener noreferrer"
 						title={site.name}
-						class="group/site flex min-w-0 items-center gap-2"
+						class="flex min-w-0 items-center gap-2"
 					>
 						{@render siteImage(site, 'h-[80px] w-[80px] rounded-xl', 'text-2xl')}
-						<span
-							class="truncate text-sm font-bold text-white transition group-hover/site:text-sky-300 group-hover/site:underline"
-						>
-							{site.name}
-						</span>
 					</a>
 
 					<!-- יצירת קשר -->
