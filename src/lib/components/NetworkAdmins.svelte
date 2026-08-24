@@ -196,7 +196,7 @@
 				{#each sites as site (site.id)}
 					{@const admin = admins[site.id]}
 
-					{@render avatar(site, admin, 'mx-auto h-[76px] w-[76px]', 'text-lg')}
+					{@render avatar(site, admin, 'mx-auto h-[86px] w-[86px]', 'text-lg')}
 
 					<!-- שם האחראי — באותה מסגרת של שדה השם בפאנל -->
 					<div class={NAME_FIELD_CLS}>
@@ -214,7 +214,7 @@
 						title={site.name}
 						class="group/site flex min-w-0 items-center gap-2"
 					>
-						{@render siteImage(site, 'h-[70px] w-[70px] rounded-xl', 'text-2xl')}
+						{@render siteImage(site, 'h-[80px] w-[80px] rounded-xl', 'text-2xl')}
 						<span
 							class="truncate text-sm font-bold text-white transition group-hover/site:text-sky-300 group-hover/site:underline"
 						>

@@ -7,4 +7,4 @@
 // כל העמודות מוגבלות ברוחב — השדות צמודים ימינה והשטח העודף נשאר בקצה השמאלי.
 // ============================================================
 export const SITE_ROWS_GRID_COLS =
-	'grid-template-columns: 84px minmax(90px,135px) minmax(295px,525px) minmax(160px,240px) 100px minmax(44px,auto);';
+	'grid-template-columns: 94px minmax(90px,135px) minmax(295px,525px) minmax(160px,240px) 100px minmax(44px,auto);';

@@ -197,7 +197,7 @@
 				ondrop={onDrop}
 				title="העלאת תמונה — לחיצה או גרירת קובץ לכאן"
 				aria-label="העלאת תמונת האדמין"
-				class="group relative h-[76px] w-[76px] flex-shrink-0 overflow-hidden rounded-full border border-dashed bg-white/5 {dragOver
+				class="group relative h-[86px] w-[86px] flex-shrink-0 overflow-hidden rounded-full border border-dashed bg-white/5 {dragOver
 					? 'border-sky-300 bg-sky-400/25'
 					: 'border-sky-400/60'}"
 			>
@@ -215,7 +215,7 @@
 			</button>
 			<input type="file" accept="image/*" hidden bind:this={fileInput} onchange={onFileChosen} />
 		{:else}
-			<div class="h-[76px] w-[76px] flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
+			<div class="h-[86px] w-[86px] flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
 				{#if avatar && !avatarBroken}
 					<img
 						src={avatar}
@@ -260,7 +260,7 @@
 		title={site.name}
 		class="group/site flex min-w-0 items-center gap-2"
 	>
-		<div class="h-[70px] w-[70px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
+		<div class="h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
 			{#if site.image && imgOk}
 				<img src={site.image} alt="" loading="lazy" decoding="async" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
 			{:else}

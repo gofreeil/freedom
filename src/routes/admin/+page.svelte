@@ -128,11 +128,11 @@
 			<!-- שלד טעינה: אותו גובה שורה, כך שהטבלה לא "קופצת" כשהנתונים מגיעים -->
 			<div class="grid items-center gap-x-2 gap-y-1" style={GRID_COLS} aria-hidden="true">
 				{#each Array.from({ length: 12 }) as _, i (i)}
-					<div class="mx-auto h-[76px] w-[76px] animate-pulse rounded-full bg-white/5"></div>
+					<div class="mx-auto h-[86px] w-[86px] animate-pulse rounded-full bg-white/5"></div>
 					<div class="h-9 animate-pulse rounded-lg bg-white/5"></div>
 					<div class="h-9 animate-pulse rounded-lg bg-white/5"></div>
 					<div class="flex items-center gap-2">
-						<div class="h-[70px] w-[70px] animate-pulse rounded-xl bg-white/5"></div>
+						<div class="h-[80px] w-[80px] animate-pulse rounded-xl bg-white/5"></div>
 						<div class="h-4 w-24 animate-pulse rounded bg-white/5"></div>
 					</div>
 					<div class="mx-auto h-7 w-16 animate-pulse rounded-lg bg-white/5"></div>
