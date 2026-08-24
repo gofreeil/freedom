@@ -144,7 +144,7 @@
 
 <div class="mx-auto max-w-5xl px-4 py-8" dir="rtl">
 	<!-- ═══════ פתיח ═══════ -->
-	<header class="mb-10 text-center">
+	<header class="mb-8 text-center">
 		<img
 			src="/images/yotzim-lecherut.png"
 			alt="לוגו יוצאים לחירות"
@@ -156,7 +156,7 @@
 			יוצאים לחירות
 		</h1>
 		<p class="mt-2 text-base font-extrabold text-amber-300 sm:text-lg">{SITE_TAGLINE}</p>
-		<p class="mx-auto mt-5 max-w-3xl text-base leading-relaxed text-gray-300 sm:text-lg">
+		<p class="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-gray-300 sm:text-lg">
 			אנחנו תנועה חברתית ישראלית התנדבותית שלא מחכה שמישהו יתקן — אלא בונה.
 			במקום להסביר איך העולם צריך להיראות, הקמנו את הכלים שמאפשרים לו להיראות ככה כבר היום:
 			רשת של פלטפורמות שכל אחת פותרת בעיה אמיתית אחת, וכולן מחוברות לאותה קהילה ולאותה זהות.
@@ -164,7 +164,7 @@
 	</header>
 
 	<!-- ═══════ כרטיסיות ═══════ -->
-	<div class="mb-8 flex justify-center gap-2" role="tablist" aria-label="תוכן דף האודות">
+	<div class="mb-6 flex justify-center gap-2" role="tablist" aria-label="תוכן דף האודות">
 		{#each TABS as t (t.id)}
 			<button
 				type="button"

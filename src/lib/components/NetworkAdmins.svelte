@@ -1,14 +1,14 @@
 <script lang="ts">
 	// ============================================================
-	// "ניהול הרשת" — מי אחראי על כל אתר ברשת, בכרטיסייה שבדף /about.
+	// "צוות הרכזים" — מי אחראי על כל אתר ברשת, בכרטיסייה שבדף /about.
 	// פתוח לכולם וקריאה בלבד; העריכה נשארת בפאנל הסופר-אדמין (/admin).
 	//
 	// שתי פריסות:
 	//   • דסקטופ (sm+) — זהה לפאנל: שורה אחת לכל אתר, באותה רשת עמודות
 	//     ובאותם גדלים (SITE_ROWS_GRID_COLS), רק בלי שדות עריכה.
-	//   • נייד — אותן עמודות דחוסות לשורה כפולה: תמונות ופונטים קטנים יותר,
-	//     והכיתובים נשברים לשתי שורות במקום להיחתך. רשת הדסקטופ לא נכנסת
-	//     למסך צר (רוחב מינימלי ~770px) והייתה גוררת גלילה אופקית.
+	//   • נייד — שם האתר עולה לכותרת ממורכזת מעל השורות, וכך נשאר רוחב מלא
+	//     לשם האחראי ולתפקיד; תמונת האתר צמודה לקצה השמאלי. רשת הדסקטופ לא
+	//     נכנסת למסך צר (רוחב מינימלי ~770px) והייתה גוררת גלילה אופקית.
 	//
 	// הנתונים נמשכים מ-/api/network-admins בפתיחת הכרטיסייה (ולא ב-load של
 	// הדף) — תמונות האדמינים שמורות כ-data URL, ואין סיבה להעמיס אותן על כל
@@ -36,9 +36,8 @@
 	// חנות החירות אינה חלק מהניהול (כמו בפאנל הסופר-אדמין)
 	const managed = SITES.filter((s) => s.id !== 'freedom_store');
 
-	// סדר האתרים — אותו סידור אישי ששמור בדפדפן מהפאנל, כדי שהרשימה תיראה
-	// אותו דבר בשני המקומות. למי שלא סידר (כלומר כל שאר המבקרים) — סדר sitesData.
-	const ORDER_KEY = 'admin:sitesOrder';
+	// סדר האתרים — מגיע מהשרת יחד עם המינויים, כלומר בדיוק הסידור שהסופר-אדמין
+	// עשה בפאנל. ריק = הסדר של sitesData.
 	let order = $state<string[]>([]);
 	const sites = $derived.by(() => {
 		if (!order.length) return managed;
@@ -48,13 +47,14 @@
 
 	onMount(async () => {
 		try {
-			const saved = JSON.parse(localStorage.getItem(ORDER_KEY) ?? '[]');
-			if (Array.isArray(saved)) order = saved.filter((id) => typeof id === 'string');
-		} catch {}
-		try {
 			const res = await fetch('/api/network-admins');
 			if (!res.ok) throw new Error(String(res.status));
-			admins = ((await res.json()) as { admins: Record<string, PublicAdmin> }).admins ?? {};
+			const json = (await res.json()) as {
+				admins: Record<string, PublicAdmin>;
+				order?: string[];
+			};
+			if (Array.isArray(json.order)) order = json.order;
+			admins = json.admins ?? {};
 		} catch {
 			error = 'לא הצלחנו לטעון את בעלי התפקידים ברשת. נסו לרענן את הדף.';
 		}
@@ -66,9 +66,6 @@
 		if (!digits) return '';
 		return `https://wa.me/${digits.startsWith('0') ? '972' + digits.slice(1) : digits}`;
 	}
-
-	// רוחב העמודות בנייד: תמונת אחראי | שם+תפקיד | אתר | יצירת קשר
-	const MOBILE_GRID_COLS = 'grid-template-columns: 44px minmax(0,1fr) minmax(0,0.95fr) auto;';
 </script>
 
 <!-- תמונת האחראי (או עיגול ריק לאתר שטרם מונה לו) -->
@@ -130,54 +127,53 @@
 {/snippet}
 
 <section>
-	<h2 class="mb-2 flex items-center gap-2 text-lg font-black text-white sm:text-2xl">
-		<span aria-hidden="true">🛡️</span> ניהול הרשת
+	<h2 class="mb-3 flex items-center gap-2 text-lg font-black text-white sm:mb-4 sm:text-2xl">
+		<span class="h-px flex-1 bg-white/10"></span>
+		<span aria-hidden="true">🛡️</span> צוות הרכזים
 		<span class="h-px flex-1 bg-white/10"></span>
 	</h2>
-	<p class="mb-4 text-[13px] leading-relaxed text-gray-400 sm:mb-5 sm:text-sm">
-		לכל פלטפורמה ברשת יש אחראי — מתנדב שמוביל אותה, מלווה את המשתמשים ואפשר לפנות אליו ישירות.
-		הרשימה פתוחה לכולם; העדכון שלה נעשה בפאנל הניהול.
-	</p>
 
 	{#if error}
 		<p class="rounded-2xl border border-red-500/25 bg-red-500/10 p-4 text-sm text-red-300">{error}</p>
 	{:else if !admins}
 		<p class="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-gray-400">טוען…</p>
 	{:else}
-		<!-- ── נייד: שורה כפולה דחוסה לכל אתר ── -->
-		<ul class="rounded-2xl border border-white/10 bg-white/[0.02] px-2 py-1 sm:hidden">
+		<!-- ── נייד: שם האתר ככותרת ממורכזת, ומתחתיה שתי שורות פרטי האחראי ── -->
+		<ul class="rounded-2xl border border-white/10 bg-white/[0.02] py-1 pr-2 sm:hidden">
 			{#each sites as site (site.id)}
 				{@const admin = admins[site.id]}
-				<li
-					class="grid items-center gap-x-2 border-b border-white/5 py-2 last:border-b-0"
-					style={MOBILE_GRID_COLS}
-				>
-					{@render avatar(site, admin, 'h-11 w-11', 'text-sm')}
-
-					<!-- שם ותפקיד — הכיתוב נשבר לשתי שורות במקום להיחתך -->
-					<div class="min-w-0">
-						<div class="line-clamp-1 text-[12px] font-bold text-amber-400">
-							{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">טרם מונה</span>{/if}
-						</div>
-						{#if admin?.role}
-							<div class="line-clamp-2 text-[10px] leading-tight text-gray-400">{admin.role}</div>
-						{/if}
-					</div>
-
-					<!-- האתר -->
+				<li class="border-b border-white/5 py-2 last:border-b-0">
+					<!-- כותרת: שם האתר במרכז, מעל השורות -->
 					<a
 						href={site.url}
 						target="_blank"
 						rel="noopener noreferrer"
-						title={site.name}
-						class="flex min-w-0 items-center gap-1.5"
+						class="mb-1.5 block text-center text-[12px] font-bold text-white"
 					>
-						{@render siteImage(site, 'h-9 w-9 rounded-lg', 'text-base')}
-						<span class="line-clamp-2 text-[11px] font-bold leading-tight text-white">{site.name}</span>
+						{site.name}
 					</a>
 
-					<div class="flex flex-col items-center gap-1">
-						{@render contact(admin, 'h-6 w-6 text-xs')}
+					<div class="flex items-center gap-2">
+						{@render avatar(site, admin, 'h-11 w-11', 'text-sm')}
+
+						<!-- שם ותפקיד — שתי שורות, עם כל הרוחב שהכותרת פינתה -->
+						<div class="min-w-0 flex-1">
+							<div class="line-clamp-1 text-[12px] font-bold text-amber-400">
+								{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">טרם מונה</span>{/if}
+							</div>
+							{#if admin?.role}
+								<div class="line-clamp-2 text-[10px] leading-tight text-gray-400">{admin.role}</div>
+							{/if}
+						</div>
+
+						<div class="flex flex-col items-center gap-1">
+							{@render contact(admin, 'h-6 w-6 text-xs')}
+						</div>
+
+						<!-- תמונת האתר — צמודה לקצה השמאלי של המסך -->
+						<a href={site.url} target="_blank" rel="noopener noreferrer" title={site.name}>
+							{@render siteImage(site, 'h-11 w-11 rounded-r-lg', 'text-base')}
+						</a>
 					</div>
 				</li>
 			{/each}
