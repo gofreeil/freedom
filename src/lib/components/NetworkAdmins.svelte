@@ -60,6 +60,14 @@
 		}
 	});
 
+	// מסגרות השדות — אותן מחלקות בדיוק של שדות ההזנה ב-SiteAdminRow (הפאנל),
+	// כדי שהתצוגה כאן תיראה זהה לו. truncate במקום שורה שנשברת: גם שם השדה
+	// בפאנל הוא input בשורה אחת.
+	const FIELD_CLS =
+		'truncate rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[13px] text-white';
+	const NAME_FIELD_CLS =
+		'truncate rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[15px] font-bold text-amber-400';
+
 	/** קישור וואטסאפ: 05x-xxxxxxx → 9725xxxxxxxx */
 	function waHref(phone: string): string {
 		const digits = phone.replace(/\D/g, '');
@@ -187,13 +195,13 @@
 
 					{@render avatar(site, admin, 'mx-auto h-[76px] w-[76px]', 'text-lg')}
 
-					<!-- שם האחראי -->
-					<div class="truncate px-2.5 py-2.5 text-[15px] font-bold text-amber-400">
+					<!-- שם האחראי — באותה מסגרת של שדה השם בפאנל -->
+					<div class={NAME_FIELD_CLS}>
 						{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">טרם מונה</span>{/if}
 					</div>
 
-					<!-- תפקיד / הערה -->
-					<div class="px-2.5 py-2.5 text-[13px] leading-snug text-gray-300">{admin?.role ?? ''}</div>
+					<!-- תפקיד / הערה — באותה מסגרת של שדה התפקיד בפאנל -->
+					<div class={FIELD_CLS}>{admin?.role ?? ''}</div>
 
 					<!-- אתר (קישור לאתר עצמו) -->
 					<a
