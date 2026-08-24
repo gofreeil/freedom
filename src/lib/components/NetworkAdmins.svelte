@@ -156,7 +156,7 @@
 						href={site.url}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="mb-1.5 block text-center text-[12px] font-bold text-white"
+						class="mb-1.5 block text-center text-[14px] font-bold text-white"
 					>
 						{site.name}
 					</a>
@@ -164,13 +164,16 @@
 					<div class="flex items-center gap-2">
 						{@render avatar(site, admin, 'h-14 w-14', 'text-lg')}
 
-						<!-- שם ותפקיד — שתי שורות, עם כל הרוחב שהכותרת פינתה -->
+						<!-- שם ותפקיד — שתי שורות, עם כל הרוחב שהכותרת פינתה.
+						     הפונטים מוגדלים עד לגבול שבו שלוש השורות (שם + שני שורות
+						     תפקיד) עדיין נמוכות מ-56px, כלומר מגובה התמונות שמכתיבות
+						     את גובה השורה — כך הצורה לא משתנה. -->
 						<div class="min-w-0 flex-1">
-							<div class="line-clamp-1 text-[12px] font-bold text-amber-400">
+							<div class="line-clamp-1 text-[14px] font-bold leading-tight text-amber-400">
 								{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">טרם מונה</span>{/if}
 							</div>
 							{#if admin?.role}
-								<div class="line-clamp-2 text-[10px] leading-tight text-gray-400">{admin.role}</div>
+								<div class="mt-0.5 line-clamp-2 text-[12px] leading-tight text-gray-400">{admin.role}</div>
 							{/if}
 						</div>
 
