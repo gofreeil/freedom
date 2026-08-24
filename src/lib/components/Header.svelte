@@ -49,12 +49,12 @@
         if (preview && btnWrapper) {
             btnWrapper.addEventListener('mouseenter', () => {
                 const rect = btnWrapper.getBoundingClientRect();
-                const imgW = 340;
+                const imgW = 260;
                 let left = rect.left + rect.width / 2 - imgW / 2;
                 if (left < 8) left = 8;
                 if (left + imgW > window.innerWidth - 8) left = window.innerWidth - imgW - 8;
                 preview.style.left = left + 'px';
-                preview.style.top = (rect.bottom + 10) + 'px';
+                preview.style.top = (rect.bottom + 4) + 'px';
                 preview.style.opacity = '1';
                 preview.style.transform = 'scale(1)';
             });
@@ -323,7 +323,7 @@
                     <img
                         src="/images/ad_neighborhoods.webp"
                         alt={tFn("welcome")}
-                        style="width:340px; border-radius:18px;
+                        style="width:260px; border-radius:18px;
                                -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
                                mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
                                filter: drop-shadow(0 0 40px rgba(0,0,0,0.95)) drop-shadow(0 0 80px rgba(0,0,0,0.7));"
