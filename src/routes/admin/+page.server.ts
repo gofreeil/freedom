@@ -1,8 +1,15 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { SITES, getSite } from '$lib/sitesData';
+import type { SiteAdminsMap } from '$lib/server/siteAdmins';
 import { isSuperAdmin } from '$lib/server/superAdmin';
-import { getSiteAdmins, setSiteAdmin, removeSiteAdmin } from '$lib/server/siteAdmins';
+import {
+	getSiteAdmins,
+	setSiteAdmin,
+	removeSiteAdmin,
+	setSiteAdminsOrder
+} from '$lib/server/siteAdmins';
 import { gravatarUrl } from '$lib/server/gravatar';
+import { displayAvatarUrl } from '$lib/server/avatarProxy';
 import type { PageServerLoad, Actions } from './$types';
 
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -18,28 +25,61 @@ async function requireSuperAdmin(locals: App.Locals) {
 	return { user: session.user, jwt };
 }
 
+// חנות החירות לא מנוהלת בדף הזה
+const MANAGED_SITES = SITES.filter((s) => s.id !== 'freedom_store');
+
+/** שורות הטבלה — פרטי האתר + האדמין שלו, בלי התמונה המוטמעת (ראו avatarProxy) */
+function siteRows(admins: SiteAdminsMap) {
+	return MANAGED_SITES.map((s) => {
+		const a = admins[s.id] ?? null;
+		return {
+			...s,
+			admin: a
+				? {
+						adminEmail: a.adminEmail ?? '',
+						adminName: a.adminName ?? '',
+						role: a.role ?? '',
+						phone: a.phone ?? '',
+						communityId: a.communityId ?? '',
+						updatedAt: a.updatedAt ?? '',
+						updatedBy: a.updatedBy ?? '',
+						// avatar = כתובת התמונה לתצוגה (פרוקסי אם הועלתה תמונה, אחרת Gravatar
+						// לפי האימייל). ה-data URL עצמו נשאר בשרת ולא מועמס על הדף.
+						avatar:
+							displayAvatarUrl(s.id, a.avatarUrl) ||
+							(a.adminEmail ? gravatarUrl(a.adminEmail) : '')
+					}
+				: null
+		};
+	});
+}
+
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, jwt } = await requireSuperAdmin(locals);
-	let admins: Awaited<ReturnType<typeof getSiteAdmins>>;
-	try {
-		admins = await getSiteAdmins(jwt);
-	} catch (e) {
-		console.error('site-admins load failed:', e);
-		throw error(502, 'שגיאה בטעינת נתוני האדמינים מהשרת המשותף');
-	}
+
+	// הנתונים מוחזרים כהבטחה ולא ב-await: SvelteKit מזרים אותם לדף. כך הלחיצה
+	// על "צוות הנהלה" מעבירה לדף מיד — הכותרת והשלד על המסך — והטבלה מתמלאת
+	// רגע אחרי, במקום שכל הניווט ימתין לסיבוב מול ה-Strapi המשותף.
+	const panel = getSiteAdmins(jwt).then(
+		({ admins, order }) => ({
+			// סדר ההצגה נשמר בשרת — כך הוא זהה בכל מכשיר וגם בתצוגה הציבורית ב-/about
+			order,
+			sites: siteRows(admins),
+			error: ''
+		}),
+		(e) => {
+			console.error('site-admins load failed:', e);
+			return {
+				order: [] as string[],
+				sites: siteRows({}),
+				error: 'שגיאה בטעינת נתוני האדמינים מהשרת המשותף — נסו לרענן'
+			};
+		}
+	);
+
 	return {
 		me: { name: user.name ?? '', email: user.email ?? '' },
-		// חנות החירות לא מנוהלת בדף הזה
-		sites: SITES.filter((s) => s.id !== 'freedom_store').map((s) => {
-			const a = admins[s.id] ?? null;
-			return {
-				...s,
-				// avatar = התמונה האפקטיבית לתצוגה (מפורשת אם הוגדרה, אחרת מהאימייל אם יש)
-				admin: a
-					? { ...a, avatar: a.avatarUrl?.trim() || (a.adminEmail ? gravatarUrl(a.adminEmail) : '') }
-					: null
-			};
-		})
+		panel
 	};
 };
 
@@ -72,6 +112,17 @@ export const actions: Actions = {
 		if (communityId.length > 100)
 			return fail(400, { siteId, error: 'מזהה קהילה ארוך מדי' });
 
+		// הדף לא מחזיק יותר את התמונה המוטמעת, ולכן שדה ריק פירושו "התמונה לא
+		// שונתה" — לוקחים את הקיימת מהשרת במקום למחוק אותה בכל שמירת שדה.
+		let keptAvatar = '';
+		if (!avatarUrl) {
+			try {
+				keptAvatar = (await getSiteAdmins(jwt)).admins[siteId]?.avatarUrl ?? '';
+			} catch {
+				keptAvatar = '';
+			}
+		}
+
 		try {
 			await setSiteAdmin(jwt, siteId, {
 				adminEmail,
@@ -79,7 +130,7 @@ export const actions: Actions = {
 				role: role || undefined,
 				phone: phone || undefined,
 				communityId: communityId || undefined,
-				avatarUrl: avatarUrl || undefined,
+				avatarUrl: avatarUrl || keptAvatar || undefined,
 				updatedAt: new Date().toISOString(),
 				updatedBy: me.email ?? ''
 			});
@@ -103,5 +154,27 @@ export const actions: Actions = {
 			return fail(502, { siteId, error: 'ההסרה בשרת המשותף נכשלה — נסו שוב' });
 		}
 		return { siteId, removed: true };
+	},
+
+	// שמירת סדר הצגת האתרים (חיצי הסידור). הסדר יושב בשרת ולא בדפדפן —
+	// כך הוא נשמר בין מכשירים ומופיע גם בכרטיסייה הציבורית ב-/about.
+	order: async ({ request, locals }) => {
+		const { jwt } = await requireSuperAdmin(locals);
+		const form = await request.formData();
+		let ids: unknown;
+		try {
+			ids = JSON.parse(String(form.get('order') ?? '[]'));
+		} catch {
+			return fail(400, { error: 'סדר לא תקין' });
+		}
+		if (!Array.isArray(ids)) return fail(400, { error: 'סדר לא תקין' });
+		const order = ids.filter((id): id is string => typeof id === 'string' && !!getSite(id));
+		try {
+			await setSiteAdminsOrder(jwt, order);
+		} catch (e) {
+			console.error('site-admins order save failed:', e);
+			return fail(502, { error: 'שמירת הסדר נכשלה — נסו שוב' });
+		}
+		return { orderSaved: true };
 	}
 };

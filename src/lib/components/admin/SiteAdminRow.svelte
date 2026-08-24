@@ -10,7 +10,7 @@
 		role?: string;
 		phone?: string;
 		communityId?: string;
-		avatarUrl?: string;
+		/** כתובת התמונה לתצוגה (פרוקסי/Gravatar) — לא ה-data URL עצמו */
 		avatar?: string;
 		updatedAt: string;
 		updatedBy: string;
@@ -43,8 +43,9 @@
 	let phone = $state(site.admin?.phone ?? '');
 	// svelte-ignore state_referenced_locally
 	let communityId = $state(site.admin?.communityId ?? '');
-	// svelte-ignore state_referenced_locally
-	let avatarUrl = $state(site.admin?.avatarUrl ?? '');
+	// תמונה *חדשה* שנבחרה עכשיו בקרופר. ריק = התמונה הקיימת נשארת כמו שהיא —
+	// הדף כבר לא נושא את ה-data URL הכבד, והשרת משלים אותו מהרשומה השמורה.
+	let avatarUrl = $state('');
 	let busy = $state(false);
 	let status = $state<{ type: 'ok' | 'err'; msg: string } | null>(null);
 	let imgOk = $state(true);
@@ -169,6 +170,9 @@
 				status = { type: 'err', msg: 'אירעה שגיאה' };
 			}
 			await update({ reset: false });
+			// אחרי שהנתונים התרעננו התמונה החדשה כבר מגיעה מהשרת ככתובת —
+			// משחררים את ה-data URL כדי שהשמירות הבאות לא ישלחו אותו שוב.
+			if (result.type === 'success') avatarUrl = '';
 		};
 	}}
 >
@@ -198,7 +202,7 @@
 					: 'border-sky-400/60'}"
 			>
 				{#if avatar && !avatarBroken}
-					<img src={avatar} alt="" class="h-full w-full object-cover" onerror={() => (avatarBroken = true)} />
+					<img src={avatar} alt="" loading="lazy" decoding="async" class="h-full w-full object-cover" onerror={() => (avatarBroken = true)} />
 				{:else}
 					<span class="flex h-full w-full items-center justify-center text-lg" aria-hidden="true">👤</span>
 				{/if}
@@ -216,6 +220,8 @@
 					<img
 						src={avatar}
 						alt={name || 'תמונת האדמין'}
+						loading="lazy"
+						decoding="async"
 						class="h-full w-full object-cover"
 						onerror={() => (avatarBroken = true)}
 					/>
@@ -256,7 +262,7 @@
 	>
 		<div class="h-[70px] w-[70px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
 			{#if site.image && imgOk}
-				<img src={site.image} alt="" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
+				<img src={site.image} alt="" loading="lazy" decoding="async" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
 			{:else}
 				<div class="flex h-full w-full items-center justify-center text-2xl">🕊️</div>
 			{/if}

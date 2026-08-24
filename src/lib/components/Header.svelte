@@ -180,13 +180,13 @@
 
                     <div class="flex items-center gap-1.5">
                         <!-- כפתור אודות - מובייל -->
-                        <button
-                            onclick={() => goto("/about")}
+                        <a
+                            href="/about"
                             class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
                             aria-label={tFn("about")}
                         >
                             <span class="text-xl font-bold text-white leading-none">ℹ</span>
-                        </button>
+                        </a>
 
                         <!-- כפתור דגל שפה - מובייל -->
                         <div class="relative lang-dropdown-container">
@@ -302,15 +302,17 @@
                 {/if}
                 <!-- כפתור אודות עם תצוגה מקדימה -->
                 <div class="relative" id="about-btn-wrapper">
-                    <button
+                    <!-- קישור ולא כפתור: כך SvelteKit מקדים את טעינת הדף כבר בריחוף
+                         (data-sveltekit-preload-data), והלחיצה עצמה מיידית. -->
+                    <a
+                        href="/about"
                         class="relative flex items-center rounded-lg px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105 hover:tracking-wide"
                         style="background:linear-gradient(135deg,#4f46e5,#7c3aed); box-shadow:0 4px 15px rgba(124,58,237,0.4);"
                         onmouseenter={(e) => (e.currentTarget as HTMLElement).style.boxShadow='0 0 24px 6px rgba(167,139,250,0.7), 0 4px 15px rgba(124,58,237,0.5)'}
                         onmouseleave={(e) => (e.currentTarget as HTMLElement).style.boxShadow='0 4px 15px rgba(124,58,237,0.4)'}
-                        onclick={() => goto("/about")}
                     >
                         {tFn("about")}
-                    </button>
+                    </a>
                 </div>
                 <!-- תמונת preview - position:fixed כדי לחמוק מ-overflow של ההדר -->
                 <div id="about-preview"

@@ -36,7 +36,10 @@
 		</script>
 		%sveltekit.head%
 	</head>
-	<body data-sveltekit-preload-data="hover">
+	<!-- ניווט מיידי: preload-data="hover" מושך את נתוני הדף כבר בריחוף/נגיעה בקישור,
+	     ו-preload-code="viewport" מקדים את ה-JS של כל קישור שנראה על המסך. כך
+	     בלחיצה עצמה כבר אין מה להמתין לו. -->
+	<body data-sveltekit-preload-data="hover" data-sveltekit-preload-code="viewport">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>
