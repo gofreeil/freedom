@@ -196,17 +196,6 @@
 				{#each sites as site (site.id)}
 					{@const admin = admins[site.id]}
 
-					<!-- שם האתר — שורה משלו מעל שורת הפרטים, מיושר לשמאל ובכחול -->
-					<a
-						href={site.url}
-						target="_blank"
-						rel="noopener noreferrer"
-						class="mt-2 truncate text-left text-sm font-bold text-sky-400 transition first:mt-0 hover:text-sky-300 hover:underline"
-						style="grid-column: 1 / -1;"
-					>
-						{site.name}
-					</a>
-
 					{@render avatar(site, admin, 'mx-auto h-[86px] w-[86px]', 'text-lg')}
 
 					<!-- שם האחראי — באותה מסגרת של שדה השם בפאנל -->
@@ -214,8 +203,19 @@
 						{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">טרם מונה</span>{/if}
 					</div>
 
-					<!-- תפקיד / הערה — באותה מסגרת של שדה התפקיד בפאנל -->
-					<div class={FIELD_CLS}>{admin?.role ?? ''}</div>
+					<!-- תפקיד / הערה — באותה מסגרת של שדה התפקיד בפאנל,
+					     ומעליה שם האתר בכחול, צמוד לקצה השמאלי של המסגרת -->
+					<div class="min-w-0">
+						<a
+							href={site.url}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="mb-1 block truncate text-left text-sm font-bold text-sky-400 transition hover:text-sky-300 hover:underline"
+						>
+							{site.name}
+						</a>
+						<div class={FIELD_CLS}>{admin?.role ?? ''}</div>
+					</div>
 
 					<!-- אתר (קישור לאתר עצמו) -->
 					<a

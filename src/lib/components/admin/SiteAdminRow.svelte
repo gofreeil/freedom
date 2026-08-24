@@ -242,15 +242,25 @@
 		class={nameInputCls}
 	/>
 
-	<!-- תפקיד / הערה -->
-	<input
-		name="role"
-		bind:value={role}
-		onchange={autoSave}
-		placeholder="תפקיד / הערה"
-		aria-label="תפקיד או הערה"
-		class={inputCls}
-	/>
+	<!-- תפקיד / הערה — ומעל המסגרת שם האתר בכחול, צמוד לקצה השמאלי -->
+	<div class="min-w-0">
+		<a
+			href={site.url}
+			target="_blank"
+			rel="noopener"
+			class="mb-1 block truncate text-left text-sm font-bold text-sky-400 transition hover:text-sky-300 hover:underline"
+		>
+			{site.name}
+		</a>
+		<input
+			name="role"
+			bind:value={role}
+			onchange={autoSave}
+			placeholder="תפקיד / הערה"
+			aria-label="תפקיד או הערה"
+			class={inputCls}
+		/>
+	</div>
 
 	<!-- אתר (קישור לאתר עצמו) -->
 	<a
@@ -258,7 +268,7 @@
 		target="_blank"
 		rel="noopener"
 		title={site.name}
-		class="group/site flex min-w-0 items-center gap-2"
+		class="flex min-w-0 items-center gap-2"
 	>
 		<div class="h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
 			{#if site.image && imgOk}
@@ -267,9 +277,6 @@
 				<div class="flex h-full w-full items-center justify-center text-2xl">🕊️</div>
 			{/if}
 		</div>
-		<span class="truncate text-sm font-bold text-white transition group-hover/site:text-sky-300 group-hover/site:underline">
-			{site.name}
-		</span>
 	</a>
 
 	<!-- יצירת קשר -->
