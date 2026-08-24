@@ -7,8 +7,8 @@
 	//   • דסקטופ (sm+) — זהה לפאנל: שורה אחת לכל אתר, באותה רשת עמודות
 	//     ובאותם גדלים (SITE_ROWS_GRID_COLS), רק בלי שדות עריכה.
 	//   • נייד — שם האתר עולה לכותרת ממורכזת מעל השורות, וכך נשאר רוחב מלא
-	//     לשם האחראי ולתפקיד; תמונת האתר צמודה לקצה השמאלי. רשת הדסקטופ לא
-	//     נכנסת למסך צר (רוחב מינימלי ~770px) והייתה גוררת גלילה אופקית.
+	//     לשם האחראי ולתפקיד; בלי מסגרת חיצונית, שחתכה את תמונות האתרים. רשת
+	//     הדסקטופ לא נכנסת למסך צר (רוחב מינימלי ~770px) וגררה גלילה אופקית.
 	//
 	// הנתונים נמשכים מ-/api/network-admins בפתיחת הכרטיסייה (ולא ב-load של
 	// הדף) — תמונות האדמינים שמורות כ-data URL, ואין סיבה להעמיס אותן על כל
@@ -139,7 +139,7 @@
 		<p class="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-gray-400">טוען…</p>
 	{:else}
 		<!-- ── נייד: שם האתר ככותרת ממורכזת, ומתחתיה שתי שורות פרטי האחראי ── -->
-		<ul class="rounded-2xl border border-white/10 bg-white/[0.02] py-1 pr-2 sm:hidden">
+		<ul class="sm:hidden">
 			{#each sites as site (site.id)}
 				{@const admin = admins[site.id]}
 				<li class="border-b border-white/5 py-2 last:border-b-0">
@@ -154,7 +154,7 @@
 					</a>
 
 					<div class="flex items-center gap-2">
-						{@render avatar(site, admin, 'h-11 w-11', 'text-sm')}
+						{@render avatar(site, admin, 'h-14 w-14', 'text-lg')}
 
 						<!-- שם ותפקיד — שתי שורות, עם כל הרוחב שהכותרת פינתה -->
 						<div class="min-w-0 flex-1">
@@ -170,9 +170,9 @@
 							{@render contact(admin, 'h-6 w-6 text-xs')}
 						</div>
 
-						<!-- תמונת האתר — צמודה לקצה השמאלי של המסך -->
+						<!-- תמונת האתר -->
 						<a href={site.url} target="_blank" rel="noopener noreferrer" title={site.name}>
-							{@render siteImage(site, 'h-11 w-11 rounded-r-lg', 'text-base')}
+							{@render siteImage(site, 'h-14 w-14 rounded-lg', 'text-xl')}
 						</a>
 					</div>
 				</li>
