@@ -64,7 +64,7 @@
 	// כדי שהתצוגה כאן תיראה זהה לו. truncate במקום שורה שנשברת: גם שם השדה
 	// בפאנל הוא input בשורה אחת.
 	const FIELD_CLS =
-		'truncate rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[13px] text-white';
+		'truncate rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[14px] text-white';
 	const NAME_FIELD_CLS =
 		'truncate rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[15px] font-bold text-amber-400';
 
