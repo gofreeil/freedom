@@ -198,9 +198,14 @@
 
 					{@render avatar(site, admin, 'mx-auto h-[86px] w-[86px]', 'text-lg')}
 
-					<!-- שם האחראי — באותה מסגרת של שדה השם בפאנל -->
-					<div class={NAME_FIELD_CLS}>
-						{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">טרם מונה</span>{/if}
+					<!-- שם האחראי — באותה מסגרת של שדה השם בפאנל.
+					     שורת רווח בלתי-נראית מעל, בגובה שורת שם האתר שבעמודת התפקיד,
+					     כדי ששתי המסגרות יישבו על אותו קו. -->
+					<div class="min-w-0">
+						<div class="invisible mb-1 text-sm font-bold" aria-hidden="true">·</div>
+						<div class={NAME_FIELD_CLS}>
+							{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">טרם מונה</span>{/if}
+						</div>
 					</div>
 
 					<!-- תפקיד / הערה — באותה מסגרת של שדה התפקיד בפאנל,

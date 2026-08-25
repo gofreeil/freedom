@@ -233,14 +233,19 @@
 	</div>
 
 	<!-- שם האדמין -->
-	<input
-		name="adminName"
-		bind:value={name}
-		onchange={autoSave}
-		placeholder="שם"
-		aria-label="שם האדמין"
-		class={nameInputCls}
-	/>
+	<!-- שורת רווח בלתי-נראית מעל, בגובה שורת שם האתר שבעמודת התפקיד,
+	     כדי ששתי המסגרות יישבו על אותו קו -->
+	<div class="min-w-0">
+		<div class="invisible mb-1 text-sm font-bold" aria-hidden="true">·</div>
+		<input
+			name="adminName"
+			bind:value={name}
+			onchange={autoSave}
+			placeholder="שם"
+			aria-label="שם האדמין"
+			class={nameInputCls}
+		/>
+	</div>
 
 	<!-- תפקיד / הערה — ומעל המסגרת שם האתר בכחול, צמוד לקצה השמאלי -->
 	<div class="min-w-0">
