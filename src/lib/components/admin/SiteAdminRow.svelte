@@ -253,7 +253,7 @@
 			href={site.url}
 			target="_blank"
 			rel="noopener"
-			class="-ml-4 mb-1 block truncate text-left text-sm font-bold text-sky-400 transition hover:text-sky-300 hover:underline"
+			class="-ml-[26px] mb-1 block truncate text-left text-sm font-bold text-sky-400 transition hover:text-sky-300 hover:underline"
 		>
 			{site.name}
 		</a>
@@ -273,7 +273,7 @@
 		target="_blank"
 		rel="noopener"
 		title={site.name}
-		class="mr-4 flex min-w-0 items-center gap-2"
+		class="mr-[26px] flex min-w-0 items-center gap-2"
 	>
 		<div class="h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
 			{#if site.image && imgOk}
