@@ -215,7 +215,7 @@
 							href={site.url}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="mb-1 block truncate text-left text-sm font-bold text-sky-400 transition hover:text-sky-300 hover:underline"
+							class="-ml-4 mb-1 block truncate text-left text-sm font-bold text-sky-400 transition hover:text-sky-300 hover:underline"
 						>
 							{site.name}
 						</a>
@@ -228,7 +228,7 @@
 						target="_blank"
 						rel="noopener noreferrer"
 						title={site.name}
-						class="flex min-w-0 items-center gap-2"
+						class="mr-4 flex min-w-0 items-center gap-2"
 					>
 						{@render siteImage(site, 'h-[80px] w-[80px] rounded-xl', 'text-2xl')}
 					</a>
