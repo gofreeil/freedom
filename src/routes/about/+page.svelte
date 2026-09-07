@@ -17,9 +17,11 @@
 		CONTACT_EMAIL,
 		aboutPageSchema,
 		organizationSchema,
-		breadcrumbSchema
+		breadcrumbSchema,
+		faqSchema
 	} from '$lib/seo';
 	import { SITES, type SiteCategory } from '$lib/sitesData';
+	import { ABOUT_FAQ } from '$lib/aboutFaq';
 
 	let { data } = $props();
 
@@ -98,24 +100,8 @@
 		}
 	];
 
-	const faqs = [
-		{
-			q: 'מי עומד מאחורי התנועה?',
-			a: 'קבוצת מתנדבים מכל הארץ — תושבים, בעלי מקצוע ואנשי תוכן — שמאמינים שאפשר לבנות חלופה מעשית במקום לחכות שמישהו אחר יבנה אותה. אין כאן מפלגה, אין גוף מסחרי ואין שיוך פוליטי.'
-		},
-		{
-			q: 'איך התנועה ממומנת?',
-			a: 'מפרסום מקומי בשטחי המודעות שבאתרים, ומהכנסות חנות החירות. אין דמי חבר, אין מנוי ואין תשלום על אף אחת מהפלטפורמות.'
-		},
-		{
-			q: 'מה עושים עם הפרטים שלי?',
-			a: 'ההרשמה משמשת אך ורק לזיהוי שלכם ברחבי הרשת. אנחנו לא מוכרים פרטים ולא מעבירים אותם לגורם שלישי.'
-		},
-		{
-			q: 'אני רוצה לתרום מזמני — איפה מתחילים?',
-			a: 'כמעט כל פלטפורמה זקוקה לידיים: בוררים בבתי הפיוס, מרכזי גמ״ח, פעילי ועד שכונה, מומחי תוכן ומתנדבי ביקורת. הירשמו, בחרו את התחום הקרוב אליכם, וכתבו לנו — נחבר אתכם לצוות הנכון.'
-		}
-	];
+	// השו"ת חי ב-$lib/aboutFaq.ts — מקור אמת אחד לתצוגה ולסכמת FAQPage שלמטה.
+	const faqs = ABOUT_FAQ;
 
 	const socials = [
 		{ label: 'פייסבוק', icon: '📘', href: 'https://www.facebook.com/share/17iu4gtxZH/' },
@@ -130,7 +116,9 @@
 		breadcrumbSchema([
 			{ name: 'יוצאים לחירות', path: '/' },
 			{ name: 'אודות', path: '/about' }
-		])
+		]),
+		// FAQPage — משקפת בדיוק את השו"ת שמוצג בדף (דף הבית מחזיק FAQPage משלו עם שאלות אחרות)
+		faqSchema(faqs)
 	];
 </script>
 
@@ -278,14 +266,15 @@
 	</section>
 
 	<!-- ═══════ שאלות נפוצות ═══════ -->
-	<section class="mb-10">
-		<h2 class="mb-5 flex items-center gap-2 text-xl font-black text-white sm:text-2xl">
+	<section id="faq" aria-labelledby="faq-title" class="mb-10">
+		<h2 id="faq-title" class="mb-5 flex items-center gap-2 text-xl font-black text-white sm:text-2xl">
 			<span aria-hidden="true">❓</span> שאלות שנשאלות הרבה
 			<span class="h-px flex-1 bg-white/10"></span>
 		</h2>
 		<div class="space-y-3">
-			{#each faqs as faq (faq.q)}
-				<details class="group rounded-2xl border border-white/10 bg-white/[0.03] p-5 shadow-lg">
+			{#each faqs as faq, i (faq.q)}
+				<!-- שתי הראשונות פתוחות כברירת מחדל: הטקסט גלוי כבר ב-SSR בלי לחיצה -->
+				<details open={i < 2} class="group rounded-2xl border border-white/10 bg-white/[0.03] p-5 shadow-lg">
 					<summary
 						class="cursor-pointer list-none text-base font-black text-white transition hover:text-amber-300"
 					>
