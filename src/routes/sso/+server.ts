@@ -9,7 +9,10 @@ import { getStrapiMe, getOrCreateStrapiJwt } from '$lib/server/strapiAuth';
  *
  * - מחובר כאן → קובעים את העוגייה המשותפת `gofreeil-auth` על `.gofreeil.com`
  *   (רק טוקן שאומת חי מול Strapi; פג → מנפיקים חדש) וחוזרים ל-callback.
- * - לא מחובר / אין טוקן חי → חוזרים ל-callback עם ?error=not_registered.
+ * - לא מחובר כאן כלל → מפנים ל-/login עם redirect חזרה לגשר: המשתמש נכנס או
+ *   מצטרף בלחיצה (Google/Facebook) וחוזר לכאן עם סשן חי. כך הכפתור באתר-האח
+ *   לעולם לא נכשל למי שאין לו חשבון (חברי קבוצות הווצאפ שאינם רשומים).
+ * - מחובר אך אין טוקן חי → חוזרים ל-callback עם ?error=not_registered.
  *
  * ה-callback חייב להיות https תחת gofreeil.com (הגנה מ-open-redirect).
  */
@@ -75,6 +78,16 @@ export const GET: RequestHandler = async ({ locals, url, cookies }) => {
 			maxAge: 60 * 60 * 24 * 90, // 90 ימים
 		});
 		throw redirect(302, callback.toString());
+	}
+
+	// אין סשן בכלל → מסך הכניסה שלנו, עם חזרה אוטומטית לגשר אחרי ההתחברות.
+	// אין לולאה: /login מפנה ל-redirect רק כשיש סשן, ואז user.email קיים.
+	if (!user?.email) {
+		const back = `/sso?callback=${encodeURIComponent(callback.toString())}`;
+		throw redirect(
+			302,
+			`/login?redirect=${encodeURIComponent(back)}&via=${encodeURIComponent(callback.hostname)}`
+		);
 	}
 
 	callback.searchParams.set('error', 'not_registered');
