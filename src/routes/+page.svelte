@@ -23,7 +23,7 @@
 		image?: string;
 		/* מידות מקוריות של התמונה - נכתבות כ-width/height על ה-img כדי שהדפדפן
 		   ישריין את הגובה לפני הטעינה ולא תהיה קפיצת פריסה (CLS).
-		   נחוץ רק לבאנרים בגובה אוטומטי (טור הקהילה); לשאר יש גובה קבוע ב-CSS. */
+		   חיוני לבאנרים בגובה אוטומטי (טור הקהילה); לשאר הגובה קבוע ב-CSS, אבל המידות ניתנות בכל מקרה. */
 		w?: number;
 		h?: number;
 		comingSoon?: boolean;
@@ -39,8 +39,8 @@
 					descriptionKey: 'page.sites.community_neighborhood.description',
 					href: 'https://community.gofreeil.com/',
 					image: '/images/community-neighborhood.webp',
-					w: 1600,
-					h: 1067
+					w: 1200,
+					h: 800
 				},
 				{
 					titleKey: 'page.sites.courts_reconciliation.title',
@@ -55,8 +55,8 @@
 					descriptionKey: 'page.sites.national_gemach.description',
 					href: 'https://gemach.gofreeil.com/',
 					image: '/images/gemach-harzi.webp',
-					w: 1536,
-					h: 1024
+					w: 1200,
+					h: 800
 				}
 				// "פינת האבדות" (avedot.gofreeil.com) מוסתר מדף הבית בלבד.
 				// האתר עצמו נשאר חלק מהרשת — מוצג בפוטר ובפאנל האדמין,
@@ -70,31 +70,41 @@
 					titleKey: 'page.sites.neighborhood_committees.title',
 					descriptionKey: 'page.sites.neighborhood_committees.description',
 					href: 'https://neighborhoods.gofreeil.com/',
-					image: '/images/news/vaadei-shchunot.webp'
+					image: '/images/news/vaadei-shchunot.webp',
+					w: 1193,
+					h: 646
 				},
 				{
 					titleKey: 'page.sites.state_auditor.title',
 					descriptionKey: 'page.sites.state_auditor.description',
 					href: 'https://criticism.gofreeil.com/',
-					image: '/images/mevaker-rashuyot.webp'
+					image: '/images/mevaker-rashuyot.webp',
+					w: 884,
+					h: 887
 				},
 				{
 					titleKey: 'page.sites.public_rating.title',
 					descriptionKey: 'page.sites.public_rating.description',
 					href: 'https://rating.gofreeil.com/',
-					image: '/images/public-rating.webp'
+					image: '/images/public-rating.webp',
+					w: 1024,
+					h: 1536
 				},
 				{
 					titleKey: 'page.sites.experts.title',
 					descriptionKey: 'page.sites.experts.description',
 					href: 'https://experts.gofreeil.com/',
-					image: '/images/the-experts.webp'
+					image: '/images/the-experts.webp',
+					w: 1400,
+					h: 933
 				},
 				{
 					titleKey: 'page.sites.referendum.title',
 					descriptionKey: 'page.sites.referendum.description',
 					href: 'https://referendum.gofreeil.com/',
-					image: '/images/referendum.webp'
+					image: '/images/referendum.webp',
+					w: 1400,
+					h: 933
 				}
 			]
 		},
@@ -105,19 +115,25 @@
 					titleKey: 'page.sites.purchasing_group.title',
 					descriptionKey: 'page.sites.purchasing_group.description',
 					href: 'https://groups.gofreeil.com/',
-					image: '/images/whatsapp_cta.webp'
+					image: '/images/whatsapp_cta.webp',
+					w: 493,
+					h: 503
 				},
 				{
 					titleKey: 'page.sites.professionals.title',
 					descriptionKey: 'page.sites.professionals.description',
 					href: 'https://index.gofreeil.com/',
-					image: '/images/professionals.webp'
+					image: '/images/professionals.webp',
+					w: 584,
+					h: 329
 				},
 				{
 					titleKey: 'page.sites.freedom_store.title',
 					descriptionKey: 'page.sites.freedom_store.description',
 					href: 'https://shop.gofreeil.com/',
-					image: '/images/freedom-store.webp'
+					image: '/images/freedom-store.webp',
+					w: 1200,
+					h: 800
 				}
 			]
 		}
@@ -598,7 +614,7 @@
 <!-- ה-hero-stage תוחם את וידאו הרקע למסך הראשון בלבד (כותרת+וידאו+מונה) ובתוך רוחב המסגרת.
      position:relative על ה-stage + position:absolute על הוידאו => הוידאו ממלא רק את האזור הזה, ונגלל איתו.
      מהמודל המשילות ומטה אין וידאו - רק הרקע הכהה של האתר, כמו מקודם.
-     poster מציג מיד תמונה דקה (~286KB) - הוידאו עצמו (7.7MB) נדחה עד אחרי mount, כדי שה-LCP יהיה מהיר. -->
+     poster מציג מיד תמונה דקה (~240KB, WebP) - הוידאו עצמו (7.7MB) נדחה עד אחרי mount, כדי שה-LCP יהיה מהיר. -->
 <div class="hero-stage">
 {#if videoSrc}
 <video
@@ -609,13 +625,13 @@
 	loop
 	playsinline
 	preload="auto"
-	poster="/images/bg-poster.jpg"
+	poster="/images/bg-poster.webp"
 	aria-hidden="true"
 >
 	<source src={videoSrc} type="video/mp4" />
 </video>
 {:else}
-<img class="bg-video" src="/images/bg-poster.jpg" alt="" aria-hidden="true" fetchpriority="high" />
+<img class="bg-video" src="/images/bg-poster.webp" alt="" aria-hidden="true" width="1280" height="720" fetchpriority="high" decoding="async" />
 {/if}
 
 <section class="max-w-5xl mx-auto px-6 pt-4 pb-6 text-center">
@@ -673,6 +689,8 @@
 					<img
 						src="https://i.ytimg.com/vi/CjBbU2ZOsa8/sddefault.jpg"
 						alt={tFn("page.video.title")}
+						width="640"
+						height="480"
 						class="h-full w-full object-cover"
 						style="object-position:50% 33%"
 						loading="eager"
@@ -758,19 +776,19 @@
 		{#if demoFingerActive}
 			<span class="finger-smudge" aria-hidden="true"></span>
 			<div class="finger-demo" aria-hidden="true">
-				<img src="/images/finger.webp" alt="" />
+				<img src="/images/finger.webp" alt="" width="500" height="802" loading="lazy" decoding="async" />
 			</div>
 		{/if}
 		{#if demoReverseActive}
 			<span class="finger-smudge reverse" aria-hidden="true"></span>
 			<div class="finger-demo reverse" aria-hidden="true">
-				<img src="/images/finger.webp" alt="" />
+				<img src="/images/finger.webp" alt="" width="500" height="802" loading="lazy" decoding="async" />
 			</div>
 		{/if}
 		{#if demoThirdActive}
 			<span class="finger-smudge reverse" aria-hidden="true"></span>
 			<div class="finger-demo reverse" aria-hidden="true">
-				<img src="/images/finger.webp" alt="" />
+				<img src="/images/finger.webp" alt="" width="500" height="802" loading="lazy" decoding="async" />
 			</div>
 		{/if}
 		{#each columns as column, i (column.headingKey)}
@@ -824,12 +842,12 @@
 								<span class="rope-unit">
 									<span class="rope-hole rope-hole-top"></span>
 									<span class="rope-hole rope-hole-bot"></span>
-									<img class="rope-img" src="/images/rope.webp" alt="" />
+									<img class="rope-img" src="/images/rope.webp" alt="" width="34" height="89" loading="lazy" decoding="async" />
 								</span>
 								<span class="rope-unit rope-unit-flip">
 									<span class="rope-hole rope-hole-top"></span>
 									<span class="rope-hole rope-hole-bot"></span>
-									<img class="rope-img" src="/images/rope.webp" alt="" />
+									<img class="rope-img" src="/images/rope.webp" alt="" width="34" height="89" loading="lazy" decoding="async" />
 								</span>
 							</div>
 						{/if}

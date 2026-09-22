@@ -158,6 +158,9 @@
                                 <img
                                     src="/images/ad_neighborhoods.webp"
                                     alt=""
+                                    width="462"
+                                    height="430"
+                                    decoding="async"
                                     class="w-full h-full object-cover scale-[1.2]"
                                 />
                             </div>
@@ -243,7 +246,10 @@
                         <div class="h-14 w-14 rounded-full overflow-hidden">
                             <img
                                 src="/images/ad_neighborhoods.webp"
-                                alt=""
+                                alt="{tFn('welcome')} – {tFn('back_home')}"
+                                width="462"
+                                height="430"
+                                decoding="async"
                                 class="w-full h-full object-cover scale-[1.2]"
                             />
                         </div>
@@ -323,8 +329,12 @@
                             transform-origin: top center;">
                     <img
                         src="/images/ad_neighborhoods.webp"
-                        alt={tFn("welcome")}
-                        style="width:260px; border-radius:18px;
+                        alt=""
+                        width="462"
+                        height="430"
+                        loading="lazy"
+                        decoding="async"
+                        style="width:260px; height:auto; border-radius:18px;
                                -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
                                mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
                                filter: drop-shadow(0 0 40px rgba(0,0,0,0.95)) drop-shadow(0 0 80px rgba(0,0,0,0.7));"

@@ -28,7 +28,7 @@ export const SITES: FreedomSite[] = [
 		name: 'יוצאים לחירות',
 		description: 'עמוד הבית של הרשת — שער לכל הפלטפורמות.',
 		url: 'https://gofreeil.com/',
-		image: '/images/yotzim-lecherut.png',
+		image: '/images/yotzim-lecherut.webp',
 		category: 'ראשי'
 	},
 	{
@@ -60,7 +60,7 @@ export const SITES: FreedomSite[] = [
 		name: 'פינת האבדות',
 		description: 'לוח אבידות ומציאות ארצי — מחזירים אבידה לבעליה.',
 		url: 'https://avedot.gofreeil.com/',
-		image: '/images/pinat-haavedot.png',
+		image: '/images/pinat-haavedot.webp',
 		category: 'קהילה'
 	},
 	{

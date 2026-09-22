@@ -134,8 +134,11 @@
 	<!-- ═══════ פתיח ═══════ -->
 	<header class="mb-8 text-center">
 		<img
-			src="/images/yotzim-lecherut.png"
-			alt="לוגו יוצאים לחירות"
+			src="/images/yotzim-lecherut.webp"
+			alt="לוגו יוצאים לחירות — יונה ממריאה מכפות ידיים פתוחות"
+			width="1164"
+			height="664"
+			decoding="async"
 			class="mx-auto mb-4 h-24 w-24 rounded-full border-2 border-amber-400/30 bg-white object-cover shadow-lg sm:h-28 sm:w-28"
 		/>
 		<h1
@@ -249,7 +252,10 @@
 									<img
 										src={site.image}
 										alt=""
+										width="56"
+										height="56"
 										loading="lazy"
+										decoding="async"
 										class="h-14 w-14 flex-shrink-0 rounded-xl object-cover"
 									/>
 								{/if}

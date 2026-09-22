@@ -32,8 +32,6 @@
 
 <svelte:head>
 	<title>{tFn("welcome")}</title>
-	<link rel="icon" href="/images/ad_neighborhoods.png" type="image/png" />
-	<link rel="apple-touch-icon" href="/images/ad_neighborhoods.png" />
 </svelte:head>
 
 <a href="#main-content" class="skip-link">{tFn("layout.skip_to_main")}</a>

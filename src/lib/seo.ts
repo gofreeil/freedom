@@ -14,8 +14,8 @@ export const SITE_NAME = 'יוצאים לחירות';
 export const SITE_TAGLINE = 'מתקדמים לעולם סולידרי, אחראי וחופשי';
 export const SITE_DESCRIPTION =
     'יוצאים לחירות — תנועה חברתית שבונה חלופה מעשית: קהילות שכונתיות, בתי פיוס לבוררות, מאגר הגמ"חים הארצי, פינת האבדות, אינדקס בעלי מקצוע, רכישות קבוצתיות שמורידות מחירים, ועדי שכונות, ביקורת ציבורית על הרשויות ומשאלי עם. כל הפלטפורמות במקום אחד, לכל תושב בישראל.';
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/yotzim-lecherut.png`;
-export const SITE_LOGO = `${SITE_URL}/images/yotzim-lecherut.png`;
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/yotzim-lecherut.jpg`;
+export const SITE_LOGO = `${SITE_URL}/images/yotzim-lecherut.jpg`;
 export const CONTACT_EMAIL = 'freedomhasbegun@gmail.com';
 
 /** בונה URL מוחלט קנוני מנתיב יחסי. */

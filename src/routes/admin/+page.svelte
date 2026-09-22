@@ -97,7 +97,7 @@
 		<div class="min-w-0">
 			<h1 class="flex items-center gap-2.5 text-xl font-black text-white sm:text-2xl">
 				<span class="h-9 w-9 flex-shrink-0 overflow-hidden rounded-full">
-					<img src="/images/ad_neighborhoods.webp" alt="" class="h-full w-full scale-[1.2] object-cover" />
+					<img src="/images/ad_neighborhoods.webp" alt="" width="462" height="430" decoding="async" class="h-full w-full scale-[1.2] object-cover" />
 				</span>
 				ניהול אתרי יוצאים לחירות
 			</h1>
