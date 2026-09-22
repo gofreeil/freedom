@@ -555,11 +555,17 @@
 
 	// רקע וידאו - הוידאו מקודד native ב-2x slow-motion עם frame interpolation (minterpolate=blend),
 	// כך שמתנגן ב-1.0x ללא קפיצות שגרם playbackRate=0.5 (שמכריח את הדפדפן לחזור על פריימים).
-	// טוענים את הוידאו (~12MB) רק אחרי שהדף האינטראקטיבי - poster מוצג מיד, ואז
-	// requestIdleCallback (או setTimeout fallback) מוסיף את ה-<video> כשהדפדפן פנוי.
+	// טוענים את הוידאו (~2.9MB, 960px H.264 CRF 32) רק אחרי שהדף אינטראקטיבי - poster
+	// מוצג מיד, ואז requestIdleCallback (או setTimeout fallback) מוסיף את ה-<video>
+	// כשהדפדפן פנוי. הוידאו הוא הקובץ הכבד ביותר באתר, ולכן מדלגים עליו לגמרי
+	// כשהגולש ביקש פחות תנועה (ה-CSS ממילא מסתיר אותו, אבל display:none לא מונע
+	// הורדה), הפעיל חיסכון בנתונים, או גולש מחיבור איטי.
 	let bgVideoEl: HTMLVideoElement | undefined = $state();
 	let videoSrc = $state('');
 	onMount(() => {
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		const conn = (navigator as any).connection;
+		if (conn?.saveData || /(^|-)2g$|^3g$/.test(conn?.effectiveType ?? '')) return;
 		const load = () => (videoSrc = '/images/bg.mp4');
 		const ric = (window as any).requestIdleCallback;
 		const id = ric ? ric(load, { timeout: 1500 }) : setTimeout(load, 600);
@@ -614,7 +620,7 @@
 <!-- ה-hero-stage תוחם את וידאו הרקע למסך הראשון בלבד (כותרת+וידאו+מונה) ובתוך רוחב המסגרת.
      position:relative על ה-stage + position:absolute על הוידאו => הוידאו ממלא רק את האזור הזה, ונגלל איתו.
      מהמודל המשילות ומטה אין וידאו - רק הרקע הכהה של האתר, כמו מקודם.
-     poster מציג מיד תמונה דקה (~240KB, WebP) - הוידאו עצמו (7.7MB) נדחה עד אחרי mount, כדי שה-LCP יהיה מהיר. -->
+     poster מציג מיד תמונה דקה (~240KB, WebP) - הוידאו עצמו (~2.9MB) נדחה עד אחרי mount, כדי שה-LCP יהיה מהיר. -->
 <div class="hero-stage">
 {#if videoSrc}
 <video
