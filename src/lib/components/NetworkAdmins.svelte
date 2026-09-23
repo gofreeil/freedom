@@ -1,7 +1,7 @@
 <script lang="ts">
 	// ============================================================
 	// "צוות הרכזים" — מי אחראי על כל אתר ברשת, בכרטיסייה שבדף /about.
-	// פתוח לכולם וקריאה בלבד; העריכה נשארת בפאנל הסופר-אדמין (/admin).
+	// פתוח לכולם וקריאה בלבד; לסופר-אדמין מוצג במקומה NetworkAdminsEditor (טבלה ניתנת לעריכה).
 	//
 	// שתי פריסות:
 	//   • דסקטופ (sm+) — זהה לפאנל: שורה אחת לכל אתר, באותה רשת עמודות
@@ -17,8 +17,6 @@
 	import { onMount } from 'svelte';
 	import { SITES, type FreedomSite } from '$lib/sitesData';
 	import { SITE_ROWS_GRID_COLS } from '$lib/components/admin/sitesGrid';
-
-	let { canEdit = false }: { canEdit?: boolean } = $props();
 
 	interface PublicAdmin {
 		name: string;
@@ -245,16 +243,5 @@
 				{/each}
 			</div>
 		</div>
-
-		{#if canEdit}
-			<div class="mt-3">
-				<a
-					href="/admin"
-					class="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
-				>
-					✏️ עריכה בפאנל הניהול
-				</a>
-			</div>
-		{/if}
 	{/if}
 </section>

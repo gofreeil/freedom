@@ -5,8 +5,8 @@ import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ locals }) => {
 	const session = await locals.auth();
 	if (!session?.user) throw redirect(302, '/login?redirect=/profile');
-	// סופר-אדמין: האזור האישי הוא פאנל ניהול אתרי הרשת
-	if (isSuperAdmin(session.user.email)) throw redirect(302, '/admin');
+	// סופר-אדמין: האזור האישי הוא פאנל ניהול אתרי הרשת (בכרטיסייה שבאודות)
+	if (isSuperAdmin(session.user.email)) throw redirect(302, '/about?tab=network');
 	// שאר המשתמשים: אין אזור אישי בשער — חוזרים לדף הבית
 	throw redirect(302, '/');
 };

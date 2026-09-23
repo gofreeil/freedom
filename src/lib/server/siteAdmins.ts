@@ -36,7 +36,7 @@ function authHeaders(jwt: string): Record<string, string> {
 }
 
 // מטמון קצר גם למפה המלאה (הפאנל): הנתונים זהים לכל סופר-אדמין ומשתנים רק
-// בשמירה מהפאנל עצמו — ושם מרוקנים את המטמון. בלעדיו כל פתיחה של /admin המתינה
+// בשמירה מהפאנל עצמו — ושם מרוקנים את המטמון. בלעדיו כל פתיחה של הפאנל המתינה
 // לסיבוב שלם מול ה-Strapi (חצי שנייה עד שתיים), וזה כל זמן ההמתנה של הדף.
 const FULL_CACHE_TTL_MS = 60_000;
 let fullCache: { at: number; data: { admins: SiteAdminsMap; order: string[] } } | null = null;

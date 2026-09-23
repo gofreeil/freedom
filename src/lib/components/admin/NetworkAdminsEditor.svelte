@@ -1,10 +1,20 @@
 <script lang="ts">
+	// ============================================================
+	// פאנל ניהול אתרי הרשת (לשעבר /admin) — מוצג לסופר-אדמין בכרטיסייה
+	// "ניהול הרשת" שבדף /about במקום התצוגה הציבורית (NetworkAdmins).
+	// הפעולות (?/assign, ?/remove, ?/order) יושבות ב-about/+page.server.ts.
+	// ============================================================
+	import type { ComponentProps } from 'svelte';
 	import SiteAdminRow from '$lib/components/admin/SiteAdminRow.svelte';
 	import { SITE_ROWS_GRID_COLS } from '$lib/components/admin/sitesGrid';
 
-	let { data } = $props();
+	type Panel = {
+		order: string[];
+		sites: ComponentProps<typeof SiteAdminRow>['site'][];
+		error: string;
+	};
 
-	type Panel = Awaited<typeof data.panel>;
+	let { panelData }: { panelData: Promise<Panel> } = $props();
 
 	// מצב עריכה: מאפשר להעלות ולמרכז תמונות אדמינים בלחיצה על העיגול,
 	// ומציג את חיצי הסידור שמזיזים אתר מעלה/מטה ברשימה.
@@ -26,7 +36,7 @@
 	let seq = 0;
 	$effect(() => {
 		const mine = ++seq;
-		data.panel.then((p) => {
+		panelData.then((p) => {
 			if (mine !== seq) return; // תשובה של טעינה שכבר הוחלפה
 			panel = p;
 			if (p.order.length) order = p.order;
@@ -89,20 +99,12 @@
 	const GRID_COLS = SITE_ROWS_GRID_COLS;
 </script>
 
-<svelte:head><title>ניהול אתרי יוצאים לחירות</title></svelte:head>
-
-<div class="mx-auto max-w-6xl px-4 py-6" dir="rtl">
-	<!-- כותרת בלבד -->
-	<header class="mb-4 flex flex-wrap items-center justify-between gap-3">
-		<div class="min-w-0">
-			<h1 class="flex items-center gap-2.5 text-xl font-black text-white sm:text-2xl">
-				<span class="h-9 w-9 flex-shrink-0 overflow-hidden rounded-full">
-					<img src="/images/ad_neighborhoods.webp" alt="" width="462" height="430" decoding="async" class="h-full w-full scale-[1.2] object-cover" />
-				</span>
-				ניהול אתרי יוצאים לחירות
-			</h1>
-		</div>
-	</header>
+<section>
+	<h2 class="mb-3 flex items-center gap-2 text-lg font-black text-white sm:mb-4 sm:text-2xl">
+		<span class="h-px flex-1 bg-white/10"></span>
+		<span aria-hidden="true">🛡️</span> צוות הרכזים — ניהול
+		<span class="h-px flex-1 bg-white/10"></span>
+	</h2>
 
 	{#if panel?.error}
 		<p class="mb-3 rounded-xl border border-red-500/25 bg-red-500/10 p-3 text-sm text-red-300">
@@ -159,4 +161,4 @@
 			<span class="text-xs font-semibold text-red-400">{orderError}</span>
 		{/if}
 	</div>
-</div>
+</section>

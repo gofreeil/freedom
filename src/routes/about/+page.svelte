@@ -12,6 +12,7 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import NetworkAdmins from '$lib/components/NetworkAdmins.svelte';
+	import NetworkAdminsEditor from '$lib/components/admin/NetworkAdminsEditor.svelte';
 	import {
 		SITE_TAGLINE,
 		CONTACT_EMAIL,
@@ -190,7 +191,12 @@
 
 	{#if tab === 'network'}
 		<div id="panel-network" role="tabpanel" aria-labelledby="tab-network">
-			<NetworkAdmins canEdit={!!data.user?.isSuperAdmin} />
+			<!-- סופר-אדמין: פאנל הניהול הניתן לעריכה; כל השאר: תצוגה לקריאה בלבד -->
+			{#if data.panel}
+				<NetworkAdminsEditor panelData={data.panel} />
+			{:else}
+				<NetworkAdmins />
+			{/if}
 		</div>
 	{:else}
 	<div id="panel-about" role="tabpanel" aria-labelledby="tab-about">
