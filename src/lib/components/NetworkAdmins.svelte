@@ -18,6 +18,15 @@
 	import { page } from '$app/state';
 	import { SITES, type FreedomSite } from '$lib/sitesData';
 	import { SITE_ROWS_GRID_COLS } from '$lib/components/admin/sitesGrid';
+	import { locale } from 'svelte-i18n';
+	import { ABOUT_TEXT, ADMINS_TEXT, aboutLang } from '$lib/aboutContent';
+
+	// שפת התצוגה. הטבלה עצמה נשארת RTL בכל שפה — היא מראה של פאנל הניהול
+	// (אותה רשת עמודות והיסטים), והשמות והתפקידים ממילא בעברית.
+	const lang = $derived(aboutLang($locale));
+	const tx = $derived(ADMINS_TEXT[lang]);
+	const dir = $derived(ABOUT_TEXT[lang].dir);
+	const siteName = (site: FreedomSite) => tx.siteNames[site.id] ?? site.name;
 
 	interface PublicAdmin {
 		name: string;
@@ -28,7 +37,7 @@
 	}
 
 	let admins = $state<Record<string, PublicAdmin> | null>(null);
-	let error = $state('');
+	let loadFailed = $state(false);
 	let brokenAvatar = $state<Record<string, boolean>>({});
 	let brokenImage = $state<Record<string, boolean>>({});
 
@@ -55,7 +64,7 @@
 			if (Array.isArray(json.order)) order = json.order;
 			admins = json.admins ?? {};
 		} catch {
-			error = 'לא הצלחנו לטעון את בעלי התפקידים ברשת. נסו לרענן את הדף.';
+			loadFailed = true;
 		}
 	});
 
@@ -98,10 +107,10 @@
 				body: JSON.stringify({ siteId: msgFor.site.id, text: msgText })
 			});
 			const json = (await res.json().catch(() => ({}))) as { error?: string };
-			if (!res.ok) throw new Error(json.error || 'שליחת ההודעה נכשלה — נסו שוב');
+			if (!res.ok) throw new Error(json.error || tx.sendFailed);
 			msgSent = true;
 		} catch (e) {
-			msgError = e instanceof Error ? e.message : 'שליחת ההודעה נכשלה — נסו שוב';
+			msgError = e instanceof Error ? e.message : tx.sendFailed;
 		} finally {
 			sending = false;
 		}
@@ -164,8 +173,8 @@
 		<button
 			type="button"
 			onclick={() => openMessage(site, admin)}
-			title="השאירו הודעה ל{admin.name}"
-			aria-label="השאירו הודעה ל{admin.name}"
+			title={tx.msgTo(admin.name)}
+			aria-label={tx.msgTo(admin.name)}
 			class="flex items-center justify-center rounded-lg border border-white/10 bg-white/5 transition hover:bg-white/15 {cls}"
 			>✉️</button
 		>
@@ -175,8 +184,8 @@
 		<button
 			type="button"
 			onclick={() => (waFor = { site, admin })}
-			title="וואטסאפ ל{admin.name} (דחוף בלבד)"
-			aria-label="וואטסאפ ל{admin.name} (דחוף בלבד)"
+			title={tx.waTo(admin.name)}
+			aria-label={tx.waTo(admin.name)}
 			class="flex items-center justify-center rounded-lg border border-white/10 bg-white/5 transition hover:bg-white/15 {cls}"
 			>💬</button
 		>
@@ -184,25 +193,25 @@
 	{#if admin?.email}
 		<a
 			href="mailto:{admin.email}"
-			title="אימייל ל{admin.name}"
-			aria-label="אימייל ל{admin.name}"
+			title={tx.emailTo(admin.name)}
+			aria-label={tx.emailTo(admin.name)}
 			class="flex items-center justify-center rounded-lg border border-white/10 bg-white/5 transition hover:bg-white/15 {cls}"
 			>📧</a
 		>
 	{/if}
 {/snippet}
 
-<section>
+<section dir="rtl">
 	<h2 class="mb-3 flex items-center gap-2 text-lg font-black text-white sm:mb-4 sm:text-2xl">
 		<span class="h-px flex-1 bg-white/10"></span>
-		<span aria-hidden="true">🛡️</span> צוות הרכזים
+		<span aria-hidden="true">🛡️</span> {tx.title}
 		<span class="h-px flex-1 bg-white/10"></span>
 	</h2>
 
-	{#if error}
-		<p class="rounded-2xl border border-red-500/25 bg-red-500/10 p-4 text-sm text-red-300">{error}</p>
+	{#if loadFailed}
+		<p class="rounded-2xl border border-red-500/25 bg-red-500/10 p-4 text-sm text-red-300">{tx.loadError}</p>
 	{:else if !admins}
-		<p class="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-gray-400">טוען…</p>
+		<p class="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-gray-400">{tx.loading}</p>
 	{:else}
 		<!-- ── נייד: שם האתר ככותרת ממורכזת, ומתחתיה שתי שורות פרטי האחראי ── -->
 		<ul class="sm:hidden">
@@ -216,7 +225,7 @@
 						rel="noopener noreferrer"
 						class="mb-1.5 block text-center text-[14px] font-bold text-white"
 					>
-						{site.name}
+						{siteName(site)}
 					</a>
 
 					<div class="flex items-center gap-2">
@@ -228,7 +237,7 @@
 						     את גובה השורה — כך הצורה לא משתנה. -->
 						<div class="min-w-0 flex-1">
 							<div class="line-clamp-1 text-[14px] font-bold leading-tight text-amber-400">
-								{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">טרם מונה</span>{/if}
+								{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">{tx.notAssigned}</span>{/if}
 							</div>
 							{#if admin?.role}
 								<div class="mt-0.5 line-clamp-2 text-[12px] leading-tight text-gray-400">{admin.role}</div>
@@ -240,7 +249,7 @@
 						</div>
 
 						<!-- תמונת האתר -->
-						<a href={site.url} target="_blank" rel="noopener noreferrer" title={site.name}>
+						<a href={site.url} target="_blank" rel="noopener noreferrer" title={siteName(site)}>
 							{@render siteImage(site, 'h-14 w-14 rounded-lg', 'text-xl')}
 						</a>
 					</div>
@@ -262,7 +271,7 @@
 					<div class="min-w-0">
 						<div class="invisible mb-1 text-sm font-bold" aria-hidden="true">·</div>
 						<div class={NAME_FIELD_CLS}>
-							{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">טרם מונה</span>{/if}
+							{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">{tx.notAssigned}</span>{/if}
 						</div>
 					</div>
 
@@ -275,7 +284,7 @@
 							rel="noopener noreferrer"
 							class="-ml-[26px] mb-1 block truncate text-left text-sm font-bold text-sky-400 transition hover:text-sky-300 hover:underline"
 						>
-							{site.name}
+							{siteName(site)}
 						</a>
 						<div class={FIELD_CLS}>{admin?.role ?? ''}</div>
 					</div>
@@ -285,7 +294,7 @@
 						href={site.url}
 						target="_blank"
 						rel="noopener noreferrer"
-						title={site.name}
+						title={siteName(site)}
 						class="mr-[26px] flex min-w-0 items-center gap-2"
 					>
 						{@render siteImage(site, 'h-[80px] w-[80px] rounded-xl', 'text-2xl')}
@@ -315,16 +324,15 @@
 		onclick={(e) => e.target === e.currentTarget && (waFor = null)}
 	>
 		<div
-			class="w-full max-w-md rounded-2xl border border-amber-500/30 bg-[#0f172a] p-5 text-right shadow-2xl"
+			class="w-full max-w-md rounded-2xl border border-amber-500/30 bg-[#0f172a] p-5 text-start shadow-2xl"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="wa-warn-title"
-			dir="rtl"
+			{dir}
 		>
-			<h3 id="wa-warn-title" class="mb-2 text-lg font-black text-amber-300">⚠️ וואטסאפ — למקרים דחופים בלבד</h3>
+			<h3 id="wa-warn-title" class="mb-2 text-lg font-black text-amber-300">{tx.waWarnTitle}</h3>
 			<p class="text-sm leading-relaxed text-gray-300">
-				פנייה בוואטסאפ ל{t.admin.name} נועדה למקרים דחופים בלבד. בכל נושא אחר — נא להשאיר הודעה
-				או לפנות במייל, והרכז יחזור אליכם.
+				{tx.waWarnText(t.admin.name)}
 			</p>
 			<div class="mt-5 flex flex-wrap gap-2">
 				<button
@@ -332,7 +340,7 @@
 					onclick={() => openMessage(t.site, t.admin)}
 					class="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 text-sm font-black text-white transition hover:opacity-90"
 				>
-					✉️ השארת הודעה
+					{tx.leaveMessage}
 				</button>
 				{#if t.admin.email}
 					<a
@@ -340,7 +348,7 @@
 						onclick={() => (waFor = null)}
 						class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
 					>
-						📧 מייל
+						{tx.email}
 					</a>
 				{/if}
 				<a
@@ -350,7 +358,7 @@
 					onclick={() => (waFor = null)}
 					class="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm font-bold text-amber-200 transition hover:bg-amber-500/20"
 				>
-					💬 זה דחוף — לוואטסאפ
+					{tx.waUrgent}
 				</a>
 			</div>
 		</div>
@@ -366,19 +374,18 @@
 		onclick={(e) => e.target === e.currentTarget && !sending && (msgFor = null)}
 	>
 		<div
-			class="w-full max-w-md rounded-2xl border border-white/15 bg-[#0f172a] p-5 text-right shadow-2xl"
+			class="w-full max-w-md rounded-2xl border border-white/15 bg-[#0f172a] p-5 text-start shadow-2xl"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="msg-title"
-			dir="rtl"
+			{dir}
 		>
-			<h3 id="msg-title" class="mb-1 text-lg font-black text-white">✉️ הודעה ל{t.admin.name}</h3>
-			<p class="mb-4 text-xs text-gray-400">{t.site.name}</p>
+			<h3 id="msg-title" class="mb-1 text-lg font-black text-white">{tx.msgTitle(t.admin.name)}</h3>
+			<p class="mb-4 text-xs text-gray-400">{siteName(t.site)}</p>
 
 			{#if msgSent}
 				<p class="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3 text-sm leading-relaxed text-emerald-200">
-					ההודעה נשלחה ✓ היא ממתינה בתיבה האישית של {t.admin.name} בקהילה בשכונה, ונשלחה
-					עליה התראה לנייד. התשובה תגיע אליכם למייל.
+					{tx.msgSent(t.admin.name)}
 				</p>
 				<div class="mt-4">
 					<button
@@ -386,26 +393,26 @@
 						onclick={() => (msgFor = null)}
 						class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
 					>
-						סגירה
+						{tx.close}
 					</button>
 				</div>
 			{:else if !loggedIn}
 				<p class="text-sm leading-relaxed text-gray-300">
-					כדי להשאיר הודעה צריך להתחבר — כך הרכז יודע ממי ההודעה ולאן להשיב.
+					{tx.loginNeeded}
 				</p>
 				<div class="mt-4 flex flex-wrap gap-2">
 					<a
 						href="/login?redirect={encodeURIComponent(page.url.pathname + page.url.search)}"
 						class="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 text-sm font-black text-white transition hover:opacity-90"
 					>
-						🕊️ התחברות
+						{tx.login}
 					</a>
 					{#if t.admin.email}
 						<a
 							href="mailto:{t.admin.email}"
 							class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
 						>
-							📧 או במייל
+							{tx.orEmail}
 						</a>
 					{/if}
 				</div>
@@ -416,7 +423,7 @@
 						sendMessage();
 					}}
 				>
-					<label for="msg-text" class="sr-only">תוכן ההודעה</label>
+					<label for="msg-text" class="sr-only">{tx.msgLabel}</label>
 					<textarea
 						id="msg-text"
 						bind:value={msgText}
@@ -424,11 +431,11 @@
 						maxlength="2000"
 						required
 						minlength="5"
-						placeholder="במה אפשר לעזור?"
+						placeholder={tx.msgPlaceholder}
 						class="w-full resize-y rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none"
 					></textarea>
 					<p class="mt-1 text-xs text-gray-500">
-						ההודעה תגיע לתיבה האישית של הרכז בקהילה בשכונה, ותישלח אליו התראה ב-SMS.
+						{tx.msgHint}
 					</p>
 					{#if msgError}
 						<p class="mt-2 text-sm font-semibold text-red-400">{msgError}</p>
@@ -439,7 +446,7 @@
 							disabled={sending || msgText.trim().length < 5}
 							class="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-2 text-sm font-black text-white transition hover:opacity-90 disabled:opacity-40"
 						>
-							{sending ? 'שולח…' : 'שליחה'}
+							{sending ? tx.sending : tx.send}
 						</button>
 						<button
 							type="button"
@@ -447,7 +454,7 @@
 							onclick={() => (msgFor = null)}
 							class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
 						>
-							ביטול
+							{tx.cancel}
 						</button>
 					</div>
 				</form>
