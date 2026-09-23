@@ -186,14 +186,15 @@
 			<span aria-hidden="true">🧭</span> העקרונות שלנו
 			<span class="h-px flex-1 bg-white/10"></span>
 		</h2>
-		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+		<!-- רשת קווים לא מחוברת (כמו באודות של קהילה בשכונה): בלי כרטיסים, רק קווי הפרדה קצרים -->
+		<div class="principles-net grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 			{#each principles as p (p.title)}
-				<div
-					class="rounded-2xl border border-white/10 bg-white/[0.03] p-5 shadow-lg transition hover:border-amber-400/30 hover:bg-white/[0.06]"
-				>
-					<div class="mb-2 text-2xl" aria-hidden="true">{p.icon}</div>
-					<h3 class="mb-1.5 text-base font-black text-white">{p.title}</h3>
-					<p class="text-sm leading-relaxed text-gray-400">{p.text}</p>
+				<div class="relative flex items-start gap-4 px-5 py-6">
+					<span class="mt-0.5 flex-shrink-0 text-3xl" aria-hidden="true">{p.icon}</span>
+					<div class="min-w-0">
+						<h3 class="mb-1.5 text-base font-black text-amber-300">{p.title}</h3>
+						<p class="text-sm leading-relaxed text-gray-300">{p.text}</p>
+					</div>
 				</div>
 			{/each}
 		</div>
@@ -316,3 +317,51 @@
 	</div>
 	{/if}
 </div>
+
+<style>
+	/* קווי הפרדה קצרים שלא נוגעים זה בזה — אופקי מתחת לתא, אנכי בצד השמאלי (RTL: בין תא לתא הבא) */
+	.principles-net > div::after,
+	.principles-net > div::before {
+		content: '';
+		position: absolute;
+		background: rgb(255 255 255 / 0.1);
+		display: none;
+	}
+	.principles-net > div::after {
+		bottom: 0;
+		left: 10%;
+		right: 10%;
+		height: 1px;
+	}
+	.principles-net > div::before {
+		top: 12%;
+		bottom: 12%;
+		left: 0;
+		width: 1px;
+	}
+	/* עמודה אחת */
+	.principles-net > div:not(:last-child)::after {
+		display: block;
+	}
+	/* שתי עמודות */
+	@media (min-width: 640px) {
+		.principles-net > div:not(:last-child)::after {
+			display: none;
+		}
+		.principles-net > div:not(:nth-last-child(-n + 2))::after,
+		.principles-net > div:nth-child(2n + 1)::before {
+			display: block;
+		}
+	}
+	/* שלוש עמודות */
+	@media (min-width: 1024px) {
+		.principles-net > div:not(:nth-last-child(-n + 2))::after,
+		.principles-net > div:nth-child(2n + 1)::before {
+			display: none;
+		}
+		.principles-net > div:not(:nth-last-child(-n + 3))::after,
+		.principles-net > div:not(:nth-child(3n))::before {
+			display: block;
+		}
+	}
+</style>
