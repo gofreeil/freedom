@@ -12,6 +12,8 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			id: session.user.id,
 			name: session.user.name ?? '',
 			email: session.user.email ?? '',
+			// תמונת הפרופיל (Google/Facebook); בלעדיה ההדר מציג את האות הראשונה
+			image: session.user.image ?? '',
 			isSuperAdmin: superAdmin,
 			// כפתור "ניהול הרשת" בהדר — לסופר-אדמין ולאדמיני אתרי הרשת בלבד
 			canManage: superAdmin || (await isNetworkAdmin(session.user.email))

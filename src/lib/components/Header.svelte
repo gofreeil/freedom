@@ -6,7 +6,9 @@
     import { onMount } from "svelte";
 
     // משתמש מחובר (מגיע מ-+layout.server דרך +layout.svelte); null = אנונימי
-    let { user = null }: { user?: { name: string; email: string; isSuperAdmin?: boolean; canManage?: boolean } | null } = $props();
+    let { user = null }: { user?: { name: string; email: string; image?: string; isSuperAdmin?: boolean; canManage?: boolean } | null } = $props();
+    // תמונת פרופיל שלא נטענה → עיגול עם האות הראשונה
+    let avatarBroken = $state(false);
 
     let languages = [
         { name: "עברית", code: "he", flag: "il" },
@@ -278,33 +280,16 @@
                 </a>
             </div>
 <div class="flex items-center gap-2">
-                <!-- התחברות / אזור אישי -->
-                {#if user}
-                    <span
-                        class="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-bold text-white"
-                        title={user.email}
-                    >
-                        <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">👤</span>
-                        <span class="hidden sm:inline max-w-[120px] truncate">{user.name || user.email}</span>
-                    </span>
-                    <!-- "ניהול הרשת" — לסופר-אדמין ולאדמיני אתרי הרשת בלבד; צמוד ל"אודות" -->
-                    {#if user.canManage}
-                        <a
-                            href="/admin"
-                            class="flex items-center gap-2 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm font-bold text-white transition-colors"
-                            title="ניהול הרשת"
-                        >
-                            <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">🛡️</span>
-                            <span class="hidden sm:inline">ניהול הרשת</span>
-                        </a>
-                    {/if}
-                {:else}
+                <!-- הסדר מימין לשמאל: ניהול הרשת · אודות · שפה · משתמש -->
+                <!-- "ניהול הרשת" — לסופר-אדמין ולאדמיני אתרי הרשת בלבד -->
+                {#if user?.canManage}
                     <a
-                        href="/login"
-                        class="login-grad flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-bold text-white transition-all hover:brightness-110"
+                        href="/admin"
+                        class="flex items-center gap-2 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm font-bold text-white transition-colors"
+                        title="ניהול הרשת"
                     >
-                        <span>🕊️</span>
-                        <span class="hidden sm:inline">התחברות</span>
+                        <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">🛡️</span>
+                        <span class="hidden sm:inline">ניהול הרשת</span>
                     </a>
                 {/if}
                 <!-- כפתור אודות עם תצוגה מקדימה -->
@@ -402,6 +387,40 @@
                         </div>
                     {/if}
                 </div>
+                <!-- התחברות / תמונת המשתמש — עיגול כמו בשאר אתרי יוצאים לחירות -->
+                {#if user}
+                    <a
+                        href="/profile"
+                        class="flex-shrink-0 rounded-full transition-transform hover:scale-105"
+                        title={user.name || user.email}
+                        aria-label={user.name || user.email}
+                    >
+                        {#if user.image && !avatarBroken}
+                            <img
+                                src={user.image}
+                                alt=""
+                                width="36"
+                                height="36"
+                                decoding="async"
+                                referrerpolicy="no-referrer"
+                                class="h-9 w-9 rounded-full object-cover border-2 border-purple-500/40 shadow-lg"
+                                onerror={() => (avatarBroken = true)}
+                            />
+                        {:else}
+                            <span class="login-grad flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-sm font-bold text-white shadow-lg" aria-hidden="true">
+                                {(user.name || user.email).charAt(0).toUpperCase()}
+                            </span>
+                        {/if}
+                    </a>
+                {:else}
+                    <a
+                        href="/login"
+                        class="login-grad flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-bold text-white transition-all hover:brightness-110"
+                    >
+                        <span>🕊️</span>
+                        <span class="hidden sm:inline">התחברות</span>
+                    </a>
+                {/if}
             </div>
         </div>
     </div>
