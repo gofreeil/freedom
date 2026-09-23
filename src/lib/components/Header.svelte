@@ -280,7 +280,14 @@
 <div class="flex items-center gap-2">
                 <!-- התחברות / אזור אישי -->
                 {#if user}
-                    <!-- "ניהול הרשת" — לסופר-אדמין ולאדמיני אתרי הרשת בלבד -->
+                    <span
+                        class="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-bold text-white"
+                        title={user.email}
+                    >
+                        <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">👤</span>
+                        <span class="hidden sm:inline max-w-[120px] truncate">{user.name || user.email}</span>
+                    </span>
+                    <!-- "ניהול הרשת" — לסופר-אדמין ולאדמיני אתרי הרשת בלבד; צמוד ל"אודות" -->
                     {#if user.canManage}
                         <a
                             href="/admin"
@@ -291,13 +298,6 @@
                             <span class="hidden sm:inline">ניהול הרשת</span>
                         </a>
                     {/if}
-                    <span
-                        class="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-bold text-white"
-                        title={user.email}
-                    >
-                        <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">👤</span>
-                        <span class="hidden sm:inline max-w-[120px] truncate">{user.name || user.email}</span>
-                    </span>
                 {:else}
                     <a
                         href="/login"
