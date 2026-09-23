@@ -3,9 +3,6 @@
 	// /about — דף האודות של שער הרשת.
 	// כתוב בעברית ישירות ולא דרך i18n: זהו טקסט מותג ארוך,
 	// והתחזוקה שלו בשלוש שפות ב-i18n.ts הייתה יקרה מהתועלת.
-	//
-	// רשימת הפלטפורמות נגזרת מ-sitesData.ts (מקור האמת של הרשת) — כך
-	// שהוספת אתר לרשת מתגלגלת לכאן אוטומטית ואין רשימה כפולה לתחזק.
 	// ============================================================
 	import { page } from '$app/state';
 	import { replaceState } from '$app/navigation';
@@ -21,7 +18,6 @@
 		breadcrumbSchema,
 		faqSchema
 	} from '$lib/seo';
-	import { SITES, type SiteCategory } from '$lib/sitesData';
 	import { ABOUT_FAQ } from '$lib/aboutFaq';
 
 	let { data } = $props();
@@ -43,30 +39,6 @@
 		else url.searchParams.set('tab', next);
 		replaceState(url, page.state);
 	}
-
-	const CATEGORY_ORDER: SiteCategory[] = ['קהילה', 'משילות', 'כלכלה'];
-
-	const catMeta: Record<string, { icon: string; blurb: string }> = {
-		'קהילה': {
-			icon: '🤝',
-			blurb: 'הרשת החברתית של השכונה — עזרה הדדית, פתרון סכסוכים והחזרת אבידות.'
-		},
-		'משילות': {
-			icon: '⚖️',
-			blurb: 'הכלים שמחזירים את הפיקוח לידי הציבור — ביקורת, דירוג, ייצוג והצבעה.'
-		},
-		'כלכלה': {
-			icon: '💰',
-			blurb: 'כוח קנייה משותף — מחירים הוגנים, בעלי מקצוע כשירים ומוצרים לחיים עצמאיים.'
-		}
-	};
-
-	// האתרים מקובצים לפי קטגוריה; "ראשי" (שער הרשת עצמו) לא מוצג — אנחנו בו.
-	const groups = CATEGORY_ORDER.map((category) => ({
-		category,
-		...catMeta[category],
-		sites: SITES.filter((s) => s.category === category)
-	})).filter((g) => g.sites.length > 0);
 
 	const principles = [
 		{
@@ -218,55 +190,6 @@
 				</div>
 			{/each}
 		</div>
-	</section>
-
-	<!-- ═══════ הפלטפורמות ═══════ -->
-	<section class="mb-10">
-		<h2 class="mb-2 flex items-center gap-2 text-xl font-black text-white sm:text-2xl">
-			<span aria-hidden="true">🌐</span> הפלטפורמות של הרשת
-			<span class="h-px flex-1 bg-white/10"></span>
-		</h2>
-		<p class="mb-5 text-sm text-gray-400">
-			{SITES.length} אתרים, שלושה תחומים — כולם פתוחים, חינמיים ומחוברים לאותה הרשמה.
-		</p>
-
-		{#each groups as group (group.category)}
-			<div class="mb-5 rounded-3xl border border-white/10 bg-white/[0.03] p-5 shadow-lg sm:p-6">
-				<h3 class="flex items-center gap-2 text-lg font-black text-white">
-					<span aria-hidden="true">{group.icon}</span>
-					{group.category}
-				</h3>
-				<p class="mb-4 mt-1 text-sm text-gray-400">{group.blurb}</p>
-				<ul class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-					{#each group.sites as site (site.id)}
-						<li>
-							<a
-								href={site.url}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="flex h-full items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.02] p-3 transition hover:border-purple-400/40 hover:bg-white/[0.07]"
-							>
-								{#if site.image}
-									<img
-										src={site.image}
-										alt=""
-										width="56"
-										height="56"
-										loading="lazy"
-										decoding="async"
-										class="h-14 w-14 flex-shrink-0 rounded-xl object-cover"
-									/>
-								{/if}
-								<span class="min-w-0">
-									<span class="block text-sm font-black leading-tight text-white">{site.name}</span>
-									<span class="mt-1 block text-xs leading-relaxed text-gray-400">{site.description}</span>
-								</span>
-							</a>
-						</li>
-					{/each}
-				</ul>
-			</div>
-		{/each}
 	</section>
 
 	<!-- ═══════ שאלות נפוצות ═══════ -->

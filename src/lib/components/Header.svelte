@@ -280,24 +280,14 @@
 <div class="flex items-center gap-2">
                 <!-- התחברות / אזור אישי -->
                 {#if user}
-                    {#if user.isSuperAdmin}
-                        <a
-                            href="/about?tab=network"
-                            class="flex items-center gap-2 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm font-bold text-white transition-colors"
-                            title="ניהול אתרי הרשת"
-                        >
-                            <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">🛡️</span>
-                            <span class="hidden sm:inline max-w-[120px] truncate">צוות הנהלה</span>
-                        </a>
-                    {:else}
-                        <span
-                            class="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-bold text-white"
-                            title={user.email}
-                        >
-                            <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">👤</span>
-                            <span class="hidden sm:inline max-w-[120px] truncate">{user.name || user.email}</span>
-                        </span>
-                    {/if}
+                    <!-- פאנל הניהול של סופר-אדמין נגיש מכרטיסיית "ניהול הרשת" שב-/about -->
+                    <span
+                        class="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-bold text-white"
+                        title={user.email}
+                    >
+                        <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">👤</span>
+                        <span class="hidden sm:inline max-w-[120px] truncate">{user.name || user.email}</span>
+                    </span>
                 {:else}
                     <a
                         href="/login"
