@@ -1,8 +1,7 @@
 <script lang="ts">
 	// ============================================================
-	// פאנל ניהול אתרי הרשת (לשעבר /admin) — מוצג לסופר-אדמין בכרטיסייה
-	// "ניהול הרשת" שבדף /about במקום התצוגה הציבורית (NetworkAdmins).
-	// הפעולות (?/assign, ?/remove, ?/order) יושבות ב-about/+page.server.ts.
+	// טבלת הרכזים הניתנת לעריכה — מוצגת לסופר-אדמין בדף /admin ("ניהול הרשת").
+	// הפעולות (?/assign, ?/remove, ?/order) יושבות ב-admin/+page.server.ts.
 	// ============================================================
 	import type { ComponentProps } from 'svelte';
 	import SiteAdminRow from '$lib/components/admin/SiteAdminRow.svelte';
@@ -21,7 +20,7 @@
 	let editMode = $state(false);
 
 	// סדר האתרים — נשמר בשרת (ולא בדפדפן), כדי שהסידור יהיה זהה בכל מכשיר
-	// ויופיע גם בכרטיסייה הציבורית "ניהול הרשת" שב-/about.
+	// ויופיע גם ברשימת הרכזים הציבורית שב-/about.
 	const ORDER_KEY = 'admin:sitesOrder'; // המיקום הישן — נקרא פעם אחת להעלאה לשרת
 	let order = $state<string[]>([]);
 	let orderError = $state('');
@@ -102,7 +101,7 @@
 <section>
 	<h2 class="mb-3 flex items-center gap-2 text-lg font-black text-white sm:mb-4 sm:text-2xl">
 		<span class="h-px flex-1 bg-white/10"></span>
-		<span aria-hidden="true">🛡️</span> צוות הרכזים — ניהול
+		<span aria-hidden="true">🛡️</span> צוות הרכזים
 		<span class="h-px flex-1 bg-white/10"></span>
 	</h2>
 

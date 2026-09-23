@@ -4,12 +4,9 @@
 	// כתוב בעברית ישירות ולא דרך i18n: זהו טקסט מותג ארוך,
 	// והתחזוקה שלו בשלוש שפות ב-i18n.ts הייתה יקרה מהתועלת.
 	// ============================================================
-	import { page } from '$app/state';
-	import { replaceState } from '$app/navigation';
 	import Seo from '$lib/components/Seo.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import NetworkAdmins from '$lib/components/NetworkAdmins.svelte';
-	import NetworkAdminsEditor from '$lib/components/admin/NetworkAdminsEditor.svelte';
 	import {
 		SITE_TAGLINE,
 		CONTACT_EMAIL,
@@ -19,26 +16,6 @@
 		faqSchema
 	} from '$lib/seo';
 	import { ABOUT_FAQ } from '$lib/aboutFaq';
-
-	let { data } = $props();
-
-	// ── כרטיסיות ──
-	// "ניהול הרשת" יושב כאן ולא בדף נפרד: זה חלק מהסיפור של "מי אנחנו".
-	// הכרטיסייה הפעילה נשמרת ב-?tab= כדי שאפשר יהיה לשלוח קישור ישיר אליה.
-	type Tab = 'about' | 'network';
-	const TABS: { id: Tab; label: string; icon: string }[] = [
-		{ id: 'about', label: 'אודות', icon: '🕊️' },
-		{ id: 'network', label: 'ניהול הרשת', icon: '🛡️' }
-	];
-	let tab = $state<Tab>(page.url.searchParams.get('tab') === 'network' ? 'network' : 'about');
-
-	function selectTab(next: Tab) {
-		tab = next;
-		const url = new URL(page.url);
-		if (next === 'about') url.searchParams.delete('tab');
-		else url.searchParams.set('tab', next);
-		replaceState(url, page.state);
-	}
 
 	const principles = [
 		{
@@ -141,37 +118,11 @@
 		</div>
 	</header>
 
-	<!-- ═══════ כרטיסיות ═══════ -->
-	<div class="mb-6 flex justify-center gap-2" role="tablist" aria-label="תוכן דף האודות">
-		{#each TABS as t (t.id)}
-			<button
-				type="button"
-				role="tab"
-				id="tab-{t.id}"
-				aria-selected={tab === t.id}
-				aria-controls="panel-{t.id}"
-				onclick={() => selectTab(t.id)}
-				class="rounded-xl px-5 py-2.5 text-sm font-black transition {tab === t.id
-					? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-					: 'border border-white/15 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white'}"
-			>
-				<span aria-hidden="true">{t.icon}</span>
-				{t.label}
-			</button>
-		{/each}
+	<!-- ═══════ צוות הרכזים — מי אחראי על כל אתר ברשת ═══════ -->
+	<div class="mb-10">
+		<NetworkAdmins />
 	</div>
 
-	{#if tab === 'network'}
-		<div id="panel-network" role="tabpanel" aria-labelledby="tab-network">
-			<!-- סופר-אדמין: פאנל הניהול הניתן לעריכה; כל השאר: תצוגה לקריאה בלבד -->
-			{#if data.panel}
-				<NetworkAdminsEditor panelData={data.panel} />
-			{:else}
-				<NetworkAdmins />
-			{/if}
-		</div>
-	{:else}
-	<div id="panel-about" role="tabpanel" aria-labelledby="tab-about">
 	<!-- ═══════ עקרונות ═══════ -->
 	<section class="mb-10">
 		<h2 class="mb-5 flex items-center gap-2 text-xl font-black text-white sm:text-2xl">
@@ -257,8 +208,6 @@
 			{/each}
 		</div>
 	</section>
-	</div>
-	{/if}
 </div>
 
 <style>

@@ -6,7 +6,7 @@
     import { onMount } from "svelte";
 
     // משתמש מחובר (מגיע מ-+layout.server דרך +layout.svelte); null = אנונימי
-    let { user = null }: { user?: { name: string; email: string; isSuperAdmin?: boolean } | null } = $props();
+    let { user = null }: { user?: { name: string; email: string; isSuperAdmin?: boolean; canManage?: boolean } | null } = $props();
 
     let languages = [
         { name: "עברית", code: "he", flag: "il" },
@@ -280,7 +280,17 @@
 <div class="flex items-center gap-2">
                 <!-- התחברות / אזור אישי -->
                 {#if user}
-                    <!-- פאנל הניהול של סופר-אדמין נגיש מכרטיסיית "ניהול הרשת" שב-/about -->
+                    <!-- "ניהול הרשת" — לסופר-אדמין ולאדמיני אתרי הרשת בלבד -->
+                    {#if user.canManage}
+                        <a
+                            href="/admin"
+                            class="flex items-center gap-2 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm font-bold text-white transition-colors"
+                            title="ניהול הרשת"
+                        >
+                            <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">🛡️</span>
+                            <span class="hidden sm:inline">ניהול הרשת</span>
+                        </a>
+                    {/if}
                     <span
                         class="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-bold text-white"
                         title={user.email}

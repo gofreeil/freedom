@@ -5,7 +5,7 @@ import { getStrapiMe, bestStrapiName, friendlyName } from '$lib/server/strapiAut
 
 export const load: PageServerLoad = async ({ locals, url, cookies }) => {
 	const session = await locals.auth();
-	// ברירת מחדל אחרי התחברות: האזור האישי (/profile) — שם סופר-אדמין מנותב אוטומטית לפאנל הניהול (/about?tab=network)
+	// ברירת מחדל אחרי התחברות: האזור האישי (/profile) — שם סופר-אדמין מנותב אוטומטית ל"ניהול הרשת" (/admin)
 	const redirectTo = url.searchParams.get('redirect') ?? '/profile';
 	if (session?.user) throw redirect(302, redirectTo);
 

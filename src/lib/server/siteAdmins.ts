@@ -102,7 +102,7 @@ export async function removeSiteAdmin(jwt: string, siteId: string): Promise<void
 }
 
 // ============================================================
-// תצוגה ציבורית — כרטיסיית "ניהול הרשת" בדף /about.
+// תצוגה ציבורית — רשימת צוות הרכזים בדף /about.
 // נקודת קצה פתוחה (GET /api/site-admins/public) שמחזירה רק שדות תצוגה
 // ויצירת קשר. את המפה המלאה (כולל communityId ונתוני ביקורת) אפשר לקרוא
 // רק עם JWT של סופר-אדמין, דרך getSiteAdmins.
@@ -145,8 +145,23 @@ export async function getPublicSiteAdmins(): Promise<PublicSiteAdminsPayload> {
 		cache = { at: Date.now(), data };
 		return data;
 	} catch (e) {
-		// מטמון ישן עדיף על כרטיסייה ריקה
+		// מטמון ישן עדיף על רשימה ריקה
 		if (cache) return cache.data;
 		throw e;
+	}
+}
+
+/**
+ * האם האימייל שייך לאדמין של אחד מאתרי הרשת (לפי המינויים ב-Strapi, דרך המטמון
+ * הציבורי). משמש להצגת כפתור "ניהול הרשת" ולכניסה לדף /admin. תקלה = לא אדמין.
+ */
+export async function isNetworkAdmin(email: string | null | undefined): Promise<boolean> {
+	const e = email?.trim().toLowerCase();
+	if (!e) return false;
+	try {
+		const { admins } = await getPublicSiteAdmins();
+		return Object.values(admins).some((a) => a.adminEmail?.trim().toLowerCase() === e);
+	} catch {
+		return false;
 	}
 }
