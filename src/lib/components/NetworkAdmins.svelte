@@ -15,6 +15,7 @@
 	// מי שנכנס לאודות.
 	// ============================================================
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 	import { SITES, type FreedomSite } from '$lib/sitesData';
 	import { SITE_ROWS_GRID_COLS } from '$lib/components/admin/sitesGrid';
 
@@ -66,6 +67,53 @@
 	const NAME_FIELD_CLS =
 		'truncate rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[15px] font-bold text-amber-400';
 
+	// ── יצירת קשר ──
+	// וואטסאפ: חלון אזהרה ("דחוף בלבד") לפני המעבר. הודעה: נשלחת לתיבה האישית של
+	// הרכז בקהילה בשכונה + SMS אליו (ראו /api/coordinator-message) — למחוברים בלבד.
+	type Target = { site: FreedomSite; admin: PublicAdmin };
+	let waFor = $state<Target | null>(null);
+	let msgFor = $state<Target | null>(null);
+	let msgText = $state('');
+	let sending = $state(false);
+	let msgError = $state('');
+	let msgSent = $state(false);
+	const loggedIn = $derived(!!page.data.user);
+
+	function openMessage(site: FreedomSite, admin: PublicAdmin) {
+		waFor = null;
+		msgFor = { site, admin };
+		msgText = '';
+		msgError = '';
+		msgSent = false;
+	}
+
+	async function sendMessage() {
+		if (!msgFor || sending) return;
+		sending = true;
+		msgError = '';
+		try {
+			const res = await fetch('/api/coordinator-message', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ siteId: msgFor.site.id, text: msgText })
+			});
+			const json = (await res.json().catch(() => ({}))) as { error?: string };
+			if (!res.ok) throw new Error(json.error || 'שליחת ההודעה נכשלה — נסו שוב');
+			msgSent = true;
+		} catch (e) {
+			msgError = e instanceof Error ? e.message : 'שליחת ההודעה נכשלה — נסו שוב';
+		} finally {
+			sending = false;
+		}
+	}
+
+	function onKey(e: KeyboardEvent) {
+		if (e.key === 'Escape') {
+			waFor = null;
+			if (!sending) msgFor = null;
+		}
+	}
+
 	/** קישור וואטסאפ: 05x-xxxxxxx → 9725xxxxxxxx */
 	function waHref(phone: string): string {
 		const digits = phone.replace(/\D/g, '');
@@ -110,17 +158,27 @@
 	</div>
 {/snippet}
 
-<!-- כפתורי יצירת קשר (מוצגים רק כשיש פרטים) -->
-{#snippet contact(admin: PublicAdmin | undefined, cls: string)}
-	{#if admin?.phone}
-		<a
-			href={waHref(admin.phone)}
-			target="_blank"
-			rel="noopener noreferrer"
-			title="וואטסאפ ל{admin.name}"
-			aria-label="וואטסאפ ל{admin.name}"
+<!-- כפתורי יצירת קשר: הודעה לתיבה (לכל רכז ממונה), וואטסאפ ומייל — רק כשיש פרטים -->
+{#snippet contact(site: FreedomSite, admin: PublicAdmin | undefined, cls: string)}
+	{#if admin?.name}
+		<button
+			type="button"
+			onclick={() => openMessage(site, admin)}
+			title="השאירו הודעה ל{admin.name}"
+			aria-label="השאירו הודעה ל{admin.name}"
 			class="flex items-center justify-center rounded-lg border border-white/10 bg-white/5 transition hover:bg-white/15 {cls}"
-			>💬</a
+			>✉️</button
+		>
+	{/if}
+	{#if admin?.phone}
+		<!-- וואטסאפ עובר קודם דרך אזהרה: מיועד למקרים דחופים בלבד -->
+		<button
+			type="button"
+			onclick={() => (waFor = { site, admin })}
+			title="וואטסאפ ל{admin.name} (דחוף בלבד)"
+			aria-label="וואטסאפ ל{admin.name} (דחוף בלבד)"
+			class="flex items-center justify-center rounded-lg border border-white/10 bg-white/5 transition hover:bg-white/15 {cls}"
+			>💬</button
 		>
 	{/if}
 	{#if admin?.email}
@@ -177,8 +235,8 @@
 							{/if}
 						</div>
 
-						<div class="flex flex-col items-center gap-1">
-							{@render contact(admin, 'h-6 w-6 text-xs')}
+						<div class="grid grid-cols-2 place-items-center gap-1">
+							{@render contact(site, admin, 'h-6 w-6 text-xs')}
 						</div>
 
 						<!-- תמונת האתר -->
@@ -235,7 +293,7 @@
 
 					<!-- יצירת קשר -->
 					<div class="flex items-center justify-center gap-1">
-						{@render contact(admin, 'h-7 w-7 text-sm')}
+						{@render contact(site, admin, 'h-7 w-7 text-sm')}
 					</div>
 
 					<!-- עמודת הפעולות של הפאנל — ריקה כאן, שומרת על יישור זהה -->
@@ -245,3 +303,155 @@
 		</div>
 	{/if}
 </section>
+
+<svelte:window onkeydown={onKey} />
+
+<!-- ── חלון אזהרה לפני וואטסאפ ── -->
+{#if waFor}
+	{@const t = waFor}
+	<div
+		class="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4"
+		role="presentation"
+		onclick={(e) => e.target === e.currentTarget && (waFor = null)}
+	>
+		<div
+			class="w-full max-w-md rounded-2xl border border-amber-500/30 bg-[#0f172a] p-5 text-right shadow-2xl"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="wa-warn-title"
+			dir="rtl"
+		>
+			<h3 id="wa-warn-title" class="mb-2 text-lg font-black text-amber-300">⚠️ וואטסאפ — למקרים דחופים בלבד</h3>
+			<p class="text-sm leading-relaxed text-gray-300">
+				פנייה בוואטסאפ ל{t.admin.name} נועדה למקרים דחופים בלבד. בכל נושא אחר — נא להשאיר הודעה
+				או לפנות במייל, והרכז יחזור אליכם.
+			</p>
+			<div class="mt-5 flex flex-wrap gap-2">
+				<button
+					type="button"
+					onclick={() => openMessage(t.site, t.admin)}
+					class="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 text-sm font-black text-white transition hover:opacity-90"
+				>
+					✉️ השארת הודעה
+				</button>
+				{#if t.admin.email}
+					<a
+						href="mailto:{t.admin.email}"
+						onclick={() => (waFor = null)}
+						class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+					>
+						📧 מייל
+					</a>
+				{/if}
+				<a
+					href={waHref(t.admin.phone)}
+					target="_blank"
+					rel="noopener noreferrer"
+					onclick={() => (waFor = null)}
+					class="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm font-bold text-amber-200 transition hover:bg-amber-500/20"
+				>
+					💬 זה דחוף — לוואטסאפ
+				</a>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- ── השארת הודעה: לתיבה האישית של הרכז בקהילה בשכונה + SMS אליו ── -->
+{#if msgFor}
+	{@const t = msgFor}
+	<div
+		class="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4"
+		role="presentation"
+		onclick={(e) => e.target === e.currentTarget && !sending && (msgFor = null)}
+	>
+		<div
+			class="w-full max-w-md rounded-2xl border border-white/15 bg-[#0f172a] p-5 text-right shadow-2xl"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="msg-title"
+			dir="rtl"
+		>
+			<h3 id="msg-title" class="mb-1 text-lg font-black text-white">✉️ הודעה ל{t.admin.name}</h3>
+			<p class="mb-4 text-xs text-gray-400">{t.site.name}</p>
+
+			{#if msgSent}
+				<p class="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3 text-sm leading-relaxed text-emerald-200">
+					ההודעה נשלחה ✓ היא ממתינה בתיבה האישית של {t.admin.name} בקהילה בשכונה, ונשלחה
+					עליה התראה לנייד. התשובה תגיע אליכם למייל.
+				</p>
+				<div class="mt-4">
+					<button
+						type="button"
+						onclick={() => (msgFor = null)}
+						class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+					>
+						סגירה
+					</button>
+				</div>
+			{:else if !loggedIn}
+				<p class="text-sm leading-relaxed text-gray-300">
+					כדי להשאיר הודעה צריך להתחבר — כך הרכז יודע ממי ההודעה ולאן להשיב.
+				</p>
+				<div class="mt-4 flex flex-wrap gap-2">
+					<a
+						href="/login?redirect={encodeURIComponent(page.url.pathname + page.url.search)}"
+						class="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 text-sm font-black text-white transition hover:opacity-90"
+					>
+						🕊️ התחברות
+					</a>
+					{#if t.admin.email}
+						<a
+							href="mailto:{t.admin.email}"
+							class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+						>
+							📧 או במייל
+						</a>
+					{/if}
+				</div>
+			{:else}
+				<form
+					onsubmit={(e) => {
+						e.preventDefault();
+						sendMessage();
+					}}
+				>
+					<label for="msg-text" class="sr-only">תוכן ההודעה</label>
+					<textarea
+						id="msg-text"
+						bind:value={msgText}
+						rows="5"
+						maxlength="2000"
+						required
+						minlength="5"
+						placeholder="במה אפשר לעזור?"
+						class="w-full resize-y rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none"
+					></textarea>
+					<p class="mt-1 text-xs text-gray-500">
+						ההודעה תגיע לתיבה האישית של הרכז בקהילה בשכונה, ותישלח אליו התראה ב-SMS.
+					</p>
+					{#if msgError}
+						<p class="mt-2 text-sm font-semibold text-red-400">{msgError}</p>
+					{/if}
+					<div class="mt-4 flex flex-wrap gap-2">
+						<button
+							type="submit"
+							disabled={sending || msgText.trim().length < 5}
+							class="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-2 text-sm font-black text-white transition hover:opacity-90 disabled:opacity-40"
+						>
+							{sending ? 'שולח…' : 'שליחה'}
+						</button>
+						<button
+							type="button"
+							disabled={sending}
+							onclick={() => (msgFor = null)}
+							class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+						>
+							ביטול
+						</button>
+					</div>
+				</form>
+			{/if}
+		</div>
+	</div>
+{/if}
