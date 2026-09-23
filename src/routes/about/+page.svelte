@@ -180,29 +180,6 @@
 		</div>
 	{:else}
 	<div id="panel-about" role="tabpanel" aria-labelledby="tab-about">
-	<!-- ═══════ הרעיון ═══════ -->
-	<section class="mb-10 rounded-3xl border border-white/10 bg-white/[0.03] p-6 shadow-lg sm:p-8">
-		<h2 class="mb-4 flex items-center gap-2 text-xl font-black text-white sm:text-2xl">
-			<span aria-hidden="true">💡</span> הרעיון שמאחורי הרשת
-		</h2>
-		<div class="space-y-4 text-sm leading-relaxed text-gray-300 sm:text-base">
-			<p>
-				רוב הבעיות שאנחנו פוגשים ביום-יום הן מקומיות: סכסוך שנתקע שנים בבית משפט, ציוד שנקנה
-				בשלמות כשלשכן ממול הוא מונח ללא שימוש, מחיר מנופח כי כל אחד קונה לבד, ועד שכונה שאין
-				לו כוח מול הרשות, ופקיד שאיש לא בודק את עבודתו.
-			</p>
-			<p>
-				<span class="font-bold text-white">אף אחת מהבעיות האלה לא דורשת רשות מאף אחד כדי להיפתר.</span>
-				היא דורשת רק שהאנשים הנכונים יידעו זה על זה. זה בדיוק מה שהרשת עושה: מחברת בין מי שצריך
-				למי שיכול — בשכונה, בעיר ובמדינה.
-			</p>
-			<p>
-				כל פלטפורמה עומדת בפני עצמה ואפשר להשתמש בה בנפרד, אבל יחד הן יוצרות משהו גדול יותר:
-				מרחב שבו אפשר לחיות, לפתור בעיות ולהתנהל — בלי להיות תלויים במערכות שהפסיקו לשרת אותנו.
-			</p>
-		</div>
-	</section>
-
 	<!-- ═══════ עקרונות ═══════ -->
 	<section class="mb-10">
 		<h2 class="mb-5 flex items-center gap-2 text-xl font-black text-white sm:text-2xl">
