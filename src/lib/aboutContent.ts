@@ -25,6 +25,7 @@ export interface AboutText {
 	tagline: string;
 	logoAlt: string;
 	intro: string[];
+	sitesTitle: string;
 	principlesTitle: string;
 	principles: Principle[];
 	joinTitle: string;
@@ -49,6 +50,7 @@ export const ABOUT_TEXT: Record<AboutLang, AboutText> = {
 			'הפרקטיקה שלנו מבוצעת על ידי התאגדות של שכונות בכל הארץ לגוף עממי אחד, כאשר בראש כל שכונה עומד רכז / ועד שכונתי המקדם את האינטרסים של אותה שכונה מול רשויות המדינה.',
 			'הקמנו רשת פלטפורמות שכל אחת מהן פותרת בעיה ציבורית אחת ומאפשרת לנו לגבש את הכוח הציבורי כולו לטובת חזון זה. כל אחת מהפלטפורמות ממנפת את חברתה, בתקווה להתקדם לחיים סולידריים שבהם העם הוא חכם ואחראי, ויש לו שליטה על מוסדותיו!'
 		],
+		sitesTitle: 'אתרי הרשת',
 		principlesTitle: 'העקרונות שלנו',
 		principles: [
 			{
@@ -96,6 +98,7 @@ export const ABOUT_TEXT: Record<AboutLang, AboutText> = {
 			'Our practice is carried out by uniting neighborhoods across the country into one grassroots body, with each neighborhood led by a coordinator / neighborhood committee that advances its interests before the state authorities.',
 			'We have built a network of platforms, each solving one public problem and together allowing us to unite the full power of the public behind this vision. Each platform strengthens the others, in the hope of moving toward a life of solidarity in which the people are wise and responsible, and in control of their institutions!'
 		],
+		sitesTitle: 'Network sites',
 		principlesTitle: 'Our principles',
 		principles: [
 			{
@@ -143,6 +146,7 @@ export const ABOUT_TEXT: Record<AboutLang, AboutText> = {
 			'Наша практика — объединение районов по всей стране в единый народный орган, где во главе каждого района стоит координатор / районный комитет, отстаивающий интересы своего района перед государственными органами.',
 			'Мы создали сеть платформ, каждая из которых решает одну общественную проблему и позволяет нам объединить всю силу общества ради этого видения. Каждая платформа усиливает другие — в надежде прийти к солидарной жизни, в которой народ мудр и ответственен и контролирует свои институты!'
 		],
+		sitesTitle: 'Сайты сети',
 		principlesTitle: 'Наши принципы',
 		principles: [
 			{

@@ -17,6 +17,7 @@
 	} from '$lib/seo';
 	import { ABOUT_FAQ } from '$lib/aboutFaq';
 	import { ABOUT_TEXT, aboutLang } from '$lib/aboutContent';
+	import { networkSites } from '$lib/networkSites';
 
 	const tx = $derived(ABOUT_TEXT[aboutLang($locale)]);
 
@@ -73,6 +74,36 @@
 			{/each}
 		</div>
 	</header>
+
+	<!-- ═══════ אתרי הרשת — אותה רשת לוגואים כמו במסך הפתיחה אחרי הרשמה (WelcomeScreen) ═══════ -->
+	<section class="mb-10">
+		<h2 class="mb-5 flex items-center gap-2 text-xl font-black text-white sm:text-2xl">
+			<span aria-hidden="true">🌐</span> {tx.sitesTitle}
+			<span class="h-px flex-1 bg-white/10"></span>
+		</h2>
+		<div class="flex flex-wrap justify-center gap-2 sm:gap-3" dir="rtl" aria-label={tx.sitesTitle}>
+			{#each networkSites as site (site.id)}
+				<a
+					href={site.href}
+					target="_blank"
+					rel="noopener noreferrer"
+					title={site.title}
+					class="group flex grow-0 basis-[calc(33.333%-0.34rem)] flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2 transition-all hover:-translate-y-0.5 hover:border-purple-400/40 hover:bg-white/10 sm:basis-[calc(25%-0.57rem)] sm:p-3 lg:basis-[calc(20%-0.6rem)]"
+				>
+					<div class="aspect-[4/3] w-full overflow-hidden rounded-lg bg-gradient-to-br {site.color}">
+						<img
+							src={site.image}
+							alt=""
+							loading="lazy"
+							decoding="async"
+							class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+						/>
+					</div>
+					<span class="line-clamp-2 text-center text-xs font-semibold leading-tight text-gray-200 sm:text-sm">{site.title}</span>
+				</a>
+			{/each}
+		</div>
+	</section>
 
 	<!-- ═══════ צוות הרכזים — מי אחראי על כל אתר ברשת ═══════ -->
 	<div class="mb-10">
