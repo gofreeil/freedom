@@ -1,11 +1,12 @@
 <script lang="ts">
 	// ============================================================
 	// /admin — "ניהול הרשת" (סופר-אדמין ואדמיני אתרי הרשת בלבד; ההרשאה ב-load).
-	// כאן ינוהלו בהמשך גם משימות הארגון. כרגע: טבלת הרכזים — ניתנת לעריכה
-	// לסופר-אדמין, לקריאה בלבד לשאר האדמינים.
+	// מרכז העבודה של הצוות: משימות, דיווחי פעילות וסקירת צוות (TeamWorkspace),
+	// ובלשונית "צוות הרכזים" — הטבלה: ניתנת לעריכה לסופר-אדמין, לקריאה לשאר.
 	// ============================================================
 	import NetworkAdmins from '$lib/components/NetworkAdmins.svelte';
 	import NetworkAdminsEditor from '$lib/components/admin/NetworkAdminsEditor.svelte';
+	import TeamWorkspace from '$lib/components/admin/team/TeamWorkspace.svelte';
 
 	let { data } = $props();
 </script>
@@ -17,9 +18,11 @@
 		<span aria-hidden="true">🛡️</span> ניהול הרשת
 	</h1>
 
-	{#if data.panel}
-		<NetworkAdminsEditor panelData={data.panel} />
-	{:else}
-		<NetworkAdmins />
-	{/if}
+	<TeamWorkspace>
+		{#if data.panel}
+			<NetworkAdminsEditor panelData={data.panel} />
+		{:else}
+			<NetworkAdmins />
+		{/if}
+	</TeamWorkspace>
 </div>
