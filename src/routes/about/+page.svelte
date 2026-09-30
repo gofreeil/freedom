@@ -15,7 +15,7 @@
 		breadcrumbSchema,
 		faqSchema
 	} from '$lib/seo';
-	import { ABOUT_FAQ } from '$lib/aboutFaq';
+	import { ABOUT_FAQ, faqParts, faqPlain } from '$lib/aboutFaq';
 	import { ABOUT_TEXT, aboutLang } from '$lib/aboutContent';
 	import { networkSites } from '$lib/networkSites';
 
@@ -39,7 +39,7 @@
 			{ name: 'אודות', path: '/about' }
 		]),
 		// FAQPage — משקפת בדיוק את השו"ת שמוצג בדף (דף הבית מחזיק FAQPage משלו עם שאלות אחרות)
-		faqSchema(faqs)
+		faqSchema(faqs.map((f) => ({ q: f.q, a: faqPlain(f.a) })))
 	];
 </script>
 
@@ -147,7 +147,8 @@
 						<span class="ml-2 inline-block text-amber-400 transition-transform group-open:rotate-90" aria-hidden="true">◂</span>
 						{faq.q}
 					</summary>
-					<p class="mt-3 text-sm leading-relaxed text-gray-300">{faq.a}</p>
+					<!-- בשורה אחת בכוונה: whitespace-pre-line היה מציג רווחי תבנית כירידות שורה -->
+					<p class="mt-3 whitespace-pre-line text-sm leading-relaxed text-gray-300">{#each faqParts(faq.a) as part}{#if part.href}<a href={part.href} target={part.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" class="font-bold text-amber-300 underline decoration-amber-300/40 underline-offset-2 transition hover:text-amber-200">{part.text}</a>{:else}{part.text}{/if}{/each}</p>
 				</details>
 			{/each}
 		</div>

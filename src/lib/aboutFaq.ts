@@ -9,43 +9,85 @@
 // רשימת האתרים בתשובות נגזרת מ-sitesData.ts — הוספת אתר לרשת מתגלגלת לכאן.
 // ============================================================
 
-import { SITES } from '$lib/sitesData';
+import { SITES, getSite } from '$lib/sitesData';
 import { CONTACT_EMAIL } from '$lib/seo';
 
 export interface FaqItem {
 	q: string;
+	/** טקסט התשובה. קישור נכתב כ-[טקסט](כתובת); ירידות שורה נשמרות בתצוגה. */
 	a: string;
 }
+
+/** קטע בתשובה — טקסט רגיל, או קישור כשיש href. */
+export interface FaqPart {
+	text: string;
+	href?: string;
+}
+
+const LINK_RE = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+/** [טקסט](כתובת) לאתר ברשת לפי ה-id שלו ב-sitesData. */
+const link = (text: string, siteId: string) => `[${text}](${getSite(siteId)?.url ?? '/'})`;
+
+/** פירוק תשובה לקטעים לתצוגה בדף. */
+export function faqParts(a: string): FaqPart[] {
+	const parts: FaqPart[] = [];
+	let last = 0;
+	for (const m of a.matchAll(LINK_RE)) {
+		if (m.index > last) parts.push({ text: a.slice(last, m.index) });
+		parts.push({ text: m[1], href: m[2] });
+		last = m.index + m[0].length;
+	}
+	if (last < a.length) parts.push({ text: a.slice(last) });
+	return parts;
+}
+
+/** התשובה כטקסט נקי (בלי תחביר הקישורים) — לסכמת FAQPage. */
+export const faqPlain = (a: string) => a.replace(LINK_RE, '$1');
 
 /** כל אתרי הרשת חוץ משער הרשת עצמו. */
 const NETWORK_SITES = SITES.filter((s) => s.id !== 'portal');
 const NETWORK_SITE_COUNT = NETWORK_SITES.length;
 
-/** "קהילה: א, ב, ג. משילות: ד, ה." — נגזר מהקטגוריות ב-sitesData. */
+/** "קהילה: א, ב, ג." שורה לכל תחום — נגזר מהקטגוריות ב-sitesData, כל שם מקושר לאתר. */
 const SITES_BY_CATEGORY = (['קהילה', 'משילות', 'כלכלה'] as const)
 	.map((cat) => {
-		const names = NETWORK_SITES.filter((s) => s.category === cat).map((s) => s.name);
+		const names = NETWORK_SITES.filter((s) => s.category === cat).map((s) => link(s.name, s.id));
 		return names.length ? `${cat}: ${names.join(', ')}.` : '';
 	})
 	.filter(Boolean)
-	.join(' ');
+	.join('\n');
 
 export const ABOUT_FAQ: FaqItem[] = [
 	{
 		q: 'מה זה "יוצאים לחירות" ומה מטרת האתר gofreeil.com?',
-		a: `יוצאים לחירות (gofreeil.com) היא תנועה חברתית ישראלית התנדבותית שבונה חלופה מעשית בשטח במקום להסתפק במחאה. האתר הזה הוא אתר האם ושער הכניסה לרשת של ${NETWORK_SITE_COUNT} פלטפורמות, שכל אחת מהן פותרת בעיה אחת אמיתית — בקהילה, במשילות ובכלכלה. מכאן מגיעים לכל אתרי הרשת, נרשמים פעם אחת, ורואים מי עומד מאחורי כל פלטפורמה.`
+		a: `יוצאים לחירות (gofreeil.com) היא תנועה חברתית ישראלית התנדבותית שמקדמת סדר עולם מתוקן יותר בשלושה נתיבים:
+1. מקדמים חברה סולידרית עם ${link('גמילויות חסדים', 'national_gemach')}, ו${link('גיבוש שכונות', 'community_neighborhood')} סביב הערך האנושי קהילתי.
+2. ${link('מעורבות ציבורית', 'referendum')} בהנהלת המדינה, ${link('פיקוח בקרה', 'state_auditor')} ו${link('דירוג לרשויות המדינה', 'public_rating')}.
+3. ${link('ריכוז ומינוף הכח הכלכלי של העם', 'purchasing_group')} וביזור הכח הריכוזי מידי התאגידים והאליטות.`
 	},
 	{
 		q: 'למי האתר מיועד?',
-		a: 'לכל תושב בישראל שרוצה לפתור בעיות יום-יומיות בלי להיות תלוי במערכות שהפסיקו לשרת אותו: מי שמחפש גמ"ח, בעל מקצוע או קבוצת רכישה, מי שאיבד או מצא חפץ, מי שרוצה להשפיע בוועד השכונה, לבקר את הרשויות או להצביע במשאלי עם — וגם מי שרוצה להתנדב ולבנות את הכלים האלה יחד איתנו.'
+		a: `לכל תושב בישראל שרוצה לסייע בקידום המטרות:
+${link('חברה שמקדמת ואהבת לרעך כמוך', 'community_neighborhood')},
+${link('מערכות מדינה שקופות והוגנות לתושב', 'state_auditor')},
+חיסכון בהוצאות החודשיות, ומינוף כח הקניה ב${link('רכישות קבוצתיות', 'purchasing_group')}.`
 	},
 	{
 		q: 'אילו אתרים יש ברשת יוצאים לחירות?',
-		a: `הרשת כוללת ${NETWORK_SITE_COUNT} פלטפורמות בשלושה תחומים. ${SITES_BY_CATEGORY} הרשימה המלאה עם קישורים ותיאורים מופיעה בדף הזה תחת "הפלטפורמות של הרשת".`
+		a: `הרשת כוללת ${NETWORK_SITE_COUNT} פלטפורמות בשלושה תחומים.\n${SITES_BY_CATEGORY}`
 	},
 	{
-		q: 'מה הקשר בין החשבון המשותף לאתרי הרשת?',
-		a: 'ההרשמה ב-gofreeil.com היא הזהות שלכם בכל הרשת. אחרי התחברות באתר האם, כל אתר ברשת (כתובות משנה של gofreeil.com) מזהה אתכם אוטומטית — בלי הרשמה חוזרת ובלי סיסמה נוספת. אפשר להתחבר גם מכל אתר ברשת: הוא מפנה לכאן להתחברות ומחזיר אתכם לאותו הדף.'
+		q: 'אפשר דוגמא לשימוש התושב בכלים החברתיים שיש לתנועה?',
+		a: `כן: לדוגמא מחפש ${link('גמ"ח', 'national_gemach')}? ${link('בעל מקצוע', 'professionals')} משכונתך? ${link('מצאת חפץ ואתה רוצה להחזיר לבעליו', 'lost_and_found')}?
+רוצה להשפיע ב${link('ועד השכונה', 'neighborhood_committees')}, לתת מידע לכיתת הכוננות — כל זאת ועוד תוכל לעשות באפליקציה ובאתר ${link('קהילה בשכונה', 'community_neighborhood')}.
+רוצה ${link('לבקר את הרשויות', 'state_auditor')} או למצות את זכויותיך כתושב, להתדיין על המצב האקטואלי ולהשפיע את דעתך ב${link('משאלי עם', 'referendum')} — אתה מוזמן לעשות זאת במערכת שלנו שנקראת ${link('דירוג ציבורי', 'public_rating')}.
+רוצה לחסוך כסף בכל חודש ולחזק את הכח של העם מול התאגידים — היכנס לאתר ${link('רכישות קבוצתיות', 'purchasing_group')}.
+וכו' — לכל אתר יש את היתרון והמומחיות שלו בסיוע לתושב.`
+	},
+	{
+		q: 'חשבון אחד לכל הרשת — איך זה עובד?',
+		a: `מפתח אחד פותח את כל הדלתות: [נרשמים פעם אחת](/register?redirect=/about) ב-gofreeil.com, ומאותו רגע כל ${NETWORK_SITE_COUNT} אתרי הרשת כבר מכירים אתכם — מהגמ"ח השכונתי ועד משאלי העם, בלי עוד טופס הרשמה ובלי עוד סיסמה לזכור. הגעתם קודם לאחד מאתרי הרשת? לחיצה על "התחברות" שם תקפיץ אתכם לרגע לכאן, ותחזיר אתכם בדיוק לדף שבו עצרתם.`
 	},
 	{
 		q: 'איך מצטרפים ומתחילים להשתמש?',
