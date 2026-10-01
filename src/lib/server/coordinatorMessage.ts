@@ -20,7 +20,7 @@ import { getSite } from '$lib/sitesData';
 
 const STRAPI_TOKEN = process.env.STRAPI_TOKEN ?? '';
 const COMMUNITY_URL = 'https://community.gofreeil.com';
-const INBOX_LINK = `${COMMUNITY_URL}/messages`;
+export const INBOX_LINK = `${COMMUNITY_URL}/messages`;
 
 export const MESSAGE_MIN = 5;
 export const MESSAGE_MAX = 2000;
@@ -34,7 +34,7 @@ export class ContactError extends Error {
 	}
 }
 
-interface StrapiUserRow {
+export interface StrapiUserRow {
 	id: number;
 	email?: string | null;
 	phone?: string | null;
@@ -45,12 +45,12 @@ interface StrapiUserRow {
 	sms_prefs?: unknown;
 }
 
-function headers() {
+export function headers() {
 	return { 'Content-Type': 'application/json', Authorization: `Bearer ${STRAPI_TOKEN}` };
 }
 
 /** משתמש ה-Strapi של הרכז לפי האימייל שלו */
-async function findUserByEmail(email: string): Promise<StrapiUserRow | null> {
+export async function findUserByEmail(email: string): Promise<StrapiUserRow | null> {
 	const q = new URLSearchParams({ 'filters[email][$eqi]': email, 'pagination[limit]': '1' });
 	const res = await fetch(`${STRAPI_URL}/api/users?${q}`, {
 		headers: headers(),
@@ -66,7 +66,7 @@ async function findUserByEmail(email: string): Promise<StrapiUserRow | null> {
  * משקף את notifyAdminBySms: תפקיד super_admin/neighborhood_admin או רכז שכונה,
  * לא חסום, והעדפות ה-SMS לא מכבות את קבוצת "other" (שאליה נופל הסוג שלנו).
  */
-function backendWillSms(u: StrapiUserRow): boolean {
+export function backendWillSms(u: StrapiUserRow): boolean {
 	if (u.blocked) return false;
 	const privileged =
 		['super_admin', 'neighborhood_admin'].includes(String(u.app_role ?? '')) ||
@@ -78,7 +78,7 @@ function backendWillSms(u: StrapiUserRow): boolean {
 	return !Array.isArray(p.groups) || p.groups.map(String).includes('other');
 }
 
-async function sendSms(phone: string, message: string): Promise<void> {
+export async function sendSms(phone: string, message: string): Promise<void> {
 	const res = await fetch(`${STRAPI_URL}/api/admin/sms/send`, {
 		method: 'POST',
 		headers: headers(),

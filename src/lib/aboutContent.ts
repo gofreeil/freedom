@@ -212,8 +212,51 @@ export interface AdminsText {
 	send: string;
 	cancel: string;
 	sendFailed: string;
+	/** תווית ה"משרה פנויה" בשפות שבהן שם הרכז (עברית, מהנתונים) לא מתאים להצגה */
+	vacantLabel: string;
+	/** "הגשת מועמדות" לרכז — הטופס שנפתח מהקישור "דרוש רכז" */
+	apply: {
+		linkTitle: (site: string) => string;
+		title: string;
+		intro: (site: string) => string;
+		name: string;
+		phone: string;
+		email: string;
+		emailOptional: string;
+		city: string;
+		cityPlaceholder: string;
+		availability: string;
+		availabilityPlaceholder: string;
+		/** תוויות לפי הסדר של APPLY_AVAILABILITY */
+		availabilityLabels: string[];
+		advantage: string;
+		advantagePlaceholder: string;
+		experience: string;
+		experiencePlaceholder: string;
+		hint: string;
+		submit: string;
+		sending: string;
+		sent: string;
+		failed: string;
+	};
 	/** שמות האתרים לפי id; חסר = השם העברי מ-sitesData */
 	siteNames: Record<string, string>;
+}
+
+/**
+ * ערכי הזמינות בטופס "הגשת מועמדות". הערכים עצמם בעברית — הם מגיעים לתיבה של מנהל
+ * הרשת כמו שהם, והשרת בודק מולם. התוויות המוצגות בכל שפה ב-ADMINS_TEXT.*.apply.
+ */
+export const APPLY_AVAILABILITY = [
+	'עד 2 שעות בשבוע',
+	'2–5 שעות בשבוע',
+	'5–10 שעות בשבוע',
+	'יותר מ-10 שעות בשבוע'
+];
+
+/** האם שם האחראי בנתונים הוא סימון של משרה פנויה ("דרוש רכז") */
+export function isVacantCoordinator(name: string | undefined | null): boolean {
+	return /^\s*דרוש(ה|ים)?\s+רכז/.test(name ?? '');
 }
 
 export const ADMINS_TEXT: Record<AboutLang, AdminsText> = {
@@ -245,6 +288,31 @@ export const ADMINS_TEXT: Record<AboutLang, AdminsText> = {
 		send: 'שליחה',
 		cancel: 'ביטול',
 		sendFailed: 'שליחת ההודעה נכשלה — נסו שוב',
+		vacantLabel: 'דרוש רכז',
+		apply: {
+			linkTitle: (s) => `הגשת מועמדות לתפקיד רכז — ${s}`,
+			title: '🙋 הגשת מועמדות לתפקיד רכז',
+			intro: (s) =>
+				`רוצים להוביל את "${s}"? מלאו את הפרטים וספרו לנו למה אתם מתאימים לתפקיד — ניצור איתכם קשר.`,
+			name: 'שם מלא',
+			phone: 'טלפון',
+			email: 'אימייל',
+			emailOptional: '(לא חובה)',
+			city: 'עיר / שכונה',
+			cityPlaceholder: 'איפה אתם גרים?',
+			availability: 'כמה זמן אפשר להקדיש לתפקיד?',
+			availabilityPlaceholder: 'בחרו…',
+			availabilityLabels: APPLY_AVAILABILITY,
+			advantage: 'מה היתרון שלכם? למה אתם מתאימים לתפקיד?',
+			advantagePlaceholder: 'כישורים, תכונות, מוטיבציה — כל מה שיעזור לנו להכיר אתכם…',
+			experience: 'ניסיון רלוונטי',
+			experiencePlaceholder: 'התנדבות, ניהול, פעילות קהילתית, תחום מקצועי קשור — אם יש…',
+			hint: 'הפרטים מגיעים ישירות למנהל הרשת, ולא יפורסמו.',
+			submit: 'שליחת מועמדות',
+			sending: 'שולח…',
+			sent: 'תודה! המועמדות התקבלה ✓ נחזור אליכם בהקדם.',
+			failed: 'שליחת המועמדות נכשלה — נסו שוב'
+		},
 		siteNames: {}
 	},
 
@@ -277,6 +345,36 @@ export const ADMINS_TEXT: Record<AboutLang, AdminsText> = {
 		send: 'Send',
 		cancel: 'Cancel',
 		sendFailed: 'Sending the message failed — please try again',
+		vacantLabel: 'Coordinator needed',
+		apply: {
+			linkTitle: (s) => `Apply to be the coordinator — ${s}`,
+			title: '🙋 Apply to be a coordinator',
+			intro: (s) =>
+				`Want to lead "${s}"? Fill in your details and tell us why you're a good fit — we'll get in touch.`,
+			name: 'Full name',
+			phone: 'Phone',
+			email: 'Email',
+			emailOptional: '(optional)',
+			city: 'City / neighborhood',
+			cityPlaceholder: 'Where do you live?',
+			availability: 'How much time can you give the role?',
+			availabilityPlaceholder: 'Choose…',
+			availabilityLabels: [
+				'Up to 2 hours a week',
+				'2–5 hours a week',
+				'5–10 hours a week',
+				'More than 10 hours a week'
+			],
+			advantage: 'What is your advantage? Why are you a good fit for the role?',
+			advantagePlaceholder: 'Skills, qualities, motivation — anything that helps us get to know you…',
+			experience: 'Relevant experience',
+			experiencePlaceholder: 'Volunteering, management, community work, a related profession — if any…',
+			hint: 'Your details go straight to the network manager and will not be published.',
+			submit: 'Send application',
+			sending: 'Sending…',
+			sent: "Thank you! Your application was received ✓ We'll get back to you soon.",
+			failed: 'Sending the application failed — please try again'
+		},
 		siteNames: {
 			portal: 'Going to Freedom',
 			community_neighborhood: 'Community in the Neighborhood',
@@ -322,6 +420,36 @@ export const ADMINS_TEXT: Record<AboutLang, AdminsText> = {
 		send: 'Отправить',
 		cancel: 'Отмена',
 		sendFailed: 'Не удалось отправить сообщение — попробуйте ещё раз',
+		vacantLabel: 'Нужен координатор',
+		apply: {
+			linkTitle: (s) => `Подать заявку на роль координатора — ${s}`,
+			title: '🙋 Заявка на роль координатора',
+			intro: (s) =>
+				`Хотите возглавить «${s}»? Заполните данные и расскажите, почему вы подходите, — мы свяжемся с вами.`,
+			name: 'Полное имя',
+			phone: 'Телефон',
+			email: 'Email',
+			emailOptional: '(необязательно)',
+			city: 'Город / район',
+			cityPlaceholder: 'Где вы живёте?',
+			availability: 'Сколько времени вы готовы уделять?',
+			availabilityPlaceholder: 'Выберите…',
+			availabilityLabels: [
+				'До 2 часов в неделю',
+				'2–5 часов в неделю',
+				'5–10 часов в неделю',
+				'Более 10 часов в неделю'
+			],
+			advantage: 'В чём ваше преимущество? Почему вы подходите на эту роль?',
+			advantagePlaceholder: 'Навыки, качества, мотивация — всё, что поможет нам узнать вас…',
+			experience: 'Соответствующий опыт',
+			experiencePlaceholder: 'Волонтёрство, управление, общественная работа, смежная профессия — если есть…',
+			hint: 'Данные попадут напрямую руководителю сети и не будут опубликованы.',
+			submit: 'Отправить заявку',
+			sending: 'Отправка…',
+			sent: 'Спасибо! Заявка получена ✓ Мы скоро свяжемся с вами.',
+			failed: 'Не удалось отправить заявку — попробуйте ещё раз'
+		},
 		siteNames: {
 			portal: 'Путь к свободе',
 			community_neighborhood: 'Сообщество в районе',

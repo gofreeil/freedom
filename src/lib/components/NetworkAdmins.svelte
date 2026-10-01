@@ -19,7 +19,7 @@
 	import { SITES, type FreedomSite } from '$lib/sitesData';
 	import { SITE_ROWS_GRID_COLS } from '$lib/components/admin/sitesGrid';
 	import { locale } from 'svelte-i18n';
-	import { ABOUT_TEXT, ADMINS_TEXT, aboutLang } from '$lib/aboutContent';
+	import { ABOUT_TEXT, ADMINS_TEXT, APPLY_AVAILABILITY, aboutLang, isVacantCoordinator } from '$lib/aboutContent';
 
 	// שפת התצוגה. הטבלה עצמה נשארת RTL בכל שפה — היא מראה של פאנל הניהול
 	// (אותה רשת עמודות והיסטים), והשמות והתפקידים ממילא בעברית.
@@ -116,10 +116,68 @@
 		}
 	}
 
+	// ── הגשת מועמדות ──
+	// כשבשדה האחראי כתוב "דרוש רכז", השם הופך לקישור שפותח טופס מועמדות. הטופס נשלח
+	// לתיבה האישית של מנהל הרשת (+ SMS אליו) דרך /api/coordinator-application, ופתוח
+	// גם למי שלא מחובר.
+	const emptyForm = () => ({
+		name: '',
+		phone: '',
+		email: '',
+		city: '',
+		availability: '',
+		advantage: '',
+		experience: '',
+		website: '' // שדה-פיתיון נסתר — אדם לא ממלא אותו
+	});
+	let applyFor = $state<FreedomSite | null>(null);
+	let form = $state(emptyForm());
+	let applying = $state(false);
+	let applyError = $state('');
+	let applySent = $state(false);
+	const applyReady = $derived(
+		form.name.trim().length >= 2 &&
+			form.phone.replace(/\D/g, '').length >= 9 &&
+			form.advantage.trim().length >= 10
+	);
+
+	function openApply(site: FreedomSite) {
+		waFor = null;
+		msgFor = null;
+		applyFor = site;
+		form = { ...emptyForm(), name: page.data.user?.name ?? '', email: page.data.user?.email ?? '' };
+		applyError = '';
+		applySent = false;
+	}
+
+	async function submitApply() {
+		if (!applyFor || applying || !applyReady) return;
+		applying = true;
+		applyError = '';
+		try {
+			const res = await fetch('/api/coordinator-application', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ siteId: applyFor.id, ...form })
+			});
+			const json = (await res.json().catch(() => ({}))) as { error?: string };
+			if (!res.ok) throw new Error(json.error || tx.apply.failed);
+			applySent = true;
+		} catch (e) {
+			applyError = e instanceof Error ? e.message : tx.apply.failed;
+		} finally {
+			applying = false;
+		}
+	}
+
+	const INPUT_CLS =
+		'w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-[16px] text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none sm:text-sm';
+
 	function onKey(e: KeyboardEvent) {
 		if (e.key === 'Escape') {
 			waFor = null;
 			if (!sending) msgFor = null;
+			if (!applying) applyFor = null;
 		}
 	}
 
@@ -167,9 +225,27 @@
 	</div>
 {/snippet}
 
-<!-- כפתורי יצירת קשר: הודעה לתיבה (לכל רכז ממונה), וואטסאפ ומייל — רק כשיש פרטים -->
+<!-- שם האחראי. "דרוש רכז" הופך לקישור שפותח טופס הגשת מועמדות לאתר -->
+{#snippet adminName(site: FreedomSite, admin: PublicAdmin | undefined)}
+	{#if admin && isVacantCoordinator(admin.name)}
+		<button
+			type="button"
+			onclick={() => openApply(site)}
+			title={tx.apply.linkTitle(siteName(site))}
+			class="cursor-pointer font-bold underline decoration-dotted underline-offset-4 transition hover:text-amber-300 hover:decoration-solid"
+			>{lang === 'he' ? admin.name : tx.vacantLabel}</button
+		>
+	{:else if admin?.name}
+		{admin.name}
+	{:else}
+		<span class="font-normal text-gray-500">{tx.notAssigned}</span>
+	{/if}
+{/snippet}
+
+<!-- כפתורי יצירת קשר: הודעה לתיבה (לכל רכז ממונה), וואטסאפ ומייל — רק כשיש פרטים.
+     באתר שדרוש לו רכז אין למי לכתוב — שם במקום זה הקישור "דרוש רכז" -->
 {#snippet contact(site: FreedomSite, admin: PublicAdmin | undefined, cls: string)}
-	{#if admin?.name}
+	{#if admin?.name && !isVacantCoordinator(admin.name)}
 		<button
 			type="button"
 			onclick={() => openMessage(site, admin)}
@@ -237,7 +313,7 @@
 						     את גובה השורה — כך הצורה לא משתנה. -->
 						<div class="min-w-0 flex-1">
 							<div class="line-clamp-1 text-[14px] font-bold leading-tight text-amber-400">
-								{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">{tx.notAssigned}</span>{/if}
+								{@render adminName(site, admin)}
 							</div>
 							{#if admin?.role}
 								<div class="mt-0.5 line-clamp-2 text-[12px] leading-tight text-gray-400">{admin.role}</div>
@@ -271,7 +347,7 @@
 					<div class="min-w-0">
 						<div class="invisible mb-1 text-sm font-bold" aria-hidden="true">·</div>
 						<div class={NAME_FIELD_CLS}>
-							{#if admin?.name}{admin.name}{:else}<span class="font-normal text-gray-500">{tx.notAssigned}</span>{/if}
+							{@render adminName(site, admin)}
 						</div>
 					</div>
 
@@ -452,6 +528,177 @@
 							type="button"
 							disabled={sending}
 							onclick={() => (msgFor = null)}
+							class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+						>
+							{tx.cancel}
+						</button>
+					</div>
+				</form>
+			{/if}
+		</div>
+	</div>
+{/if}
+
+<!-- ── הגשת מועמדות לתפקיד רכז (מהקישור "דרוש רכז") ── -->
+{#if applyFor}
+	{@const a = tx.apply}
+	<div
+		class="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4"
+		role="presentation"
+		onclick={(e) => e.target === e.currentTarget && !applying && (applyFor = null)}
+	>
+		<div
+			class="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-white/15 bg-[#0f172a] p-5 text-start shadow-2xl"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="apply-title"
+			{dir}
+		>
+			<h3 id="apply-title" class="mb-1 text-lg font-black text-white">{a.title}</h3>
+			<p class="mb-4 text-sm leading-relaxed text-gray-300">{a.intro(siteName(applyFor))}</p>
+
+			{#if applySent}
+				<p class="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3 text-sm leading-relaxed text-emerald-200">
+					{a.sent}
+				</p>
+				<div class="mt-4">
+					<button
+						type="button"
+						onclick={() => (applyFor = null)}
+						class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+					>
+						{tx.close}
+					</button>
+				</div>
+			{:else}
+				<form
+					class="space-y-3"
+					onsubmit={(e) => {
+						e.preventDefault();
+						submitApply();
+					}}
+				>
+					<!-- שדה-פיתיון: מוסתר מבני אדם, בוטים ממלאים אותו והשרת מתעלם מהפנייה -->
+					<div class="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+						<input type="text" tabindex="-1" autocomplete="off" bind:value={form.website} />
+					</div>
+
+					<div class="grid gap-3 sm:grid-cols-2">
+						<div>
+							<label for="apply-name" class="mb-1 block text-xs font-bold text-gray-300">{a.name} *</label>
+							<input
+								id="apply-name"
+								type="text"
+								bind:value={form.name}
+								required
+								minlength="2"
+								maxlength="80"
+								autocomplete="name"
+								class={INPUT_CLS}
+							/>
+						</div>
+						<div>
+							<label for="apply-phone" class="mb-1 block text-xs font-bold text-gray-300">{a.phone} *</label>
+							<input
+								id="apply-phone"
+								type="tel"
+								inputmode="tel"
+								dir="ltr"
+								bind:value={form.phone}
+								required
+								maxlength="20"
+								autocomplete="tel"
+								placeholder="050-0000000"
+								class={INPUT_CLS}
+							/>
+						</div>
+						<div>
+							<label for="apply-email" class="mb-1 block text-xs font-bold text-gray-300">
+								{a.email} <span class="font-normal text-gray-500">{a.emailOptional}</span>
+							</label>
+							<input
+								id="apply-email"
+								type="email"
+								dir="ltr"
+								bind:value={form.email}
+								maxlength="120"
+								autocomplete="email"
+								class={INPUT_CLS}
+							/>
+						</div>
+						<div>
+							<label for="apply-city" class="mb-1 block text-xs font-bold text-gray-300">
+								{a.city} <span class="font-normal text-gray-500">{a.emailOptional}</span>
+							</label>
+							<input
+								id="apply-city"
+								type="text"
+								bind:value={form.city}
+								maxlength="80"
+								placeholder={a.cityPlaceholder}
+								autocomplete="address-level2"
+								class={INPUT_CLS}
+							/>
+						</div>
+					</div>
+
+					<div>
+						<label for="apply-availability" class="mb-1 block text-xs font-bold text-gray-300">
+							{a.availability} <span class="font-normal text-gray-500">{a.emailOptional}</span>
+						</label>
+						<select id="apply-availability" bind:value={form.availability} class={INPUT_CLS}>
+							<option value="">{a.availabilityPlaceholder}</option>
+							{#each APPLY_AVAILABILITY as value, i (value)}
+								<option {value}>{a.availabilityLabels[i] ?? value}</option>
+							{/each}
+						</select>
+					</div>
+
+					<div>
+						<label for="apply-advantage" class="mb-1 block text-xs font-bold text-gray-300">{a.advantage} *</label>
+						<textarea
+							id="apply-advantage"
+							bind:value={form.advantage}
+							rows="4"
+							maxlength="1500"
+							required
+							minlength="10"
+							placeholder={a.advantagePlaceholder}
+							class="{INPUT_CLS} resize-y"
+						></textarea>
+					</div>
+
+					<div>
+						<label for="apply-experience" class="mb-1 block text-xs font-bold text-gray-300">
+							{a.experience} <span class="font-normal text-gray-500">{a.emailOptional}</span>
+						</label>
+						<textarea
+							id="apply-experience"
+							bind:value={form.experience}
+							rows="3"
+							maxlength="1500"
+							placeholder={a.experiencePlaceholder}
+							class="{INPUT_CLS} resize-y"
+						></textarea>
+					</div>
+
+					<p class="text-xs text-gray-500">{a.hint}</p>
+					{#if applyError}
+						<p class="text-sm font-semibold text-red-400">{applyError}</p>
+					{/if}
+
+					<div class="flex flex-wrap gap-2 pt-1">
+						<button
+							type="submit"
+							disabled={applying || !applyReady}
+							class="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-2 text-sm font-black text-white transition hover:opacity-90 disabled:opacity-40"
+						>
+							{applying ? a.sending : a.submit}
+						</button>
+						<button
+							type="button"
+							disabled={applying}
+							onclick={() => (applyFor = null)}
 							class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
 						>
 							{tx.cancel}
