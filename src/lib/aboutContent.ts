@@ -13,12 +13,6 @@ export function aboutLang(locale: string | null | undefined): AboutLang {
 	return code === 'en' || code === 'ru' ? code : 'he';
 }
 
-interface Principle {
-	icon: string;
-	title: string;
-	text: string;
-}
-
 export interface AboutText {
 	dir: 'rtl' | 'ltr';
 	title: string;
@@ -26,8 +20,6 @@ export interface AboutText {
 	logoAlt: string;
 	intro: string[];
 	sitesTitle: string;
-	principlesTitle: string;
-	principles: Principle[];
 	joinTitle: string;
 	joinText: string;
 	register: string;
@@ -35,8 +27,6 @@ export interface AboutText {
 	contact: string;
 	socials: { facebook: string; youtube: string; telegram: string; tiktok: string };
 }
-
-const ICONS = ['🆓', '🏘️', '🛠️', '🔎', '🕊️', '🌱'];
 
 export const ABOUT_TEXT: Record<AboutLang, AboutText> = {
 	he: {
@@ -51,33 +41,6 @@ export const ABOUT_TEXT: Record<AboutLang, AboutText> = {
 			'הקמנו רשת פלטפורמות שכל אחת מהן פותרת בעיה ציבורית אחת ומאפשרת לנו לגבש את הכוח הציבורי כולו לטובת חזון זה. כל אחת מהפלטפורמות ממנפת את חברתה, בתקווה להתקדם לחיים סולידריים שבהם העם הוא חכם ואחראי, ויש לו שליטה על מוסדותיו!'
 		],
 		sitesTitle: 'אתרי הרשת',
-		principlesTitle: 'העקרונות שלנו',
-		principles: [
-			{
-				title: 'חינם, תמיד',
-				text: 'כל הפלטפורמות פתוחות לשימוש ללא תשלום. הפעילות מבוססת התנדבות, והמימון מגיע מפרסום מקומי ומחנות החירות.'
-			},
-			{
-				title: 'מקומי לפני ארצי',
-				text: 'הכוח נמצא בשכונה. כל כלי ברשת נבנה כדי לחזק קודם כול את מי שגר לידך — ורק אחר כך את התמונה הארצית.'
-			},
-			{
-				title: 'מעשי, לא הצהרתי',
-				text: 'לא מחאה ולא מניפסט. כל תחום מקבל פלטפורמה עובדת שאפשר להשתמש בה כבר היום — גמ״ח, בורר, בעל מקצוע, קבוצת רכישה.'
-			},
-			{
-				title: 'שקיפות ואחריותיות',
-				text: 'פעולות עובדי הציבור מתועדות, מדורגות ונחשפות. ציבור שרואה מה נעשה בשמו הוא ציבור שאפשר לתת בו אמון.'
-			},
-			{
-				title: 'זהות אחת לכל הרשת',
-				text: 'נרשמים פעם אחת — ומזוהים בכל אתרי הרשת, בלי הרשמה חוזרת ובלי עוד סיסמה לזכור.'
-			},
-			{
-				title: 'נבנה בידי המשתמשים',
-				text: 'התוכן, הביקורת והדירוגים מגיעים מהתושבים עצמם. אנחנו מספקים את הכלים; הקהילה מספקת את התוכן.'
-			}
-		].map((p, i) => ({ icon: ICONS[i], ...p })),
 		joinTitle: '🕊️ הרשמה אחת — נוכחות בכל הרשת',
 		joinText:
 			'מי שנרשם אצלנו מזוהה אוטומטית בכל אתרי יוצאים לחירות. בלי הרשמה חוזרת, בלי עוד סיסמה — ועם גישה מלאה לכל הפלטפורמות.',
@@ -99,33 +62,6 @@ export const ABOUT_TEXT: Record<AboutLang, AboutText> = {
 			'We have built a network of platforms, each solving one public problem and together allowing us to unite the full power of the public behind this vision. Each platform strengthens the others, in the hope of moving toward a life of solidarity in which the people are wise and responsible, and in control of their institutions!'
 		],
 		sitesTitle: 'Network sites',
-		principlesTitle: 'Our principles',
-		principles: [
-			{
-				title: 'Free, always',
-				text: 'All platforms are open to use at no cost. Our work is volunteer-based, funded by local advertising and the Freedom Store.'
-			},
-			{
-				title: 'Local before national',
-				text: 'The power is in the neighborhood. Every tool in the network is built first to strengthen the people who live next to you — and only then the national picture.'
-			},
-			{
-				title: 'Practical, not declarative',
-				text: 'Not a protest and not a manifesto. Every field gets a working platform you can use today — a gemach, an arbitrator, a professional, a purchasing group.'
-			},
-			{
-				title: 'Transparency and accountability',
-				text: 'The actions of public servants are documented, rated and exposed. A public that sees what is done in its name is a public that can be trusted.'
-			},
-			{
-				title: 'One identity for the whole network',
-				text: 'Sign up once — and be recognized across all network sites, with no repeat registration and no extra password to remember.'
-			},
-			{
-				title: 'Built by its users',
-				text: 'The content, reviews and ratings come from the residents themselves. We provide the tools; the community provides the content.'
-			}
-		].map((p, i) => ({ icon: ICONS[i], ...p })),
 		joinTitle: '🕊️ One sign-up — present across the whole network',
 		joinText:
 			'Anyone who signs up with us is automatically recognized on every Going to Freedom site. No repeat registration, no extra password — and full access to all platforms.',
@@ -147,33 +83,6 @@ export const ABOUT_TEXT: Record<AboutLang, AboutText> = {
 			'Мы создали сеть платформ, каждая из которых решает одну общественную проблему и позволяет нам объединить всю силу общества ради этого видения. Каждая платформа усиливает другие — в надежде прийти к солидарной жизни, в которой народ мудр и ответственен и контролирует свои институты!'
 		],
 		sitesTitle: 'Сайты сети',
-		principlesTitle: 'Наши принципы',
-		principles: [
-			{
-				title: 'Бесплатно, всегда',
-				text: 'Все платформы открыты для использования бесплатно. Работа основана на волонтёрстве, а финансирование идёт от местной рекламы и Магазина свободы.'
-			},
-			{
-				title: 'Местное прежде общенационального',
-				text: 'Сила — в районе. Каждый инструмент сети создан, чтобы прежде всего поддержать тех, кто живёт рядом с вами, — и только потом общую картину страны.'
-			},
-			{
-				title: 'Практика, а не декларации',
-				text: 'Не протест и не манифест. Каждая сфера получает работающую платформу, которой можно пользоваться уже сегодня, — гмах, третейский судья, специалист, закупочная группа.'
-			},
-			{
-				title: 'Прозрачность и подотчётность',
-				text: 'Действия государственных служащих документируются, оцениваются и становятся публичными. Общество, которое видит, что делается от его имени, — это общество, которому можно доверять.'
-			},
-			{
-				title: 'Одна учётная запись для всей сети',
-				text: 'Регистрируетесь один раз — и вас узнают на всех сайтах сети, без повторной регистрации и без лишнего пароля.'
-			},
-			{
-				title: 'Создано пользователями',
-				text: 'Контент, отзывы и рейтинги поступают от самих жителей. Мы даём инструменты; сообщество наполняет их содержанием.'
-			}
-		].map((p, i) => ({ icon: ICONS[i], ...p })),
 		joinTitle: '🕊️ Одна регистрация — присутствие во всей сети',
 		joinText:
 			'Каждый, кто зарегистрировался у нас, автоматически узнаётся на всех сайтах «Путь к свободе». Без повторной регистрации, без лишнего пароля — и с полным доступом ко всем платформам.',

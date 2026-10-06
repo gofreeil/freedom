@@ -132,26 +132,6 @@
 		<NetworkAdmins />
 	</div>
 
-	<!-- ═══════ עקרונות ═══════ -->
-	<section class="mb-10">
-		<h2 class="mb-5 flex items-center gap-2 text-xl font-black text-white sm:text-2xl">
-			<span aria-hidden="true">🧭</span> {tx.principlesTitle}
-			<span class="h-px flex-1 bg-white/10"></span>
-		</h2>
-		<!-- רשת קווים לא מחוברת (כמו באודות של קהילה בשכונה): בלי כרטיסים, רק קווי הפרדה קצרים -->
-		<div class="principles-net grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-			{#each tx.principles as p (p.title)}
-				<div class="relative flex items-start gap-4 px-5 py-6">
-					<span class="mt-0.5 flex-shrink-0 text-3xl" aria-hidden="true">{p.icon}</span>
-					<div class="min-w-0">
-						<h3 class="mb-1.5 text-base font-black text-amber-300">{p.title}</h3>
-						<p class="text-sm leading-relaxed text-gray-300">{p.text}</p>
-					</div>
-				</div>
-			{/each}
-		</div>
-	</section>
-
 	<!-- ═══════ שאלות נפוצות ═══════ -->
 	<!-- השו"ת בעברית בלבד בינתיים (בעריכה) — לכן RTL קבוע -->
 	<section
@@ -251,50 +231,5 @@
 		inset: 0;
 		z-index: -1;
 		background: rgb(7 11 20 / 0.5);
-	}
-	/* קווי הפרדה קצרים שלא נוגעים זה בזה — אופקי מתחת לתא, אנכי בקצה הסוף של התא (בין תא לתא הבא — ב-RTL וב-LTR) */
-	.principles-net > div::after,
-	.principles-net > div::before {
-		content: '';
-		position: absolute;
-		background: rgb(255 255 255 / 0.1);
-		display: none;
-	}
-	.principles-net > div::after {
-		bottom: 0;
-		left: 10%;
-		right: 10%;
-		height: 1px;
-	}
-	.principles-net > div::before {
-		top: 12%;
-		bottom: 12%;
-		inset-inline-end: 0;
-		width: 1px;
-	}
-	/* עמודה אחת */
-	.principles-net > div:not(:last-child)::after {
-		display: block;
-	}
-	/* שתי עמודות */
-	@media (min-width: 640px) {
-		.principles-net > div:not(:last-child)::after {
-			display: none;
-		}
-		.principles-net > div:not(:nth-last-child(-n + 2))::after,
-		.principles-net > div:nth-child(2n + 1)::before {
-			display: block;
-		}
-	}
-	/* שלוש עמודות */
-	@media (min-width: 1024px) {
-		.principles-net > div:not(:nth-last-child(-n + 2))::after,
-		.principles-net > div:nth-child(2n + 1)::before {
-			display: none;
-		}
-		.principles-net > div:not(:nth-last-child(-n + 3))::after,
-		.principles-net > div:not(:nth-child(3n))::before {
-			display: block;
-		}
 	}
 </style>
