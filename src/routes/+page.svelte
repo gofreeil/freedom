@@ -28,6 +28,10 @@
 		h?: number;
 		comingSoon?: boolean;
 		mobileHide?: boolean;
+		/* חיתוך בדסקטופ לבאנר בטור הקהילה (שגובהו אוטומטי): גובה קבוע + נקודת מיקוד,
+		   כדי ששלושת הטורים ייגמרו באותו גובה. בנייד התמונה נשארת מלאה. */
+		cropH?: string;
+		cropFocus?: string;
 	}
 
 	const columns: { headingKey: string; sites: Site[] }[] = [
@@ -48,7 +52,9 @@
 					href: 'https://chachmim.gofreeil.com/',
 					image: '/images/bati-hapius.webp',
 					w: 1024,
-					h: 1024
+					h: 1024,
+					cropH: 'md:h-[120px]',
+					cropFocus: 'md:object-[center_20%]'
 				},
 				{
 					titleKey: 'page.sites.national_gemach.title',
@@ -56,7 +62,9 @@
 					href: 'https://gemach.gofreeil.com/',
 					image: '/images/gemach-harzi.webp',
 					w: 1200,
-					h: 800
+					h: 800,
+					cropH: 'md:h-[95px]',
+					cropFocus: 'md:object-[center_23%]'
 				},
 				{
 					titleKey: 'page.sites.singles.title',
@@ -890,14 +898,14 @@
 							       transition-colors hover:border-purple-500/50 hover:bg-white/10
 							       {site.comingSoon && !site.image ? 'opacity-60' : ''}"
 						>
-							<div class="banner-media relative {i === 0 ? 'h-auto' : i === 1 ? (si === 2 ? 'h-60 md:h-44' : si === 3 ? 'h-52 md:h-[137px]' : si === 4 ? 'h-52 md:h-[138px]' : 'h-44 md:h-28') : i === 2 ? (si === 0 ? 'h-36 md:h-48' : si === 1 ? 'h-44 md:h-56' : 'h-40 md:h-[335px]') : 'h-28'} w-full overflow-hidden bg-slate-800">
+							<div class="banner-media relative {i === 0 ? `h-auto ${site.cropH ?? ''}` : i === 1 ? (si === 2 ? 'h-60 md:h-44' : si === 3 ? 'h-52 md:h-[137px]' : si === 4 ? 'h-52 md:h-[138px]' : 'h-44 md:h-28') : i === 2 ? (si === 0 ? 'h-36 md:h-48' : si === 1 ? 'h-44 md:h-56' : 'h-40 md:h-[335px]') : 'h-28'} w-full overflow-hidden bg-slate-800">
 								{#if site.image}
 									<img
 										src={site.image}
 										alt={tFn(site.titleKey)}
 										width={site.w}
 										height={site.h}
-										class="banner-img {i === 0 ? 'h-auto' : 'h-full'} w-full object-cover transition-transform"
+										class="banner-img {i === 0 ? (site.cropH ? `h-auto md:h-full ${site.cropFocus ?? ''}` : 'h-auto') : 'h-full'} w-full object-cover transition-transform"
 										decoding="async"
 										loading="lazy"
 									/>
