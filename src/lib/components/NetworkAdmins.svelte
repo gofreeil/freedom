@@ -280,7 +280,7 @@
 <section dir="rtl">
 	<h2 class="mb-3 flex items-center gap-2 text-lg font-black text-white sm:mb-4 sm:text-2xl">
 		<span class="h-px flex-1 bg-white/10"></span>
-		<span aria-hidden="true">🛡️</span> {tx.title}
+		{tx.title}
 		<span class="h-px flex-1 bg-white/10"></span>
 	</h2>
 
