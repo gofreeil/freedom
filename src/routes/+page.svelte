@@ -993,9 +993,13 @@
 	:global(.site-frame) {
 		background-color: transparent !important;
 	}
-	/* שכבת רקע כחולה כהה מתחת לוידאו - כדי שלא ייראה הבזק לבן בזמן טעינת הוידאו. */
+	/* שכבת רקע ירוקה (כתמי ירוק בגוונים שונים, ראו .forest-bg ב-app.css) מתחת לוידאו - כדי שלא ייראה
+	   הבזק לבן בזמן טעינת הוידאו, והיא גם הרקע של שאר הדף מתחת למסך הפתיחה. */
 	:global(html) {
-		background: #070b14 !important;
+		background-color: #08331f !important;
+		background-image: var(--forest-layers) !important;
+		background-size: 100% 1800px !important;
+		background-repeat: repeat-y !important;
 	}
 
 	/* אזור הוידאו: תוחם למסך הראשון בלבד. isolation יוצר הקשר-ערימה כדי שהוידאו

@@ -52,7 +52,26 @@ body {
 
 :root {
     --header-height: 90px;
-    --bg-deep: #070b14;
+    /* מחוץ למסגרת האתר: ירוק עמוק כמעט שחור */
+    --bg-deep: #04150d;
+    /* רקע האתר: כתמי ירוק בגוונים שונים (אזמרגד, זית, ג'ייד, טורקיז-ירוק, יער עמוק) על בסיס ירוק כהה.
+       הכתמים מרוחקים ≥70% מהרדיוס משולי האריח (1800px) והבסיס סימטרי, כדי שאין תפר בין חזרות. */
+    --forest-layers:
+        radial-gradient(ellipse 55% 300px at 10% 330px, rgb(21 128 61 / 0.38), transparent 70%),
+        radial-gradient(ellipse 50% 300px at 92% 620px, rgb(77 124 15 / 0.34), transparent 70%),
+        radial-gradient(ellipse 60% 320px at 38% 940px, rgb(13 148 136 / 0.22), transparent 70%),
+        radial-gradient(ellipse 45% 280px at 80% 1280px, rgb(22 163 74 / 0.26), transparent 70%),
+        radial-gradient(ellipse 60% 280px at 18% 1500px, rgb(20 83 45 / 0.6), transparent 70%),
+        radial-gradient(ellipse 50% 200px at 62% 1650px, rgb(101 163 13 / 0.18), transparent 70%),
+        linear-gradient(172deg, #08331f 0%, #0a3d24 40%, #052e1a 70%, #08331f 100%);
+}
+
+/* רקע ה"יער" של האתר — class לאלמנטים; בדף הבית מוחל ישירות על html (ראו +page.svelte) */
+.forest-bg {
+    background-color: #08331f;
+    background-image: var(--forest-layers);
+    background-size: 100% 1800px;
+    background-repeat: repeat-y;
 }
 
 html {

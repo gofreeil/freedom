@@ -46,7 +46,7 @@
 
 <span class="golden-frame golden-frame-left" aria-hidden="true"></span>
 <span class="golden-frame golden-frame-right" aria-hidden="true"></span>
-<div class="site-frame min-h-screen flex flex-col bg-[#0f172a]">
+<div class="site-frame forest-bg min-h-screen flex flex-col">
 	<Header user={data.user} />
 
 	<div class="layout-container flex-grow">
