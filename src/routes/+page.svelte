@@ -238,6 +238,16 @@
 		};
 	});
 
+	// באנר הטקסט בראש הדף הוא קישור ל"אודותינו" רק בנייח (מ-768px, כמו שאר הדף) - בנייד נשאר טקסט רגיל
+	let isDesktop = $state(false);
+	onMount(() => {
+		const mq = window.matchMedia('(min-width: 768px)');
+		const update = () => (isDesktop = mq.matches);
+		update();
+		mq.addEventListener('change', update);
+		return () => mq.removeEventListener('change', update);
+	});
+
 	// הסרטון נטען רק בלחיצה - מאיץ משמעותית את טעינת הדף
 	let videoPlaying = $state(false);
 
@@ -641,7 +651,12 @@
 {/if}
 
 <section class="max-w-5xl mx-auto px-6 pt-4 pb-6 text-center">
-	<div class="text-card">
+	<svelte:element
+		this={isDesktop ? 'a' : 'div'}
+		href={isDesktop ? '/about' : undefined}
+		class="text-card hero-card"
+		class:hero-card-link={isDesktop}
+	>
 		<h1
 			class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent
 			       text-5xl md:text-7xl lg:text-8xl font-black text-center leading-tight px-4 mb-4 md:mb-6"
@@ -665,7 +680,7 @@
 			<span class="font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-400 bg-clip-text text-transparent">{tFn("page.intro.activity_label")}</span>
 			{tFn("page.intro.activity_text")}
 		</p>
-	</div>
+	</svelte:element>
 </section>
 
 <!-- וידאו + מונה החברים במסגרת אחת, padding מינימלי סביב הוידאו -->
@@ -1023,6 +1038,19 @@
 		-webkit-backdrop-filter: blur(0.3px);
 		border-radius: 0.875rem;
 		padding: 0.75rem 1.1rem;
+	}
+	/* באנר הטקסט בראש הדף - בנייח הוא קישור ל"אודותינו" */
+	.hero-card {
+		display: block;
+		color: inherit;
+		text-decoration: none;
+	}
+	.hero-card-link {
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
+	.hero-card-link:hover {
+		background: rgba(7, 11, 20, 0.58);
 	}
 	/* וריאציה לכרטיס הגדול שעוטף את כל אזור הפלטפורמות - יותר breathing room. */
 	.platforms-card {
