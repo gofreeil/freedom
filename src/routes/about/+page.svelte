@@ -191,7 +191,7 @@
 
 	<!-- ═══════ הצטרפות ═══════ -->
 	<section
-		class="rounded-3xl border border-amber-500/25 bg-gradient-to-l from-amber-500/10 to-pink-600/10 p-6 text-center shadow-lg sm:p-8"
+		class="rounded-3xl border border-amber-500/25 bg-[#0f172a] bg-gradient-to-l from-amber-500/10 to-pink-600/10 p-6 text-center shadow-lg sm:p-8"
 	>
 		<h2 class="text-xl font-black text-white sm:text-2xl">{tx.joinTitle}</h2>
 		<p class="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-amber-100/90 sm:text-base">
