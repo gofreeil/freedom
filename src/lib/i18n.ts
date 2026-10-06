@@ -66,6 +66,10 @@ register('he', () => Promise.resolve({
                 title: 'הגמ"ח הארצי',
                 description: "מנגישים את הגמחים בארץ, תורמים ומחזקים איש את רעהו.",
             },
+            singles: {
+                title: "פנויים פנויות",
+                description: "לוח פנויים ופנויות בליווי שדכנים, בצניעות ובפרטיות — להקמת בית נאמן בישראל.",
+            },
             lost_and_found: {
                 title: "פינת האבדות",
                 description: "לוח אבידות ומציאות ארצי — מפרסמים מה שאבד או נמצא, ומחזירים אבידה לבעליה.",
@@ -279,6 +283,10 @@ register('en', () => Promise.resolve({
                 title: "National Free-Loan Fund",
                 description: "All free-loan funds under one roof.",
             },
+            singles: {
+                title: "Singles",
+                description: "A singles board with matchmakers, modesty and privacy - for building a faithful home in Israel.",
+            },
             lost_and_found: {
                 title: "Lost & Found Corner",
                 description: "A nationwide lost-and-found board - post what you lost or found and return items to their owners.",
@@ -491,6 +499,10 @@ register('ru', () => Promise.resolve({
             national_gemach: {
                 title: "Национальный фонд беспроцентной помощи",
                 description: "Все фонды взаимопомощи под одной крышей.",
+            },
+            singles: {
+                title: "Знакомства",
+                description: "Доска знакомств с сопровождением сватов, скромно и конфиденциально - для создания верного дома в Израиле.",
             },
             lost_and_found: {
                 title: "Уголок находок",

@@ -56,6 +56,14 @@ export const SITES: FreedomSite[] = [
 		category: 'קהילה'
 	},
 	{
+		id: 'singles',
+		name: 'פנויים פנויות',
+		description: 'לוח פנויים ופנויות בליווי שדכנים, בצניעות ובפרטיות.',
+		url: 'https://singles.gofreeil.com/',
+		image: '/images/singles.webp',
+		category: 'קהילה'
+	},
+	{
 		id: 'lost_and_found',
 		name: 'פינת האבדות',
 		description: 'לוח אבידות ומציאות ארצי — מחזירים אבידה לבעליה.',

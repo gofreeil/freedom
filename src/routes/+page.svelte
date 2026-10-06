@@ -57,6 +57,14 @@
 					image: '/images/gemach-harzi.webp',
 					w: 1200,
 					h: 800
+				},
+				{
+					titleKey: 'page.sites.singles.title',
+					descriptionKey: 'page.sites.singles.description',
+					href: 'https://singles.gofreeil.com/',
+					image: '/images/singles.webp',
+					w: 640,
+					h: 427
 				}
 				// "פינת האבדות" (avedot.gofreeil.com) מוסתר מדף הבית בלבד.
 				// האתר עצמו נשאר חלק מהרשת — מוצג בפוטר ובפאנל האדמין,
