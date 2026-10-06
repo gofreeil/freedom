@@ -72,9 +72,9 @@
 	// כדי שהתצוגה כאן תיראה זהה לו. truncate במקום שורה שנשברת: גם שם השדה
 	// בפאנל הוא input בשורה אחת.
 	const FIELD_CLS =
-		'truncate rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[16px] text-white';
+		'truncate rounded-lg border border-white/10 bg-[#1b2335] px-2.5 py-2.5 text-[16px] text-white';
 	const NAME_FIELD_CLS =
-		'truncate rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[15px] font-bold text-amber-400';
+		'truncate rounded-lg border border-white/10 bg-[#1b2335] px-2.5 py-2.5 text-[15px] font-bold text-amber-400';
 
 	// ── יצירת קשר ──
 	// וואטסאפ: חלון אזהרה ("דחוף בלבד") לפני המעבר. הודעה: נשלחת לתיבה האישית של
@@ -171,7 +171,7 @@
 	}
 
 	const INPUT_CLS =
-		'w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-[16px] text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none sm:text-sm';
+		'w-full rounded-xl border border-white/10 bg-[#1b2335] px-3 py-2 text-[16px] text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none sm:text-sm';
 
 	function onKey(e: KeyboardEvent) {
 		if (e.key === 'Escape') {
@@ -191,7 +191,7 @@
 
 <!-- תמונת האחראי (או עיגול ריק לאתר שטרם מונה לו) -->
 {#snippet avatar(site: FreedomSite, admin: PublicAdmin | undefined, cls: string, iconCls: string)}
-	<div class="flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5 {cls}">
+	<div class="flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-[#1b2335] {cls}">
 		{#if admin?.avatar && !brokenAvatar[site.id]}
 			<img
 				src={admin.avatar}
@@ -209,7 +209,7 @@
 
 <!-- תמונת האתר -->
 {#snippet siteImage(site: FreedomSite, cls: string, iconCls: string)}
-	<div class="flex-shrink-0 overflow-hidden bg-white/5 {cls}">
+	<div class="flex-shrink-0 overflow-hidden bg-[#1b2335] {cls}">
 		{#if site.image && !brokenImage[site.id]}
 			<img
 				src={site.image}
@@ -251,7 +251,7 @@
 			onclick={() => openMessage(site, admin)}
 			title={tx.msgTo(admin.name)}
 			aria-label={tx.msgTo(admin.name)}
-			class="flex items-center justify-center rounded-lg border border-white/10 bg-white/5 transition hover:bg-white/15 {cls}"
+			class="flex items-center justify-center rounded-lg border border-white/10 bg-[#1b2335] transition hover:bg-[#333a4a] {cls}"
 			>✉️</button
 		>
 	{/if}
@@ -262,7 +262,7 @@
 			onclick={() => (waFor = { site, admin })}
 			title={tx.waTo(admin.name)}
 			aria-label={tx.waTo(admin.name)}
-			class="flex items-center justify-center rounded-lg border border-white/10 bg-white/5 transition hover:bg-white/15 {cls}"
+			class="flex items-center justify-center rounded-lg border border-white/10 bg-[#1b2335] transition hover:bg-[#333a4a] {cls}"
 			>💬</button
 		>
 	{/if}
@@ -271,7 +271,7 @@
 			href="mailto:{admin.email}"
 			title={tx.emailTo(admin.name)}
 			aria-label={tx.emailTo(admin.name)}
-			class="flex items-center justify-center rounded-lg border border-white/10 bg-white/5 transition hover:bg-white/15 {cls}"
+			class="flex items-center justify-center rounded-lg border border-white/10 bg-[#1b2335] transition hover:bg-[#333a4a] {cls}"
 			>📧</a
 		>
 	{/if}
@@ -287,7 +287,7 @@
 	{#if loadFailed}
 		<p class="rounded-2xl border border-red-500/25 bg-red-500/10 p-4 text-sm text-red-300">{tx.loadError}</p>
 	{:else if !admins}
-		<p class="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-gray-400">{tx.loading}</p>
+		<p class="rounded-2xl border border-white/10 bg-[#161e30] p-4 text-sm text-gray-400">{tx.loading}</p>
 	{:else}
 		<!-- ── נייד: שם האתר ככותרת ממורכזת, ומתחתיה שתי שורות פרטי האחראי ── -->
 		<ul class="sm:hidden">
@@ -334,7 +334,7 @@
 		</ul>
 
 		<!-- ── דסקטופ: אותה טבלה של הפאנל ── -->
-		<div class="hidden overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.02] p-3 sm:block">
+		<div class="hidden overflow-x-auto rounded-2xl border border-white/10 bg-[#141c2f] p-3 sm:block">
 			<div class="grid items-center gap-x-2 gap-y-1" style={SITE_ROWS_GRID_COLS}>
 				{#each sites as site (site.id)}
 					{@const admin = admins[site.id]}
@@ -422,7 +422,7 @@
 					<a
 						href="mailto:{t.admin.email}"
 						onclick={() => (waFor = null)}
-						class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+						class="rounded-xl border border-white/15 bg-[#1b2335] px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-[#272f3f]"
 					>
 						{tx.email}
 					</a>
@@ -467,7 +467,7 @@
 					<button
 						type="button"
 						onclick={() => (msgFor = null)}
-						class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+						class="rounded-xl border border-white/15 bg-[#1b2335] px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-[#272f3f]"
 					>
 						{tx.close}
 					</button>
@@ -486,7 +486,7 @@
 					{#if t.admin.email}
 						<a
 							href="mailto:{t.admin.email}"
-							class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+							class="rounded-xl border border-white/15 bg-[#1b2335] px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-[#272f3f]"
 						>
 							{tx.orEmail}
 						</a>
@@ -508,7 +508,7 @@
 						required
 						minlength="5"
 						placeholder={tx.msgPlaceholder}
-						class="w-full resize-y rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none"
+						class="w-full resize-y rounded-xl border border-white/10 bg-[#1b2335] p-3 text-sm text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none"
 					></textarea>
 					<p class="mt-1 text-xs text-gray-500">
 						{tx.msgHint}
@@ -528,7 +528,7 @@
 							type="button"
 							disabled={sending}
 							onclick={() => (msgFor = null)}
-							class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+							class="rounded-xl border border-white/15 bg-[#1b2335] px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-[#272f3f]"
 						>
 							{tx.cancel}
 						</button>
@@ -565,7 +565,7 @@
 					<button
 						type="button"
 						onclick={() => (applyFor = null)}
-						class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+						class="rounded-xl border border-white/15 bg-[#1b2335] px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-[#272f3f]"
 					>
 						{tx.close}
 					</button>
@@ -699,7 +699,7 @@
 							type="button"
 							disabled={applying}
 							onclick={() => (applyFor = null)}
-							class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+							class="rounded-xl border border-white/15 bg-[#1b2335] px-4 py-2 text-sm font-bold text-gray-200 transition hover:bg-[#272f3f]"
 						>
 							{tx.cancel}
 						</button>

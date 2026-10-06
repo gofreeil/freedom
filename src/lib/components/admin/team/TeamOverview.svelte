@@ -56,7 +56,7 @@
 		})
 	);
 
-	const TILE = 'rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4';
+	const TILE = 'rounded-2xl border border-white/10 bg-[#161e30] p-3 sm:p-4';
 </script>
 
 <!-- ── מספרי מפתח ── -->
@@ -92,13 +92,13 @@
 <!-- ── חברי הצוות ── -->
 <h3 class="mt-6 mb-3 text-[15px] font-black text-white">👥 חברי הצוות</h3>
 {#if !rows.length}
-	<p class="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-gray-400">
+	<p class="rounded-2xl border border-white/10 bg-[#161e30] p-4 text-sm text-gray-400">
 		עוד לא מונו רכזים לאתרי הרשת. מינוי רכז בלשונית "צוות הרכזים" מוסיף אותו לכאן.
 	</p>
 {:else}
 	<div class="overflow-hidden rounded-2xl border border-white/10">
 		<!-- כותרות (מחשב בלבד) -->
-		<div class="hidden grid-cols-[minmax(0,1fr)_repeat(4,4.5rem)_7.5rem_5.5rem] items-center gap-2 border-b border-white/10 bg-white/[0.04] px-3 py-2 text-[11px] font-bold text-gray-400 md:grid">
+		<div class="hidden grid-cols-[minmax(0,1fr)_repeat(4,4.5rem)_7.5rem_5.5rem] items-center gap-2 border-b border-white/10 bg-[#182034] px-3 py-2 text-[11px] font-bold text-gray-400 md:grid">
 			<span>חבר/ת צוות</span>
 			<span class="text-center">פתוחות</span>
 			<span class="text-center">באיחור</span>
@@ -109,7 +109,7 @@
 		</div>
 		{#each rows as row (row.m.id)}
 			{@const m = row.m}
-			<div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-white/5 bg-white/[0.02] px-3 py-2.5 last:border-b-0 md:grid-cols-[minmax(0,1fr)_repeat(4,4.5rem)_7.5rem_5.5rem]">
+			<div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-white/5 bg-[#141c2f] px-3 py-2.5 last:border-b-0 md:grid-cols-[minmax(0,1fr)_repeat(4,4.5rem)_7.5rem_5.5rem]">
 				<div class="flex min-w-0 items-center gap-2.5">
 					<MemberAvatar member={m} cls="h-9 w-9 text-sm" />
 					<div class="min-w-0">
@@ -143,7 +143,7 @@
 						type="button"
 						onclick={() => onfilter(m.id)}
 						title="המשימות של {m.name}"
-						class="rounded-lg border border-white/10 px-2 py-1 text-[12px] text-gray-200 hover:bg-white/10"
+						class="rounded-lg border border-white/10 px-2 py-1 text-[12px] text-gray-200 hover:bg-[#272f3f]"
 					>
 						📋
 					</button>

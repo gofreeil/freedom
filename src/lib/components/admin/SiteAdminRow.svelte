@@ -80,7 +80,7 @@
 	});
 
 	const contactBtnCls =
-		'flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-sm transition hover:bg-white/15';
+		'flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-[#1b2335] text-sm transition hover:bg-[#333a4a]';
 
 	// שמירה אוטומטית ביציאה משדה שהשתנה (onchange) — אין כפתור "שמור".
 	function autoSave() {
@@ -131,13 +131,13 @@
 
 	// חיצי סידור — כפתורים זעירים בעמודה השמאלית
 	const moveBtnCls =
-		'flex h-[15px] w-6 items-center justify-center rounded border border-white/10 bg-white/5 text-[9px] leading-none text-gray-300 transition hover:border-sky-400/60 hover:bg-white/15 hover:text-sky-300 disabled:cursor-default disabled:opacity-20 disabled:hover:border-white/10 disabled:hover:bg-white/5 disabled:hover:text-gray-300';
+		'flex h-[15px] w-6 items-center justify-center rounded border border-white/10 bg-[#1b2335] text-[9px] leading-none text-gray-300 transition hover:border-sky-400/60 hover:bg-[#333a4a] hover:text-sky-300 disabled:cursor-default disabled:opacity-20 disabled:hover:border-white/10 disabled:hover:bg-[#1b2335] disabled:hover:text-gray-300';
 
 	const inputCls =
-		'w-full rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[13px] text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none';
+		'w-full rounded-lg border border-white/10 bg-[#1b2335] px-2.5 py-2.5 text-[13px] text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none';
 	// שדה שם האדמין — פונט גדול יותר ובצבע זהב
 	const nameInputCls =
-		'w-full rounded-lg border border-white/10 bg-white/5 px-2.5 py-2.5 text-[15px] font-bold text-amber-400 placeholder:font-normal placeholder:text-gray-500 focus:border-sky-500 focus:outline-none';
+		'w-full rounded-lg border border-white/10 bg-[#1b2335] px-2.5 py-2.5 text-[15px] font-bold text-amber-400 placeholder:font-normal placeholder:text-gray-500 focus:border-sky-500 focus:outline-none';
 </script>
 
 <form
@@ -197,7 +197,7 @@
 				ondrop={onDrop}
 				title="העלאת תמונה — לחיצה או גרירת קובץ לכאן"
 				aria-label="העלאת תמונת האדמין"
-				class="group relative h-[86px] w-[86px] flex-shrink-0 overflow-hidden rounded-full border border-dashed bg-white/5 {dragOver
+				class="group relative h-[86px] w-[86px] flex-shrink-0 overflow-hidden rounded-full border border-dashed bg-[#1b2335] {dragOver
 					? 'border-sky-300 bg-sky-400/25'
 					: 'border-sky-400/60'}"
 			>
@@ -215,7 +215,7 @@
 			</button>
 			<input type="file" accept="image/*" hidden bind:this={fileInput} onchange={onFileChosen} />
 		{:else}
-			<div class="h-[86px] w-[86px] flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-white/5">
+			<div class="h-[86px] w-[86px] flex-shrink-0 overflow-hidden rounded-full border border-white/15 bg-[#1b2335]">
 				{#if avatar && !avatarBroken}
 					<img
 						src={avatar}
@@ -275,7 +275,7 @@
 		title={site.name}
 		class="mr-[26px] flex min-w-0 items-center gap-2"
 	>
-		<div class="h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl bg-white/5">
+		<div class="h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl bg-[#1b2335]">
 			{#if site.image && imgOk}
 				<img src={site.image} alt="" loading="lazy" decoding="async" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
 			{:else}

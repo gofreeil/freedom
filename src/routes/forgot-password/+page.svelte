@@ -69,7 +69,7 @@
 					</a>
 				{/if}
 
-				<ul class="mb-5 list-disc space-y-1 rounded-xl bg-white/5 py-3 pr-8 pl-4 text-xs leading-relaxed text-gray-400">
+				<ul class="mb-5 list-disc space-y-1 rounded-xl bg-[#1b2335] py-3 pr-8 pl-4 text-xs leading-relaxed text-gray-400">
 					<li>המייל מגיע בדרך כלל תוך דקה.</li>
 					<li>לא רואים אותו? בדקו בתיקיית <strong>ספאם</strong> או <strong>קידומי מכירות</strong>.</li>
 					<li>הקלקה על הקישור במייל מחברת אתכם מיד, בלי להתחבר שוב.</li>
@@ -90,7 +90,7 @@
 					<button
 						type="submit"
 						disabled={loading || cooldown > 0}
-						class="w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold text-gray-200 transition hover:bg-white/10 disabled:cursor-default disabled:text-gray-500 disabled:hover:bg-white/5"
+						class="w-full rounded-2xl border border-white/15 bg-[#1b2335] px-4 py-3 text-sm font-bold text-gray-200 transition hover:bg-[#272f3f] disabled:cursor-default disabled:text-gray-500 disabled:hover:bg-[#1b2335]"
 					>
 						{#if loading}שולח…{:else if cooldown > 0}שליחה חוזרת בעוד {cooldown} שנ'{:else}לא הגיע? שלחו שוב{/if}
 					</button>
@@ -163,7 +163,7 @@
 			{/if}
 		</div>
 
-		<div class="mt-5 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 text-center text-sm leading-relaxed text-gray-400">
+		<div class="mt-5 rounded-2xl border border-white/10 bg-[#161e30] px-5 py-4 text-center text-sm leading-relaxed text-gray-400">
 			<strong class="text-gray-200">נרשמתם עם Google או Facebook?</strong>
 			אז אין לכם סיסמה ואין צורך בה — פשוט
 			<a href="/login" class="font-bold text-purple-400 hover:text-purple-300">היכנסו בלחיצה בדף ההתחברות</a>.

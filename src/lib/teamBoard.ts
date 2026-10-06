@@ -23,7 +23,7 @@ export const PRIORITIES = [
 	{ id: 'urgent', label: 'דחוף', icon: '🔴', cls: 'border-red-500/40 bg-red-500/15 text-red-200' },
 	{ id: 'high', label: 'גבוהה', icon: '🟠', cls: 'border-orange-400/40 bg-orange-400/10 text-orange-200' },
 	{ id: 'normal', label: 'רגילה', icon: '🔵', cls: 'border-sky-400/30 bg-sky-400/10 text-sky-200' },
-	{ id: 'low', label: 'נמוכה', icon: '⚪', cls: 'border-white/15 bg-white/5 text-gray-300' }
+	{ id: 'low', label: 'נמוכה', icon: '⚪', cls: 'border-white/15 bg-[#1b2335] text-gray-300' }
 ] as const;
 export type TaskPriority = (typeof PRIORITIES)[number]['id'];
 

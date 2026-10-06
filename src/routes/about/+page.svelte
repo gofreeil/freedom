@@ -110,7 +110,7 @@
 					target="_blank"
 					rel="noopener noreferrer"
 					title={site.title}
-					class="group flex grow-0 basis-[calc(33.333%-0.34rem)] flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-2 transition-all hover:-translate-y-0.5 hover:border-purple-400/40 hover:bg-white/10 sm:basis-[calc(25%-0.57rem)] sm:p-3 lg:basis-[calc(20%-0.6rem)]"
+					class="group flex grow-0 basis-[calc(33.333%-0.34rem)] flex-col items-center gap-2 rounded-xl border border-white/10 bg-[#1b2335] p-2 transition-all hover:-translate-y-0.5 hover:border-purple-400/40 hover:bg-[#272f3f] sm:basis-[calc(25%-0.57rem)] sm:p-3 lg:basis-[calc(20%-0.6rem)]"
 				>
 					<div class="aspect-[4/3] w-full overflow-hidden rounded-lg bg-gradient-to-br {site.color}">
 						<img
@@ -175,7 +175,7 @@
 		<div class="space-y-3">
 			{#each faqs as faq, i (faq.q)}
 				<!-- שתי הראשונות פתוחות כברירת מחדל: הטקסט גלוי כבר ב-SSR בלי לחיצה -->
-				<details open={i < 2} class="group rounded-2xl border border-white/10 bg-[#070b14]/60 p-5 shadow-lg backdrop-blur-sm">
+				<details open={i < 2} class="group rounded-2xl border border-white/10 bg-[#0a101d] p-5 shadow-lg">
 					<summary
 						class="cursor-pointer list-none text-base font-black text-white transition hover:text-amber-300"
 					>
@@ -206,13 +206,13 @@
 			</a>
 			<a
 				href="/login?redirect=/about"
-				class="rounded-xl border border-white/15 bg-white/5 px-6 py-2.5 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+				class="rounded-xl border border-white/15 bg-[#1b2335] px-6 py-2.5 text-sm font-bold text-gray-200 transition hover:bg-[#272f3f]"
 			>
 				{tx.login}
 			</a>
 			<a
 				href="mailto:{CONTACT_EMAIL}"
-				class="rounded-xl border border-white/15 bg-white/5 px-6 py-2.5 text-sm font-bold text-gray-200 transition hover:bg-white/10"
+				class="rounded-xl border border-white/15 bg-[#1b2335] px-6 py-2.5 text-sm font-bold text-gray-200 transition hover:bg-[#272f3f]"
 			>
 				{tx.contact}
 			</a>
@@ -224,7 +224,7 @@
 					href={s.href}
 					target="_blank"
 					rel="noopener noreferrer"
-					class="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-bold text-gray-300 transition hover:bg-white/10 hover:text-white"
+					class="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-[#1b2335] px-3.5 py-1.5 text-xs font-bold text-gray-300 transition hover:bg-[#272f3f] hover:text-white"
 				>
 					<span aria-hidden="true">{s.icon}</span>{s.label}
 				</a>

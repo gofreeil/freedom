@@ -171,7 +171,7 @@
 
 	const LABEL = 'text-[12px] font-bold text-gray-400';
 	const FIELD =
-		'w-full rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-[14px] text-white focus:border-sky-500 focus:outline-none disabled:opacity-70';
+		'w-full rounded-lg border border-white/10 bg-[#1b2335] px-2.5 py-2 text-[14px] text-white focus:border-sky-500 focus:outline-none disabled:opacity-70';
 </script>
 
 <svelte:window onkeydown={onKey} />
@@ -191,7 +191,7 @@
 		{#if !task}
 			<div class="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center">
 				<p class="text-gray-300">המשימה לא נמצאה — אולי נמחקה.</p>
-				<button type="button" onclick={onclose} class="rounded-lg border border-white/15 px-4 py-1.5 text-sm text-gray-200 hover:bg-white/10">סגירה</button>
+				<button type="button" onclick={onclose} class="rounded-lg border border-white/15 px-4 py-1.5 text-sm text-gray-200 hover:bg-[#272f3f]">סגירה</button>
 			</div>
 		{:else}
 			<!-- ── כותרת עליונה ── -->
@@ -201,13 +201,13 @@
 					{#if isOverdue(task, today)}<span class="ms-1 font-bold text-red-300">· באיחור</span>{/if}
 				</span>
 				<div class="ms-auto flex items-center gap-1">
-					<button type="button" onclick={copyLink} class="rounded-lg px-2 py-1 text-[12px] text-gray-300 hover:bg-white/10" title="העתקת קישור ישיר למשימה">
+					<button type="button" onclick={copyLink} class="rounded-lg px-2 py-1 text-[12px] text-gray-300 hover:bg-[#272f3f]" title="העתקת קישור ישיר למשימה">
 						{copied ? '✓ הועתק' : '🔗 קישור'}
 					</button>
 					{#if deletable}
 						<button type="button" onclick={remove} class="rounded-lg px-2 py-1 text-[12px] text-red-300 hover:bg-red-500/10">🗑️ מחיקה</button>
 					{/if}
-					<button type="button" onclick={onclose} aria-label="סגירה" class="rounded-lg px-2 py-1 text-lg leading-none text-gray-300 hover:bg-white/10">✕</button>
+					<button type="button" onclick={onclose} aria-label="סגירה" class="rounded-lg px-2 py-1 text-lg leading-none text-gray-300 hover:bg-[#272f3f]">✕</button>
 				</div>
 			</div>
 
@@ -232,7 +232,7 @@
 				></textarea>
 
 				<!-- סטטוס -->
-				<div class="mt-3 grid grid-cols-4 gap-1 rounded-xl border border-white/10 bg-white/[0.03] p-1" role="group" aria-label="סטטוס">
+				<div class="mt-3 grid grid-cols-4 gap-1 rounded-xl border border-white/10 bg-[#161e30] p-1" role="group" aria-label="סטטוס">
 					{#each STATUSES as s (s.id)}
 						<button
 							type="button"
@@ -243,7 +243,7 @@
 								? s.id === 'done'
 									? 'bg-emerald-600 text-white'
 									: 'bg-sky-600 text-white'
-								: 'text-gray-300 enabled:hover:bg-white/10'}"
+								: 'text-gray-300 enabled:hover:bg-[#272f3f]'}"
 						>
 							<span aria-hidden="true">{s.icon}</span>
 							{s.label}
@@ -283,7 +283,7 @@
 								class="{FIELD} [color-scheme:dark]"
 							/>
 							{#if task.due && editable}
-								<button type="button" onclick={() => update({ due: '' })} aria-label="הסרת תאריך" class="rounded-lg border border-white/10 px-2 text-gray-400 hover:bg-white/10">✕</button>
+								<button type="button" onclick={() => update({ due: '' })} aria-label="הסרת תאריך" class="rounded-lg border border-white/10 px-2 text-gray-400 hover:bg-[#272f3f]">✕</button>
 							{/if}
 						</div>
 					</div>
@@ -309,14 +309,14 @@
 						{/if}
 					</div>
 					{#if pickAssignees}
-						<div class="mt-2 max-h-64 overflow-y-auto rounded-xl border border-white/10 bg-white/[0.03] p-1">
+						<div class="mt-2 max-h-64 overflow-y-auto rounded-xl border border-white/10 bg-[#161e30] p-1">
 							{#each store.team as m (m.id)}
 								{@const on = task.assignees.includes(m.id)}
 								<button
 									type="button"
 									onclick={() => toggleAssignee(m.id)}
 									aria-pressed={on}
-									class="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-start transition hover:bg-white/10 {on ? 'bg-sky-500/15' : ''}"
+									class="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-start transition hover:bg-[#272f3f] {on ? 'bg-sky-500/15' : ''}"
 								>
 									<span class="flex h-4 w-4 items-center justify-center rounded border text-[10px] {on ? 'border-sky-400 bg-sky-500 text-white' : 'border-white/30'}">{on ? '✓' : ''}</span>
 									<MemberAvatar member={m} cls="h-7 w-7 text-xs" />
@@ -333,7 +333,7 @@
 						<ul class="mt-2 space-y-1.5">
 							{#each task.assignees as id (id)}
 								{@const m = store.member(id)}
-								<li class="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.03] px-2 py-1.5">
+								<li class="flex items-center gap-2 rounded-xl border border-white/5 bg-[#161e30] px-2 py-1.5">
 									<MemberAvatar member={m} cls="h-8 w-8 text-xs" />
 									<span class="min-w-0 flex-1 truncate text-[14px] font-semibold text-white">{m.name}</span>
 									{#if m.phone && id !== store.me?.id}
@@ -348,7 +348,7 @@
 										</a>
 									{/if}
 									{#if m.email && id !== store.me?.id}
-										<a href="mailto:{m.email}?subject={encodeURIComponent('משימה: ' + task.title)}&body={encodeURIComponent(waText(task, m.name))}" class="rounded-lg border border-white/10 px-2 py-1 text-[12px] text-gray-300 hover:bg-white/10" title="שליחה במייל">📧</a>
+										<a href="mailto:{m.email}?subject={encodeURIComponent('משימה: ' + task.title)}&body={encodeURIComponent(waText(task, m.name))}" class="rounded-lg border border-white/10 px-2 py-1 text-[12px] text-gray-300 hover:bg-[#272f3f]" title="שליחה במייל">📧</a>
 									{/if}
 								</li>
 							{/each}
@@ -387,7 +387,7 @@
 						</div>
 						<ul class="mt-2 space-y-0.5">
 							{#each task.checklist as c (c.id)}
-								<li class="group flex items-start gap-2 rounded-lg px-1 py-1 hover:bg-white/[0.04]">
+								<li class="group flex items-start gap-2 rounded-lg px-1 py-1 hover:bg-[#182034]">
 									<input
 										type="checkbox"
 										id="chk-{c.id}"
@@ -408,7 +408,7 @@
 						<form onsubmit={addCheck} class="mt-2 flex gap-1.5">
 							<label for="new-check" class="sr-only">פריט חדש לרשימת התיוג</label>
 							<input id="new-check" bind:value={newCheck} maxlength="300" placeholder="☑ הוספת שלב / תת-משימה" class="{FIELD} placeholder:text-gray-500" />
-							<button type="submit" disabled={!newCheck.trim()} class="rounded-lg border border-white/10 px-3 text-[13px] font-bold text-gray-200 hover:bg-white/10 disabled:opacity-40">הוספה</button>
+							<button type="submit" disabled={!newCheck.trim()} class="rounded-lg border border-white/10 px-3 text-[13px] font-bold text-gray-200 hover:bg-[#272f3f] disabled:opacity-40">הוספה</button>
 						</form>
 					{/if}
 				</div>
@@ -428,7 +428,7 @@
 							{:else}
 								<li class="flex gap-2">
 									<MemberAvatar member={m} cls="h-8 w-8 text-xs" />
-									<div class="min-w-0 flex-1 rounded-xl rounded-tr-sm border border-white/10 bg-white/[0.04] px-3 py-2">
+									<div class="min-w-0 flex-1 rounded-xl rounded-tr-sm border border-white/10 bg-[#182034] px-3 py-2">
 										<div class="flex items-baseline gap-2">
 											<span class="text-[13px] font-bold text-white">{m.name}</span>
 											<span class="text-[11px] text-gray-500">{timeAgo(e.at)}</span>

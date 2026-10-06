@@ -87,23 +87,23 @@
 					? 'border-red-500/40 bg-red-500/15 text-red-300'
 					: soon
 						? 'border-amber-500/40 bg-amber-500/10 text-amber-200'
-						: 'border-white/10 bg-white/5 text-gray-300'}"
+						: 'border-white/10 bg-[#1b2335] text-gray-300'}"
 				title="תאריך יעד"
 			>
 				📅 {due}{overdue ? ' · באיחור' : ''}
 			</span>
 		{/if}
 		{#if site}
-			<span class="flex max-w-[9rem] items-center gap-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-gray-300" title={site.name}>
+			<span class="flex max-w-[9rem] items-center gap-1 rounded-md border border-white/10 bg-[#1b2335] px-1.5 py-0.5 text-gray-300" title={site.name}>
 				{#if site.image}<img src={site.image} alt="" class="h-3.5 w-3.5 rounded-sm object-cover" />{/if}
 				<span class="truncate">{site.name}</span>
 			</span>
 		{/if}
 		{#if checks}
-			<span class="rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-gray-300" title="רשימת תיוג">☑ {checks}</span>
+			<span class="rounded-md border border-white/10 bg-[#1b2335] px-1.5 py-0.5 text-gray-300" title="רשימת תיוג">☑ {checks}</span>
 		{/if}
 		{#if comments}
-			<span class="rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-gray-300" title="תגובות">💬 {comments}</span>
+			<span class="rounded-md border border-white/10 bg-[#1b2335] px-1.5 py-0.5 text-gray-300" title="תגובות">💬 {comments}</span>
 		{/if}
 
 		{#if task.assignees.length}

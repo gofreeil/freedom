@@ -129,7 +129,7 @@
 			<button
 				type="button"
 				onclick={cancel}
-				class="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-bold text-gray-300 transition hover:bg-white/10"
+				class="rounded-lg border border-white/10 bg-[#1b2335] px-3 py-1.5 text-sm font-bold text-gray-300 transition hover:bg-[#272f3f]"
 			>
 				ביטול
 			</button>

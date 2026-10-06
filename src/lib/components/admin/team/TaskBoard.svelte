@@ -168,11 +168,11 @@
 	const CHIP =
 		'rounded-full border px-3 py-1 text-[13px] font-semibold transition whitespace-nowrap';
 	const SELECT =
-		'rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-[13px] text-gray-200 focus:border-sky-500 focus:outline-none';
+		'rounded-lg border border-white/10 bg-[#1b2335] px-2 py-1.5 text-[13px] text-gray-200 focus:border-sky-500 focus:outline-none';
 </script>
 
 <!-- ── הוספה מהירה ── -->
-<form onsubmit={quickAdd} class="mb-4 flex flex-wrap items-stretch gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-2.5">
+<form onsubmit={quickAdd} class="mb-4 flex flex-wrap items-stretch gap-2 rounded-2xl border border-white/10 bg-[#161e30] p-2.5">
 	<label for="quick-task" class="sr-only">משימה חדשה</label>
 	<input
 		id="quick-task"
@@ -213,7 +213,7 @@
 				aria-pressed={f.scope === s.id}
 				class="{CHIP} {f.scope === s.id
 					? 'border-sky-400/60 bg-sky-500/20 text-sky-100'
-					: 'border-white/10 bg-white/5 text-gray-300 hover:bg-white/10'}"
+					: 'border-white/10 bg-[#1b2335] text-gray-300 hover:bg-[#272f3f]'}"
 			>
 				{s.label}
 				{#if s.id === 'mine' && myOpen}<span class="ms-1 text-sky-300">{myOpen}</span>{/if}
@@ -264,7 +264,7 @@
 			type="button"
 			onclick={() => setView('board')}
 			aria-pressed={view === 'board'}
-			class="px-3 py-1.5 text-[13px] font-semibold transition {view === 'board' ? 'bg-white/15 text-white' : 'text-gray-400 hover:bg-white/5'}"
+			class="px-3 py-1.5 text-[13px] font-semibold transition {view === 'board' ? 'bg-white/15 text-white' : 'text-gray-400 hover:bg-[#1b2335]'}"
 		>
 			▦ לוח
 		</button>
@@ -272,7 +272,7 @@
 			type="button"
 			onclick={() => setView('list')}
 			aria-pressed={view === 'list'}
-			class="px-3 py-1.5 text-[13px] font-semibold transition {view === 'list' ? 'bg-white/15 text-white' : 'text-gray-400 hover:bg-white/5'}"
+			class="px-3 py-1.5 text-[13px] font-semibold transition {view === 'list' ? 'bg-white/15 text-white' : 'text-gray-400 hover:bg-[#1b2335]'}"
 		>
 			☰ רשימה
 		</button>
@@ -280,7 +280,7 @@
 </div>
 
 {#if !store.board.tasks.length}
-	<div class="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-8 text-center">
+	<div class="rounded-2xl border border-dashed border-white/15 bg-[#141c2f] p-8 text-center">
 		<p class="text-3xl" aria-hidden="true">🗂️</p>
 		<p class="mt-2 font-bold text-white">עוד אין משימות בלוח</p>
 		<p class="mt-1 text-sm text-gray-400">
@@ -293,7 +293,7 @@
 		{#each columns as col (col.id)}
 			<section
 				aria-label={col.label}
-				class="flex w-[82%] flex-shrink-0 snap-start flex-col rounded-2xl border bg-white/[0.02] p-2.5 transition sm:w-[46%] lg:w-auto {dropAt?.status === col.id
+				class="flex w-[82%] flex-shrink-0 snap-start flex-col rounded-2xl border bg-[#141c2f] p-2.5 transition sm:w-[46%] lg:w-auto {dropAt?.status === col.id
 					? 'border-sky-500/50 bg-sky-500/[0.04]'
 					: 'border-white/10'}"
 				ondragover={(e) => onDragOver(e, col.id)}
@@ -350,7 +350,7 @@
 			{@const site = task.siteId ? getSite(task.siteId) : undefined}
 			{@const overdue = isOverdue(task, today)}
 			{@const editable = !!store.me && canEditTask(task, store.me)}
-			<div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-white/5 bg-white/[0.02] px-3 py-2.5 last:border-b-0 hover:bg-white/[0.05]">
+			<div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-white/5 bg-[#141c2f] px-3 py-2.5 last:border-b-0 hover:bg-[#1b2335]">
 				{#if editable}
 					<label class="sr-only" for="st-{task.id}">סטטוס</label>
 					<select

@@ -112,7 +112,7 @@
 	{/if}
 
 	<!-- טבלה: רשת אחת, ללא שורת כותרות (השינויים בשדות נשמרים אוטומטית) -->
-	<div class="overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.02] p-3">
+	<div class="overflow-x-auto rounded-2xl border border-white/10 bg-[#141c2f] p-3">
 		{#if panel}
 			<div class="grid items-center gap-x-2 gap-y-1" style={GRID_COLS}>
 				{#each sites as site, i (site.id)}
@@ -129,14 +129,14 @@
 			<!-- שלד טעינה: אותו גובה שורה, כך שהטבלה לא "קופצת" כשהנתונים מגיעים -->
 			<div class="grid items-center gap-x-2 gap-y-1" style={GRID_COLS} aria-hidden="true">
 				{#each Array.from({ length: 12 }) as _, i (i)}
-					<div class="mx-auto h-[86px] w-[86px] animate-pulse rounded-full bg-white/5"></div>
-					<div class="h-9 animate-pulse rounded-lg bg-white/5"></div>
-					<div class="h-9 animate-pulse rounded-lg bg-white/5"></div>
+					<div class="mx-auto h-[86px] w-[86px] animate-pulse rounded-full bg-[#1b2335]"></div>
+					<div class="h-9 animate-pulse rounded-lg bg-[#1b2335]"></div>
+					<div class="h-9 animate-pulse rounded-lg bg-[#1b2335]"></div>
 					<div class="flex items-center gap-2">
-						<div class="h-[80px] w-[80px] animate-pulse rounded-xl bg-white/5"></div>
-						<div class="h-4 w-24 animate-pulse rounded bg-white/5"></div>
+						<div class="h-[80px] w-[80px] animate-pulse rounded-xl bg-[#1b2335]"></div>
+						<div class="h-4 w-24 animate-pulse rounded bg-[#1b2335]"></div>
 					</div>
-					<div class="mx-auto h-7 w-16 animate-pulse rounded-lg bg-white/5"></div>
+					<div class="mx-auto h-7 w-16 animate-pulse rounded-lg bg-[#1b2335]"></div>
 					<div></div>
 				{/each}
 			</div>
@@ -152,7 +152,7 @@
 			disabled={!panel}
 			class="rounded-lg px-4 py-1.5 text-sm font-bold transition disabled:opacity-40 {editMode
 				? 'bg-gradient-to-r from-amber-500 to-pink-600 text-white hover:opacity-90'
-				: 'border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10'}"
+				: 'border border-white/10 bg-[#1b2335] text-gray-300 hover:bg-[#272f3f]'}"
 		>
 			{editMode ? 'סיום עריכה' : '✏️ עריכה'}
 		</button>

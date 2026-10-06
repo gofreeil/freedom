@@ -141,10 +141,10 @@
 		<!-- שלד טעינה -->
 		<div class="grid gap-3 lg:grid-cols-4" aria-hidden="true">
 			{#each Array.from({ length: 4 }) as _, i (i)}
-				<div class="space-y-2 rounded-2xl border border-white/10 bg-white/[0.02] p-3">
+				<div class="space-y-2 rounded-2xl border border-white/10 bg-[#141c2f] p-3">
 					<div class="h-5 w-24 animate-pulse rounded bg-white/10"></div>
-					<div class="h-20 animate-pulse rounded-xl bg-white/5"></div>
-					<div class="h-16 animate-pulse rounded-xl bg-white/5"></div>
+					<div class="h-20 animate-pulse rounded-xl bg-[#1b2335]"></div>
+					<div class="h-16 animate-pulse rounded-xl bg-[#1b2335]"></div>
 				</div>
 			{/each}
 		</div>

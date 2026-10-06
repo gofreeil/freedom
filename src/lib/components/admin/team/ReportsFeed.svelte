@@ -131,7 +131,7 @@
 </script>
 
 <!-- ── כתיבת דיווח ── -->
-<form onsubmit={submit} class="mb-6 rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4">
+<form onsubmit={submit} class="mb-6 rounded-2xl border border-white/10 bg-[#161e30] p-3 sm:p-4">
 	{#if nudge}
 		<p class="mb-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-[13px] text-amber-100">
 			👋 {myLast ? 'עבר שבוע מהדיווח האחרון שלך' : 'עוד לא שיתפת דיווח'} — ספר/י לצוות מה עשית לקידום התנועה. גם צעד קטן נחשב!
@@ -160,7 +160,7 @@
 						onclick={() => (category = c.id)}
 						class="rounded-full border px-2.5 py-1 text-[12px] font-semibold transition {category === c.id
 							? 'border-amber-400/60 bg-amber-500/15 text-amber-100'
-							: 'border-white/10 bg-white/5 text-gray-300 hover:bg-white/10'}"
+							: 'border-white/10 bg-[#1b2335] text-gray-300 hover:bg-[#272f3f]'}"
 					>
 						{c.icon} {c.label}
 					</button>
@@ -211,14 +211,14 @@
 <div class="mb-3 flex flex-wrap items-center gap-2">
 	<h3 class="me-auto text-[15px] font-black text-white">הפעילות של הצוות</h3>
 	<label for="rf-by" class="sr-only">מדווח/ת</label>
-	<select id="rf-by" bind:value={filterBy} class="rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-[13px] text-gray-200">
+	<select id="rf-by" bind:value={filterBy} class="rounded-lg border border-white/10 bg-[#1b2335] px-2 py-1.5 text-[13px] text-gray-200">
 		<option value="">כל הצוות</option>
 		{#each store.team as m (m.id)}
 			<option value={m.id}>{m.name}</option>
 		{/each}
 	</select>
 	<label for="rf-cat" class="sr-only">סוג</label>
-	<select id="rf-cat" bind:value={filterCat} class="rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-[13px] text-gray-200">
+	<select id="rf-cat" bind:value={filterCat} class="rounded-lg border border-white/10 bg-[#1b2335] px-2 py-1.5 text-[13px] text-gray-200">
 		<option value="">כל הסוגים</option>
 		{#each REPORT_CATEGORIES as c (c.id)}
 			<option value={c.id}>{c.icon} {c.label}</option>
@@ -228,7 +228,7 @@
 
 <!-- ── הפיד ── -->
 {#if !feed.length}
-	<div class="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-8 text-center">
+	<div class="rounded-2xl border border-dashed border-white/15 bg-[#141c2f] p-8 text-center">
 		<p class="text-3xl" aria-hidden="true">📣</p>
 		<p class="mt-2 font-bold text-white">{store.board.reports.length ? 'אין דיווחים תואמים' : 'עוד אין דיווחים'}</p>
 		{#if !store.board.reports.length}
@@ -242,7 +242,7 @@
 			{@const cat = categoryOf(r.category)}
 			{@const isNew = r.by !== store.me?.id && r.at > seenBefore}
 			{@const task = r.taskId ? store.board.tasks.find((t) => t.id === r.taskId) : undefined}
-			<li class="rounded-2xl border p-3 sm:p-4 {isNew ? 'border-sky-500/40 bg-sky-500/[0.05]' : 'border-white/10 bg-white/[0.03]'}">
+			<li class="rounded-2xl border p-3 sm:p-4 {isNew ? 'border-sky-500/40 bg-sky-500/[0.05]' : 'border-white/10 bg-[#161e30]'}">
 				<div class="flex items-start gap-3">
 					<MemberAvatar member={m} cls="h-10 w-10 text-sm" />
 					<div class="min-w-0 flex-1">
@@ -253,7 +253,7 @@
 							{/if}
 							<span class="text-[12px] text-gray-500">· {timeAgo(r.at)}</span>
 							{#if isNew}<span class="rounded-full bg-sky-500 px-1.5 text-[10px] font-black text-white">חדש</span>{/if}
-							<span class="ms-auto rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-gray-300">{cat.icon} {cat.label}</span>
+							<span class="ms-auto rounded-full border border-white/10 bg-[#1b2335] px-2 py-0.5 text-[11px] font-semibold text-gray-300">{cat.icon} {cat.label}</span>
 						</div>
 
 						<p class="mt-1.5 text-[14.5px] leading-relaxed break-words whitespace-pre-line text-gray-100">{r.text}</p>
@@ -261,13 +261,13 @@
 						{#if r.link || r.reach || task}
 							<div class="mt-2 flex flex-wrap gap-1.5 text-[12px]">
 								{#if r.link}
-									<a href={r.link} target="_blank" rel="noopener noreferrer" class="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-sky-300 hover:bg-white/10" dir="ltr">🔗 {hostOf(r.link)}</a>
+									<a href={r.link} target="_blank" rel="noopener noreferrer" class="rounded-md border border-white/10 bg-[#1b2335] px-2 py-0.5 text-sky-300 hover:bg-[#272f3f]" dir="ltr">🔗 {hostOf(r.link)}</a>
 								{/if}
 								{#if r.reach}
-									<span class="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-gray-200">👥 {r.reach.toLocaleString('he-IL')} נחשפו / השתתפו</span>
+									<span class="rounded-md border border-white/10 bg-[#1b2335] px-2 py-0.5 text-gray-200">👥 {r.reach.toLocaleString('he-IL')} נחשפו / השתתפו</span>
 								{/if}
 								{#if task}
-									<button type="button" onclick={() => onopentask(task.id)} class="max-w-[16rem] truncate rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-gray-200 hover:bg-white/10">📌 {task.title}</button>
+									<button type="button" onclick={() => onopentask(task.id)} class="max-w-[16rem] truncate rounded-md border border-white/10 bg-[#1b2335] px-2 py-0.5 text-gray-200 hover:bg-[#272f3f]">📌 {task.title}</button>
 								{/if}
 							</div>
 						{/if}
@@ -285,7 +285,7 @@
 									class="flex items-center gap-1 rounded-full border px-2 py-0.5 text-[13px] transition {mine
 										? 'border-sky-400/60 bg-sky-500/20'
 										: who.length
-											? 'border-white/15 bg-white/5 hover:bg-white/10'
+											? 'border-white/15 bg-[#1b2335] hover:bg-[#272f3f]'
 											: 'border-transparent opacity-50 hover:border-white/10 hover:opacity-100'}"
 								>
 									<span>{emoji}</span>
@@ -343,7 +343,7 @@
 											placeholder="פידבק, מחמאה, שאלה…"
 											class="{FIELD} py-1.5 text-[13px]"
 										/>
-										<button type="submit" class="rounded-lg border border-white/10 px-3 text-[12px] font-bold text-gray-200 hover:bg-white/10">שליחה</button>
+										<button type="submit" class="rounded-lg border border-white/10 px-3 text-[12px] font-bold text-gray-200 hover:bg-[#272f3f]">שליחה</button>
 									</form>
 								{:else}
 									<button type="button" onclick={() => (openReplies[r.id] = true)} class="text-[12px] text-gray-400 hover:text-white">↩ להגיב</button>
@@ -356,7 +356,7 @@
 		{/each}
 	</ul>
 	{#if feed.length > shown}
-		<button type="button" onclick={() => (shown += 20)} class="mt-3 w-full rounded-xl border border-white/10 bg-white/[0.03] py-2 text-sm font-semibold text-gray-300 hover:bg-white/10">
+		<button type="button" onclick={() => (shown += 20)} class="mt-3 w-full rounded-xl border border-white/10 bg-[#161e30] py-2 text-sm font-semibold text-gray-300 hover:bg-[#272f3f]">
 			עוד דיווחים ({feed.length - shown})
 		</button>
 	{/if}
