@@ -666,6 +666,7 @@
 <img class="bg-video" src="/images/bg-poster.webp" alt="" aria-hidden="true" width="1280" height="720" fetchpriority="high" decoding="async" />
 {/if}
 
+<div class="hero-content">
 <section class="max-w-5xl mx-auto px-6 pt-4 pb-6 text-center">
 	<svelte:element
 		this={isDesktop ? 'a' : 'div'}
@@ -763,6 +764,7 @@
 		</p>
 	</div>
 </section>
+</div><!-- /hero-content -->
 </div><!-- /hero-stage: סוף אזור וידאו הרקע -->
 
 <section class="max-w-6xl mx-auto px-6 pb-2 md:pb-20" class:revealed>
@@ -1048,6 +1050,15 @@
 		transform: translateX(-50%) translateZ(0);
 		will-change: transform;
 		backface-visibility: hidden;
+	}
+
+	/* בנייח: כל תוכן מסך הפתיחה (כותרת, טקסט, וידאו ומונה) מוקטן באופן אחיד.
+	   zoom מקטין גם את המקום בפריסה, כך שהמסך כולו מתכווץ בפרופורציה.
+	   וידאו הרקע מחוץ לעטיפה - הוא נשאר ברוחב המסגרת המלא. */
+	@media (min-width: 1024px) {
+		.hero-content {
+			zoom: 0.85;
+		}
 	}
 
 	/* מסגרת עדינה לבלוקי טקסט - הצבעים של הנוף מבצבצים דרכה, רק טשטוש קל מאחורי הטקסט.
