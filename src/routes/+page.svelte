@@ -767,7 +767,7 @@
 
 <section class="max-w-6xl mx-auto px-6 pb-2 md:pb-20" class:revealed>
 	<!-- הכותרת בלבד במסגרת. הטורים עצמם בלי מסגרת - האסימטריה הטבעית של הגבהים נבלעת ברקע הוידאו. -->
-	<div class="text-center mb-6">
+	<div class="text-center mt-4 md:mt-8 mb-3">
 		<div class="text-card-hero">
 			<h2
 				class="text-center text-2xl md:text-4xl font-black leading-snug
@@ -1330,7 +1330,7 @@
 	.magic-dust {
 		position: relative;
 		width: 100%;
-		height: 4rem;
+		height: 3rem;
 		margin-bottom: 0.5rem;
 		pointer-events: none;
 		overflow: visible;
@@ -1387,7 +1387,7 @@
 
 	@media (min-width: 768px) {
 		.magic-dust {
-			height: 6rem;
+			height: 4.5rem;
 		}
 	}
 
