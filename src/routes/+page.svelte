@@ -768,7 +768,7 @@
 </div><!-- /hero-stage: סוף אזור וידאו הרקע -->
 
 <section class="max-w-6xl mx-auto px-6 pb-2 md:pb-20" class:revealed>
-	<!-- הכותרת בלבד במסגרת. הטורים עצמם בלי מסגרת - האסימטריה הטבעית של הגבהים נבלעת ברקע הוידאו. -->
+	<!-- הכותרת והטורים בלי מסגרת - האסימטריה הטבעית של הגבהים נבלעת ברקע. -->
 	<div class="text-center mt-4 md:mt-8 mb-3">
 		<div class="text-card-hero">
 			<h2
@@ -1088,12 +1088,8 @@
 		padding: 1.75rem 1.5rem 2.5rem 1.5rem;
 		border-radius: 1.25rem;
 	}
-	/* וריאציה דקה עוד יותר לכותרות - רק רמז למסגרת */
+	/* כותרת "מודל המשילות" - בלי רקע, רק הטקסט */
 	.text-card-hero {
-		background: rgba(7, 11, 20, 0.4);
-		backdrop-filter: blur(0.2px);
-		-webkit-backdrop-filter: blur(0.2px);
-		border-radius: 1rem;
 		padding: 0.25rem 1rem;
 		display: inline-block;
 	}
