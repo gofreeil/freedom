@@ -836,7 +836,7 @@
 				></div>
 			{/if}
 			<div
-				class="col-slide {i === 1 ? 'md:-mt-12' : ''}"
+				class="col-slide {i === 1 ? 'col-raised' : ''}"
 				class:is-active={activeCol === i}
 				data-offset={offsetFor(i)}
 				onclickcapture={(e) => onSlideClick(e, i)}
@@ -1766,6 +1766,26 @@
 		.cols-container .col-slide[data-offset] .col-heading-char {
 			font-size: inherit;
 			transition: none;
+		}
+		/* העמודה האמצעית מורמת. ההרמה מוקטנת יחד עם הקלפים, כי היא מפצה
+		   על העודף בתוכן שלה - כך שלוש העמודות נגמרות באותו גובה. */
+		.cols-container .col-slide.col-raised {
+			margin-top: calc(-3rem * var(--cards-zoom, 1));
+		}
+	}
+
+	/* מסך דסקטופ רחב: כל הקלפים מוקטנים באופן אחיד, כדי שהכותרות ושלוש
+	   העמודות ייכנסו יחד במסך אחד. zoom (ולא transform) מקטין גם את המקום
+	   בפריסה, והרוחב מצטמצם באותו יחס - כך שהקלפים נפרסים בדיוק כמו ברוחב
+	   העמודה המלא, רק קטנים יותר. הכותרות נשארות בגודלן. */
+	@media (min-width: 1280px) {
+		.cols-container {
+			--cards-zoom: 0.68;
+		}
+		.cols-container .col-slide .col-slide-inner > div:last-child {
+			zoom: var(--cards-zoom);
+			width: calc(var(--cards-zoom) * 100%);
+			margin-inline: auto;
 		}
 	}
 
