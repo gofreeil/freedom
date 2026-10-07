@@ -53,7 +53,7 @@
 					image: '/images/bati-hapius.webp',
 					w: 1024,
 					h: 1024,
-					cropH: 'md:h-[120px]',
+					cropH: 'md:h-[160px]',
 					cropFocus: 'md:object-[center_20%]'
 				},
 				{
@@ -63,7 +63,7 @@
 					image: '/images/gemach-harzi.webp',
 					w: 1200,
 					h: 800,
-					cropH: 'md:h-[95px]',
+					cropH: 'md:h-[127px]',
 					cropFocus: 'md:object-[center_23%]'
 				},
 				{
@@ -871,11 +871,11 @@
 						</span>
 					{/key}
 				</div>
-				<div class="flex flex-col {i === 0 ? 'gap-10' : 'gap-4'}">
+				<div class="flex flex-col gap-4">
 					{#each column.sites as site, si (site.titleKey)}
 						<div class="relative {site.mobileHide ? 'hidden md:block' : 'block'}">
 						{#if si > 0}
-							<div class="rope-connector {i === 0 ? 'rope-connector-wide' : ''}" aria-hidden="true">
+							<div class="rope-connector" aria-hidden="true">
 								<span class="rope-unit">
 									<span class="rope-hole rope-hole-top"></span>
 									<span class="rope-hole rope-hole-bot"></span>
@@ -1280,9 +1280,6 @@
 		padding: 0 4%;
 		pointer-events: none;
 		z-index: 10;
-	}
-	.rope-connector-wide {
-		height: 88px;
 	}
 	.rope-unit {
 		position: relative;
