@@ -12,6 +12,7 @@ import {
 	bestStrapiName,
 	friendlyName
 } from '$lib/server/strapiAuth';
+import { syncAvatar } from '$lib/server/userAvatar';
 
 const AUTH_SECRET          = process.env.AUTH_SECRET          ?? '';
 
@@ -178,6 +179,8 @@ export const { handle, signIn, signOut } = !AUTH_SECRET
 							}
 						}
 					}
+					// תמונת הפרופיל לאווטאר בהדר — מ-avatar_url שב-Strapi המשותף (גם בכניסת SSO/סיסמה)
+					await syncAvatar(token, token.strapiJwt, getStrapiMe);
 					return token;
 				},
 				session({ session, token }) {
