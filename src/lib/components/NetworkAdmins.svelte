@@ -18,6 +18,7 @@
 	import { page } from '$app/state';
 	import { SITES, type FreedomSite } from '$lib/sitesData';
 	import { SITE_ROWS_GRID_COLS } from '$lib/components/admin/sitesGrid';
+	import { withIntent } from '$lib/authIntent';
 	import { locale } from 'svelte-i18n';
 	import { ABOUT_TEXT, ADMINS_TEXT, APPLY_AVAILABILITY, aboutLang, isVacantCoordinator } from '$lib/aboutContent';
 
@@ -478,7 +479,7 @@
 				</p>
 				<div class="mt-4 flex flex-wrap gap-2">
 					<a
-						href="/login?redirect={encodeURIComponent(page.url.pathname + page.url.search)}"
+						href="/login?redirect={encodeURIComponent(withIntent(page.url.pathname + page.url.search, 'admin-message'))}"
 						class="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 text-sm font-black text-white transition hover:opacity-90"
 					>
 						{tx.login}
