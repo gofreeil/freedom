@@ -49,29 +49,48 @@
         // hover על כפתור אודות - תמונה ב-fixed position
         const preview = document.getElementById('about-preview') as HTMLElement | null;
         const btnWrapper = document.getElementById('about-btn-wrapper');
-        if (preview && btnWrapper) {
-            btnWrapper.addEventListener('mouseenter', () => {
-                const rect = btnWrapper.getBoundingClientRect();
-                const imgW = 260;
-                let left = rect.left + rect.width / 2 - imgW / 2;
-                if (left < 8) left = 8;
-                if (left + imgW > window.innerWidth - 8) left = window.innerWidth - imgW - 8;
-                preview.style.left = left + 'px';
-                preview.style.top = (rect.bottom + 4) + 'px';
-                preview.style.opacity = '1';
-                preview.style.transform = 'scale(1)';
-            });
-            btnWrapper.addEventListener('mouseleave', () => {
-                preview.style.opacity = '0';
-                preview.style.transform = 'scale(0.05)';
-            });
-        }
+        // אחרי לחיצה (ניווט) העכבר נשאר על הכפתור — לא להציג שוב עד שהוא יוצא ממנו
+        let suppressed = false;
+        const onEnter = (e: PointerEvent) => {
+            // מגע לא מרחף: pointerenter של אצבע היה משאיר את התמונה תקועה אחרי הלחיצה
+            if (suppressed || !preview || !btnWrapper || e.pointerType !== 'mouse') return;
+            const rect = btnWrapper.getBoundingClientRect();
+            const imgW = 260;
+            let left = rect.left + rect.width / 2 - imgW / 2;
+            if (left < 8) left = 8;
+            if (left + imgW > window.innerWidth - 8) left = window.innerWidth - imgW - 8;
+            preview.style.left = left + 'px';
+            preview.style.top = (rect.bottom + 4) + 'px';
+            preview.style.opacity = '1';
+            preview.style.transform = 'scale(1)';
+        };
+        const onLeave = () => {
+            suppressed = false;
+            hideAboutPreview();
+        };
+        const onClick = () => {
+            suppressed = true;
+            hideAboutPreview();
+        };
+        btnWrapper?.addEventListener('pointerenter', onEnter);
+        btnWrapper?.addEventListener('pointerleave', onLeave);
+        btnWrapper?.addEventListener('click', onClick);
 
         document.addEventListener("click", handleClickOutside);
         return () => {
             document.removeEventListener("click", handleClickOutside);
+            btnWrapper?.removeEventListener('pointerenter', onEnter);
+            btnWrapper?.removeEventListener('pointerleave', onLeave);
+            btnWrapper?.removeEventListener('click', onClick);
         };
     });
+
+    function hideAboutPreview() {
+        const preview = document.getElementById('about-preview') as HTMLElement | null;
+        if (!preview) return;
+        preview.style.opacity = '0';
+        preview.style.transform = 'scale(0.05)';
+    }
 
     function handleClickOutside(event: MouseEvent) {
         const target = event.target as HTMLElement;
@@ -128,15 +147,8 @@
 	$effect(() => locale.subscribe(l => (_loc = l)));
 	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
-	// סגור תמונת preview של אודות בזמן ניווט
-	beforeNavigate(() => {
-		const preview = document.getElementById('about-preview') as HTMLElement | null;
-		if (preview) {
-			setTimeout(() => {
-				preview.style.opacity = '0';
-			}, 1000);
-		}
-	});
+	// סגור תמונת preview של אודות מיד בזמן ניווט (ההדר נשאר במקומו בין דפים)
+	beforeNavigate(() => hideAboutPreview());
 
 </script>
 
