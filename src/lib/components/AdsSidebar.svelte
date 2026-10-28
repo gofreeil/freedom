@@ -40,7 +40,7 @@
             cta: tFn(a.ctaKey),
             hover: a.hoverKey ? tFn(a.hoverKey) : undefined,
             href: a.href,
-            target: '_blank' as const,
+            target: '_self' as const,
             image: a.image,
             color: a.color,
             imageHeight: a.imageHeight,
