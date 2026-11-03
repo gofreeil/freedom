@@ -9,4 +9,8 @@
 // כך התיאורים הארוכים נחתכים פחות.
 // ============================================================
 export const SITE_ROWS_GRID_COLS =
-	'grid-template-columns: 94px minmax(90px,135px) minmax(295px,700px) 106px 100px minmax(44px,auto);';
+	'grid-template-columns: 94px minmax(90px,135px) minmax(295px,760px) 106px 100px minmax(44px,auto);';
+
+// התצוגה הציבורית (קריאה בלבד): אותן עמודות בלי עמודת הפעולות הריקה — עוד ~50px לתפקיד.
+export const PUBLIC_SITE_ROWS_GRID_COLS =
+	'grid-template-columns: 94px minmax(90px,135px) minmax(295px,760px) 106px 100px;';

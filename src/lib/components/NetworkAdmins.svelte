@@ -5,7 +5,7 @@
 	//
 	// שתי פריסות:
 	//   • דסקטופ (sm+) — זהה לפאנל: שורה אחת לכל אתר, באותה רשת עמודות
-	//     ובאותם גדלים (SITE_ROWS_GRID_COLS), רק בלי שדות עריכה.
+	//     ובאותם גדלים (PUBLIC_SITE_ROWS_GRID_COLS — בלי עמודת הפעולות הריקה), בלי שדות עריכה.
 	//   • נייד — שם האתר עולה לכותרת ממורכזת מעל השורות, וכך נשאר רוחב מלא
 	//     לשם האחראי ולתפקיד; בלי מסגרת חיצונית, שחתכה את תמונות האתרים. רשת
 	//     הדסקטופ לא נכנסת למסך צר (רוחב מינימלי ~770px) וגררה גלילה אופקית.
@@ -17,7 +17,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { SITES, type FreedomSite } from '$lib/sitesData';
-	import { SITE_ROWS_GRID_COLS } from '$lib/components/admin/sitesGrid';
+	import { PUBLIC_SITE_ROWS_GRID_COLS } from '$lib/components/admin/sitesGrid';
 	import { withIntent } from '$lib/authIntent';
 	import { locale } from 'svelte-i18n';
 	import { ABOUT_TEXT, ADMINS_TEXT, APPLY_AVAILABILITY, aboutLang, isVacantCoordinator } from '$lib/aboutContent';
@@ -336,7 +336,7 @@
 
 		<!-- ── דסקטופ: אותה טבלה של הפאנל ── -->
 		<div class="hidden overflow-x-auto rounded-2xl border border-white/10 bg-[#141c2f] p-3 sm:block">
-			<div class="grid items-center gap-x-2 gap-y-1" style={SITE_ROWS_GRID_COLS}>
+			<div class="grid items-center gap-x-2 gap-y-1" style={PUBLIC_SITE_ROWS_GRID_COLS}>
 				{#each sites as site (site.id)}
 					{@const admin = admins[site.id]}
 
@@ -381,9 +381,6 @@
 					<div class="flex items-center justify-center gap-1">
 						{@render contact(site, admin, 'h-7 w-7 text-sm')}
 					</div>
-
-					<!-- עמודת הפעולות של הפאנל — ריקה כאן, שומרת על יישור זהה -->
-					<div></div>
 				{/each}
 			</div>
 		</div>
