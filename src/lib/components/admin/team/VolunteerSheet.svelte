@@ -4,7 +4,7 @@
 	// הסופר-אדמין בלבד עורך את הכותרות (שם, סוג, סדר, הוספה ומחיקה של עמודות)
 	// ועורך/מוחק כל שורה.
 	// ============================================================
-	import { COLUMN_KINDS, COL_WIDTH, canEditRow, newId, waLink, type SheetColumn, type SheetRow } from '$lib/teamBoard';
+	import { COLUMN_KINDS, COL_WIDTH, SHEET_VER, canEditRow, newId, waLink, type SheetColumn, type SheetRow } from '$lib/teamBoard';
 	import type { TeamStore } from './teamStore.svelte';
 
 	let { store }: { store: TeamStore } = $props();
@@ -17,6 +17,11 @@
 	// הוספת שורה: לסופר-אדמין רק במצב עריכה; לשאר הרכזים (שאין להם מצב עריכה) תמיד
 	const canAddRow = $derived(!isSuper || editing);
 	let q = $state('');
+	// טבלה שנשמרה לפני שנוספו עמודות ברירת המחדל החדשות — משלימים אותן פעם אחת
+	$effect(() => {
+		if (isSuper && (sheet.ver ?? 0) < SHEET_VER) store.run({ type: 'sheet.migrate' });
+	});
+
 	let colMenu = $state(''); // id העמודה שתפריט הכותרת שלה פתוח
 	let newColLabel = $state('');
 

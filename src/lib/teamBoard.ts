@@ -140,7 +140,11 @@ export interface SheetRow {
 export interface Sheet {
 	columns: SheetColumn[];
 	rows: SheetRow[];
+	/** גרסת העמודות: 2 = כוללת את עמודות ברירת המחדל (עיר, אינסטגרם, הערות) */
+	ver?: number;
 }
+
+export const SHEET_VER = 2;
 
 export const DEFAULT_COLUMNS: SheetColumn[] = [
 	{ id: 'col-name', label: 'שם המתנדב', kind: 'text' },
@@ -225,7 +229,8 @@ export type BoardOp =
 	| { type: 'sheet.col.add'; id: string; label: string; kind?: ColumnKind }
 	| { type: 'sheet.col.update'; id: string; label?: string; kind?: ColumnKind; hidden?: boolean; width?: number }
 	| { type: 'sheet.col.move'; id: string; dir: -1 | 1 }
-	| { type: 'sheet.col.remove'; id: string };
+	| { type: 'sheet.col.remove'; id: string }
+	| { type: 'sheet.migrate' };
 
 // ── מגבלות — שהמסמך לא יתנפח ──
 export const LIMITS = {
@@ -264,7 +269,7 @@ export function newId(): string {
 }
 
 export function emptyBoard(): BoardData {
-	return { v: 1, tasks: [], reports: [], sheet: { columns: structuredClone(DEFAULT_COLUMNS), rows: [] }, people: {} };
+	return { v: 1, tasks: [], reports: [], sheet: { columns: structuredClone(DEFAULT_COLUMNS), rows: [], ver: SHEET_VER }, people: {} };
 }
 
 const KIND_IDS = new Set<string>(COLUMN_KINDS.map((k) => k.id));
@@ -300,7 +305,7 @@ function normalizeSheet(raw: unknown): Sheet {
 				updatedAt: s(x.updatedAt)
 			};
 		});
-	return { columns, rows };
+	return { columns, rows, ver: typeof r.ver === 'number' ? r.ver : 0 };
 }
 
 const STATUS_IDS = new Set<string>(STATUSES.map((s) => s.id));
@@ -819,6 +824,25 @@ export function applyOp(board: BoardData, op: BoardOp, actor: Actor, now: string
 			const j = i + (op.dir === -1 ? -1 : 1);
 			if (j < 0 || j >= cols.length) return;
 			[cols[i], cols[j]] = [cols[j], cols[i]];
+			break;
+		}
+
+		// חד-פעמי: טבלה שנשמרה לפני שנוספו עיר / אינסטגרם / הערות מקבלת אותן (עיר ליד השם)
+		case 'sheet.migrate': {
+			requireSuper(actor);
+			const sh = board.sheet;
+			if ((sh.ver ?? 0) >= SHEET_VER) return;
+			const has = (label: string) => sh.columns.some((c) => c.label.trim().startsWith(label));
+			const city = DEFAULT_COLUMNS.find((c) => c.id === 'col-city')!;
+			if (!has('עיר') && !sh.columns.some((c) => c.id === city.id)) {
+				const at = sh.columns.findIndex((c) => c.id === 'col-name');
+				sh.columns.splice(at >= 0 ? at + 1 : Math.min(1, sh.columns.length), 0, { ...city });
+			}
+			for (const id of ['col-instagram', 'col-notes']) {
+				const d = DEFAULT_COLUMNS.find((c) => c.id === id)!;
+				if (!has(d.label) && !sh.columns.some((c) => c.id === id)) sh.columns.push({ ...d });
+			}
+			sh.ver = SHEET_VER;
 			break;
 		}
 
