@@ -48,9 +48,30 @@
 		handle.addEventListener('pointercancel', up);
 	}
 
+	// ── מיון: לפי מי שהוסיף, עיר או שם (העמודות מזוהות לפי שם, כך שזה עובד גם בטבלה שכבר נשמרה) ──
+	const nameCol = $derived(sheet.columns.find((c) => c.id === 'col-name') ?? sheet.columns[0]);
+	const cityCol = $derived(sheet.columns.find((c) => c.id === 'col-city' || c.label.trim().startsWith('עיר')));
+	const sortOptions = $derived([
+		{ key: 'added', label: 'נוסף על ידי' },
+		...(cityCol ? [{ key: cityCol.id, label: 'עיר' }] : []),
+		...(nameCol ? [{ key: nameCol.id, label: 'שם' }] : [])
+	]);
+	let sortKey = $state('');
+	let sortOpen = $state(false);
+	const sortLabel = $derived(sortOptions.find((o) => o.key === sortKey)?.label ?? '');
+	const cmp = (a: string, b: string) => a.localeCompare(b, 'he');
+
 	const rows = $derived.by(() => {
 		const t = q.trim().toLowerCase();
 		const list = [...sheet.rows].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+		if (sortKey === 'added')
+			list.sort((a, b) => cmp(store.member(a.createdBy).name, store.member(b.createdBy).name));
+		else if (sortKey)
+			list.sort((a, b) => {
+				const x = a.cells[sortKey] ?? '', y = b.cells[sortKey] ?? '';
+				// ריקים בסוף
+				return !x !== !y ? (x ? -1 : 1) : cmp(x, y);
+			});
 		if (!t) return list;
 		return list.filter((r) =>
 			Object.values(r.cells).some((v) => v.toLowerCase().includes(t)) ||
@@ -150,6 +171,8 @@
 		'w-full min-w-0 text-ellipsis bg-transparent px-2.5 py-1.5 text-[14px] text-gray-100 outline-none placeholder:text-gray-600 focus:bg-sky-500/10 focus:ring-1 focus:ring-inset focus:ring-sky-400/60 disabled:cursor-default disabled:text-gray-300';
 </script>
 
+<svelte:window onclick={(e) => { if (!(e.target as HTMLElement).closest?.('.sort-menu')) sortOpen = false; }} />
+
 <div class="mb-2 flex flex-wrap items-center gap-2">
 	<input
 		type="search"
@@ -157,6 +180,27 @@
 		placeholder="חיפוש בטבלה…"
 		class="w-44 rounded-lg border border-white/10 bg-[#141c2f] px-3 py-1.5 text-[14px] text-gray-100 outline-none placeholder:text-gray-500 focus:border-sky-400/50"
 	/>
+	<div class="sort-menu relative">
+		<button
+			type="button"
+			onclick={() => (sortOpen = !sortOpen)}
+			aria-haspopup="menu"
+			aria-expanded={sortOpen}
+			class="rounded-lg border border-white/10 bg-[#141c2f] px-3 py-1.5 text-[13px] font-bold text-gray-200 hover:bg-white/5"
+		>
+			⇅ מיין לפי{sortLabel ? ': ' + sortLabel : ''}
+		</button>
+		{#if sortOpen}
+			<div role="menu" class="absolute start-0 top-full z-30 mt-1 w-44 overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl">
+				{#each sortOptions as o (o.key)}
+					<button type="button" role="menuitem" onclick={() => { sortKey = o.key; sortOpen = false; }} class="flex w-full items-center justify-between px-3 py-2 text-[13px] font-bold text-white hover:bg-white/10">{o.label}{#if sortKey === o.key}<span class="text-sky-300">✓</span>{/if}</button>
+				{/each}
+				{#if sortKey}
+					<button type="button" role="menuitem" onclick={() => { sortKey = ''; sortOpen = false; }} class="w-full border-t border-white/10 px-3 py-2 text-start text-[12px] text-gray-400 hover:bg-white/10">סדר הוספה</button>
+				{/if}
+			</div>
+		{/if}
+	</div>
 	<span class="text-[13px] text-gray-500">{sheet.rows.length} מתנדבים</span>
 	<div class="ms-auto flex gap-2">
 		<button type="button" onclick={exportCsv} class="rounded-lg border border-white/10 px-3 py-1.5 text-[13px] font-bold text-gray-300 hover:bg-white/5">⬇ הורד</button>

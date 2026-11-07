@@ -144,6 +144,7 @@ export interface Sheet {
 
 export const DEFAULT_COLUMNS: SheetColumn[] = [
 	{ id: 'col-name', label: 'שם המתנדב', kind: 'text' },
+	{ id: 'col-city', label: 'עיר', kind: 'text' },
 	{ id: 'col-phone', label: 'טלפון', kind: 'phone' },
 	{ id: 'col-telegram', label: 'טלגרם', kind: 'link' },
 	{ id: 'col-youtube', label: 'יוטיוב', kind: 'link' },
