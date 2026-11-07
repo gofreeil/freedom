@@ -106,10 +106,49 @@ export interface BoardReport {
 	replies: ReportReply[];
 }
 
+/** סוגי עמודות בטבלת המתנדבים */
+export const COLUMN_KINDS = [
+	{ id: 'text', label: 'טקסט' },
+	{ id: 'phone', label: 'טלפון' },
+	{ id: 'link', label: 'קישור' },
+	{ id: 'email', label: 'אימייל' }
+] as const;
+export type ColumnKind = (typeof COLUMN_KINDS)[number]['id'];
+
+export interface SheetColumn {
+	id: string;
+	label: string;
+	kind: ColumnKind;
+}
+
+export interface SheetRow {
+	id: string;
+	cells: Record<string, string>;
+	createdBy: string;
+	createdAt: string;
+	updatedBy: string;
+	updatedAt: string;
+}
+
+/** טבלת המתנדבים (בסגנון גיליון): הכותרות בידי הסופר-אדמין, השורות בידי הרכזים */
+export interface Sheet {
+	columns: SheetColumn[];
+	rows: SheetRow[];
+}
+
+export const DEFAULT_COLUMNS: SheetColumn[] = [
+	{ id: 'col-name', label: 'שם המתנדב', kind: 'text' },
+	{ id: 'col-phone', label: 'טלפון', kind: 'phone' },
+	{ id: 'col-telegram', label: 'טלגרם', kind: 'link' },
+	{ id: 'col-youtube', label: 'יוטיוב', kind: 'link' },
+	{ id: 'col-facebook', label: 'פייסבוק', kind: 'link' }
+];
+
 export interface BoardData {
 	v: 1;
 	tasks: BoardTask[];
 	reports: BoardReport[];
+	sheet: Sheet;
 	/** שם ותמונה אחרונים של כל מי שפעל בלוח — לתצוגה של מי שאינו ברשימת הרכזים */
 	people: Record<string, { name: string; image: string }>;
 }
@@ -170,7 +209,14 @@ export type BoardOp =
 	| { type: 'report.remove'; id: string }
 	| { type: 'report.react'; id: string; emoji: string }
 	| { type: 'report.reply'; reportId: string; id: string; text: string }
-	| { type: 'report.replyRemove'; reportId: string; id: string };
+	| { type: 'report.replyRemove'; reportId: string; id: string }
+	| { type: 'sheet.row.add'; id: string; cells?: Record<string, string> }
+	| { type: 'sheet.cell.set'; rowId: string; colId: string; value: string }
+	| { type: 'sheet.row.remove'; id: string }
+	| { type: 'sheet.col.add'; id: string; label: string; kind?: ColumnKind }
+	| { type: 'sheet.col.update'; id: string; label?: string; kind?: ColumnKind }
+	| { type: 'sheet.col.move'; id: string; dir: -1 | 1 }
+	| { type: 'sheet.col.remove'; id: string };
 
 // ── מגבלות — שהמסמך לא יתנפח ──
 export const LIMITS = {
@@ -185,7 +231,11 @@ export const LIMITS = {
 	checklist: 60,
 	reports: 1500,
 	repliesPerReport: 200,
-	assignees: 12
+	assignees: 12,
+	cell: 500,
+	colLabel: 60,
+	columns: 30,
+	rows: 3000
 } as const;
 
 export class BoardError extends Error {
@@ -205,7 +255,39 @@ export function newId(): string {
 }
 
 export function emptyBoard(): BoardData {
-	return { v: 1, tasks: [], reports: [], people: {} };
+	return { v: 1, tasks: [], reports: [], sheet: { columns: structuredClone(DEFAULT_COLUMNS), rows: [] }, people: {} };
+}
+
+const KIND_IDS = new Set<string>(COLUMN_KINDS.map((k) => k.id));
+
+function normalizeSheet(raw: unknown): Sheet {
+	if (!raw || typeof raw !== 'object') return emptyBoard().sheet;
+	const r = raw as Record<string, unknown>;
+	const columns = arr<Record<string, unknown>>(r.columns)
+		.filter((c) => c && s(c.id))
+		.map((c): SheetColumn => ({
+			id: s(c.id),
+			label: s(c.label),
+			kind: (KIND_IDS.has(s(c.kind)) ? c.kind : 'text') as ColumnKind
+		}));
+	const colIds = new Set(columns.map((c) => c.id));
+	const rows = arr<Record<string, unknown>>(r.rows)
+		.filter((x) => x && s(x.id))
+		.map((x): SheetRow => {
+			const cells: Record<string, string> = {};
+			if (x.cells && typeof x.cells === 'object')
+				for (const [k, v] of Object.entries(x.cells as Record<string, unknown>))
+					if (colIds.has(k) && typeof v === 'string' && v) cells[k] = v;
+			return {
+				id: s(x.id),
+				cells,
+				createdBy: s(x.createdBy),
+				createdAt: s(x.createdAt),
+				updatedBy: s(x.updatedBy),
+				updatedAt: s(x.updatedAt)
+			};
+		});
+	return { columns, rows };
 }
 
 const STATUS_IDS = new Set<string>(STATUSES.map((s) => s.id));
@@ -275,7 +357,13 @@ export function normalizeBoard(raw: unknown): BoardData {
 			people[k] = { name: s(v?.name), image: s(v?.image) };
 		}
 	}
-	return { v: 1, tasks: tasks.filter((t) => t.id), reports: reports.filter((p) => p.id), people };
+	return {
+		v: 1,
+		tasks: tasks.filter((t) => t.id),
+		reports: reports.filter((p) => p.id),
+		sheet: normalizeSheet(r.sheet),
+		people
+	};
 }
 
 // ── הרשאות ──
@@ -337,6 +425,31 @@ function findReport(board: BoardData, id: unknown): BoardReport {
 	const r = board.reports.find((x) => x.id === id);
 	if (!r) throw new BoardError('הדיווח לא נמצא (אולי נמחק)', 404);
 	return r;
+}
+
+function findRow(board: BoardData, id: unknown): SheetRow {
+	const r = board.sheet.rows.find((x) => x.id === id);
+	if (!r) throw new BoardError('השורה לא נמצאה (אולי נמחקה)', 404);
+	return r;
+}
+
+function findCol(board: BoardData, id: unknown): SheetColumn {
+	const c = board.sheet.columns.find((x) => x.id === id);
+	if (!c) throw new BoardError('העמודה לא נמצאה', 404);
+	return c;
+}
+
+function requireSuper(actor: Actor) {
+	if (!actor.isSuper) throw new BoardError('רק מנהל הרשת יכול לערוך את כותרות הטבלה', 403);
+}
+
+/** עריכת שורה בטבלה: מי שהוסיף אותה וסופר-אדמין */
+export function canEditRow(row: SheetRow, actor: Pick<Actor, 'id' | 'isSuper'>): boolean {
+	return actor.isSuper || row.createdBy === actor.id;
+}
+
+function requireRowEdit(row: SheetRow, actor: Actor) {
+	if (!canEditRow(row, actor)) throw new BoardError('אפשר לערוך רק שורות שהוספת', 403);
 }
 
 function requireEdit(task: BoardTask, actor: Actor) {
@@ -620,6 +733,78 @@ export function applyOp(board: BoardData, op: BoardOp, actor: Actor, now: string
 			if (reply.by !== actor.id && !actor.isSuper)
 				throw new BoardError('אפשר למחוק רק תגובה שכתבת', 403);
 			report.replies.splice(report.replies.indexOf(reply), 1);
+			break;
+		}
+
+		case 'sheet.row.add': {
+			const id = vid(op.id);
+			if (board.sheet.rows.some((x) => x.id === id)) return;
+			if (board.sheet.rows.length >= LIMITS.rows) throw new BoardError('הטבלה מלאה');
+			const cells: Record<string, string> = {};
+			for (const [k, v] of Object.entries(op.cells ?? {})) {
+				if (!board.sheet.columns.some((c) => c.id === k)) continue;
+				const val = vtext(v, LIMITS.cell, 'ערך', false);
+				if (val) cells[k] = val;
+			}
+			board.sheet.rows.push({ id, cells, createdBy: actor.id, createdAt: now, updatedBy: actor.id, updatedAt: now });
+			break;
+		}
+
+		case 'sheet.cell.set': {
+			const row = findRow(board, op.rowId);
+			requireRowEdit(row, actor);
+			if (!board.sheet.columns.some((c) => c.id === op.colId)) throw new BoardError('העמודה לא נמצאה', 404);
+			const val = vtext(op.value, LIMITS.cell, 'ערך', false);
+			if (val) row.cells[op.colId] = val;
+			else delete row.cells[op.colId];
+			row.updatedBy = actor.id;
+			row.updatedAt = now;
+			break;
+		}
+
+		case 'sheet.row.remove': {
+			const row = findRow(board, op.id);
+			requireRowEdit(row, actor);
+			board.sheet.rows.splice(board.sheet.rows.indexOf(row), 1);
+			break;
+		}
+
+		case 'sheet.col.add': {
+			requireSuper(actor);
+			const id = vid(op.id);
+			if (board.sheet.columns.some((c) => c.id === id)) return;
+			if (board.sheet.columns.length >= LIMITS.columns) throw new BoardError('יש יותר מדי עמודות');
+			board.sheet.columns.push({
+				id,
+				label: vtext(op.label, LIMITS.colLabel, 'שם עמודה'),
+				kind: KIND_IDS.has(op.kind ?? '') ? (op.kind as ColumnKind) : 'text'
+			});
+			break;
+		}
+
+		case 'sheet.col.update': {
+			requireSuper(actor);
+			const col = findCol(board, op.id);
+			if (op.label !== undefined) col.label = vtext(op.label, LIMITS.colLabel, 'שם עמודה');
+			if (op.kind !== undefined && KIND_IDS.has(op.kind)) col.kind = op.kind;
+			break;
+		}
+
+		case 'sheet.col.move': {
+			requireSuper(actor);
+			const cols = board.sheet.columns;
+			const i = cols.indexOf(findCol(board, op.id));
+			const j = i + (op.dir === -1 ? -1 : 1);
+			if (j < 0 || j >= cols.length) return;
+			[cols[i], cols[j]] = [cols[j], cols[i]];
+			break;
+		}
+
+		case 'sheet.col.remove': {
+			requireSuper(actor);
+			const col = findCol(board, op.id);
+			board.sheet.columns.splice(board.sheet.columns.indexOf(col), 1);
+			for (const row of board.sheet.rows) delete row.cells[col.id];
 			break;
 		}
 

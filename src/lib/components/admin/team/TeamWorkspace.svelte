@@ -14,6 +14,7 @@
 	import TaskDrawer from './TaskDrawer.svelte';
 	import ReportsFeed from './ReportsFeed.svelte';
 	import TeamOverview from './TeamOverview.svelte';
+	import VolunteerSheet from './VolunteerSheet.svelte';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -23,6 +24,7 @@
 		{ id: 'tasks', label: 'משימות', icon: '📋' },
 		{ id: 'reports', label: 'דיווחי פעילות', icon: '📣' },
 		{ id: 'overview', label: 'סקירת צוות', icon: '📊' },
+		{ id: 'volunteers', label: 'Freedom TV', icon: '📺' },
 		{ id: 'coordinators', label: 'צוות הרכזים', icon: '🛡️' }
 	] as const;
 	type Tab = (typeof TABS)[number]['id'];
@@ -155,6 +157,8 @@
 		<ReportsFeed {store} presetTaskId={presetReportTask} onpresetused={() => (presetReportTask = '')} onopentask={openTask} />
 	{:else if tab === 'overview'}
 		<TeamOverview {store} onfilter={filterByAssignee} />
+	{:else if tab === 'volunteers'}
+		<VolunteerSheet {store} />
 	{/if}
 </div>
 
