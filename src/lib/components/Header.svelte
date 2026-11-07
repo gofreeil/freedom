@@ -2,7 +2,7 @@
     import { headerHeight } from '$lib/actions/headerHeight';
     import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
-    import { goto, beforeNavigate } from "$app/navigation";
+    import { goto, beforeNavigate, afterNavigate } from "$app/navigation";
     import { onMount } from "svelte";
 
     // משתמש מחובר (מגיע מ-+layout.server דרך +layout.svelte); null = אנונימי
@@ -61,6 +61,8 @@
             if (left + imgW > window.innerWidth - 8) left = window.innerWidth - imgW - 8;
             preview.style.left = left + 'px';
             preview.style.top = (rect.bottom + 4) + 'px';
+            preview.style.visibility = 'visible';
+            preview.style.transition = 'opacity 0.2s ease-out, transform 0.2s ease-out';
             preview.style.opacity = '1';
             preview.style.transform = 'scale(1)';
         };
@@ -75,9 +77,13 @@
         btnWrapper?.addEventListener('pointerenter', onEnter);
         btnWrapper?.addEventListener('pointerleave', onLeave);
         btnWrapper?.addEventListener('click', onClick);
+        btnWrapper?.addEventListener('pointerdown', onClick);
+        window.addEventListener('pagehide', hideAboutPreview);
 
         document.addEventListener("click", handleClickOutside);
         return () => {
+            btnWrapper?.removeEventListener('pointerdown', onClick);
+            window.removeEventListener('pagehide', hideAboutPreview);
             document.removeEventListener("click", handleClickOutside);
             btnWrapper?.removeEventListener('pointerenter', onEnter);
             btnWrapper?.removeEventListener('pointerleave', onLeave);
@@ -88,7 +94,10 @@
     function hideAboutPreview() {
         const preview = document.getElementById('about-preview') as HTMLElement | null;
         if (!preview) return;
+        // הסתרה מיידית וקשיחה (בלי אנימציה): אנימציה שנקטעת בניווט השאירה את התמונה תקועה
+        preview.style.transition = 'none';
         preview.style.opacity = '0';
+        preview.style.visibility = 'hidden';
         preview.style.transform = 'scale(0.05)';
     }
 
@@ -149,6 +158,7 @@
 
 	// סגור תמונת preview של אודות מיד בזמן ניווט (ההדר נשאר במקומו בין דפים)
 	beforeNavigate(() => hideAboutPreview());
+	afterNavigate(() => hideAboutPreview());
 
 </script>
 
@@ -322,7 +332,7 @@
                 <div id="about-preview"
                      style="position:fixed; z-index:9999; pointer-events:none;
                             transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-                            opacity:0; transform:scale(0.05);
+                            opacity:0; visibility:hidden; transform:scale(0.05);
                             transform-origin: top center;">
                     <img
                         src="/images/ad_neighborhoods.webp"
