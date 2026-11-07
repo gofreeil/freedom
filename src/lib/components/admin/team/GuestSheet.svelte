@@ -107,6 +107,7 @@
 		<table class="w-full min-w-max border-collapse text-start">
 			<thead>
 				<tr class="bg-[#1b2335]">
+					<th class="w-9 border-b border-s border-white/10 px-1 py-2 text-center text-[12px] font-bold text-gray-500">#</th>
 					{#each columns as col (col.id)}
 						<th class="border-b border-s border-white/10 px-2.5 py-2 text-start text-[13px] font-black text-amber-200">{col.label}</th>
 					{/each}
@@ -116,6 +117,7 @@
 			<tbody>
 				{#if draft}
 					<tr class="border-b border-sky-400/30 bg-sky-500/10">
+						<td class="border-s border-white/10 px-1 text-center text-[12px] text-sky-300">+</td>
 						{#each columns as col, ci (col.id)}
 							<td class="border-s border-white/10 p-0">
 								<input
@@ -137,8 +139,9 @@
 						</td>
 					</tr>
 				{/if}
-				{#each mine as row (row.id)}
+				{#each mine as row, ri (row.id)}
 					<tr class="border-b border-white/5 bg-emerald-500/5">
+						<td class="border-s border-white/5 px-1 text-center text-[12px] text-gray-500">{ri + 1}</td>
 						{#each columns as col (col.id)}
 							<td class="border-s border-white/5 px-2.5 py-1.5 text-[14px] text-gray-100" dir={col.kind === 'text' ? 'auto' : 'ltr'}>{row.cells[col.id] ?? ''}</td>
 						{/each}
@@ -147,6 +150,7 @@
 				{/each}
 				{#each Array.from({ length: Math.min(others, MAX_MASKED) }) as _, i (i)}
 					<tr class="border-b border-white/5 select-none last:border-0" aria-hidden="true">
+						<td class="border-s border-white/5 px-1 text-center text-[12px] text-gray-600">{mine.length + i + 1}</td>
 						{#each columns as col (col.id)}
 							<td class="border-s border-white/5 px-2.5 py-1.5 text-[14px] tracking-widest text-gray-600">{MASK}</td>
 						{/each}
@@ -154,7 +158,7 @@
 					</tr>
 				{/each}
 				{#if !draft && !mine.length && !others}
-					<tr><td colspan={columns.length + 1} class="px-4 py-6 text-center text-[14px] text-gray-500">עוד אין שורות — לחצו על "הוסף שורת נתונים"</td></tr>
+					<tr><td colspan={columns.length + 2} class="px-4 py-6 text-center text-[14px] text-gray-500">עוד אין שורות — לחצו על "הוסף שורת נתונים"</td></tr>
 				{/if}
 			</tbody>
 		</table>

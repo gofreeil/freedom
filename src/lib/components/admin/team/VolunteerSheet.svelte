@@ -58,6 +58,17 @@
 		);
 	});
 
+	// מספר השורות המינימלי שמוצג (ריקות מסומנות במספר עוקב); לא בזמן חיפוש
+	const MIN_ROWS = 10;
+	const blanks = $derived(q.trim() ? 0 : Math.max(0, MIN_ROWS - rows.length));
+
+	/** לחיצה על תא בשורה ריקה: פותחת שורה אמיתית וממקדת את אותו תא */
+	function addRowAt(ci: number) {
+		const id = newId();
+		if (store.run({ type: 'sheet.row.add', id }))
+			setTimeout(() => document.querySelector<HTMLInputElement>(`[data-cell="${id}:${ci}"]`)?.focus(), 0);
+	}
+
 	function addRow() {
 		const id = newId();
 		if (store.run({ type: 'sheet.row.add', id })) {
@@ -275,10 +286,26 @@
 					</td>
 				</tr>
 			{:else}
-				<tr>
-					<td colspan={shown.length + 3} class="px-4 py-8 text-center text-[14px] text-gray-500">
-						{q ? 'לא נמצאו תוצאות' : 'עוד אין מתנדבים בטבלה — לחצו על "+ שורה" כדי להוסיף'}
-					</td>
+				{#if q}
+					<tr>
+						<td colspan={shown.length + 3} class="px-4 py-8 text-center text-[14px] text-gray-500">לא נמצאו תוצאות</td>
+					</tr>
+				{/if}
+			{/each}
+			<!-- שורות ריקות ממוספרות (כמו בגיליון): לחיצה על תא פותחת שורה חדשה -->
+			{#each Array.from({ length: blanks }) as _, bi (bi)}
+				<tr class="border-b border-white/5 last:border-0">
+					<td class="border-s border-white/5 px-1 text-center text-[12px] text-gray-700">{rows.length + bi + 1}</td>
+					{#each shown as col (col.id)}
+						{@const ci = sheet.columns.indexOf(col)}
+						<td class="border-s border-white/5 p-0 {col.hidden ? 'bg-white/[0.04]' : ''}">
+							{#if !col.hidden}
+								<input class={inputCls} aria-label="שורה חדשה" onfocus={() => addRowAt(ci)} />
+							{/if}
+						</td>
+					{/each}
+					<td class="border-s border-white/5"></td>
+					<td class="border-s border-white/5"></td>
 				</tr>
 			{/each}
 		</tbody>
