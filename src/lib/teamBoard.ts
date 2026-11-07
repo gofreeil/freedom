@@ -147,7 +147,8 @@ export const DEFAULT_COLUMNS: SheetColumn[] = [
 	{ id: 'col-phone', label: 'טלפון', kind: 'phone' },
 	{ id: 'col-telegram', label: 'טלגרם', kind: 'link' },
 	{ id: 'col-youtube', label: 'יוטיוב', kind: 'link' },
-	{ id: 'col-facebook', label: 'פייסבוק', kind: 'link' }
+	{ id: 'col-facebook', label: 'פייסבוק', kind: 'link' },
+	{ id: 'col-instagram', label: 'אינסטגרם', kind: 'link' }
 ];
 
 export interface BoardData {
