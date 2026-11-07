@@ -11,6 +11,9 @@
 
 	const sheet = $derived(store.board.sheet);
 	const isSuper = $derived(!!store.me?.isSuper);
+	// מצב "ערוך טבלה": רק בו מוצגים כלי העריכה של הכותרות (עיפרון, גרירת רוחב, הוספת עמודה)
+	let editing = $state(false);
+	const canEditCols = $derived(isSuper && editing);
 	let q = $state('');
 	let colMenu = $state(''); // id העמודה שתפריט הכותרת שלה פתוח
 	let newColLabel = $state('');
@@ -203,6 +206,14 @@
 	</div>
 	<span class="text-[13px] text-gray-500">{sheet.rows.length} מתנדבים</span>
 	<div class="ms-auto flex gap-2">
+		{#if isSuper}
+			<button
+				type="button"
+				onclick={() => { editing = !editing; colMenu = ''; }}
+				aria-pressed={editing}
+				class="rounded-lg border px-3 py-1.5 text-[13px] font-bold transition {editing ? 'border-amber-400/60 bg-amber-400/15 text-amber-200' : 'border-white/10 text-gray-300 hover:bg-white/5'}"
+			>{editing ? '✓ סיום עריכה' : '✎ ערוך טבלה'}</button>
+		{/if}
 		<button type="button" onclick={exportCsv} class="rounded-lg border border-white/10 px-3 py-1.5 text-[13px] font-bold text-gray-300 hover:bg-white/5">⬇ הורד</button>
 		<button type="button" onclick={addRow} class="rounded-lg bg-sky-500 px-3 py-1.5 text-[13px] font-black text-white hover:bg-sky-400">+ שורה</button>
 	</div>
@@ -233,7 +244,7 @@
 						</th>
 					{:else}
 					<th class="relative border-b border-s border-white/10 p-0 text-start align-top">
-						{#if isSuper}
+						{#if canEditCols}
 							<div
 								role="separator"
 								aria-orientation="vertical"
@@ -244,7 +255,7 @@
 						{/if}
 						<div class="flex items-center gap-1 px-2.5 py-2 text-[13px] font-black text-amber-200">
 							<span class="truncate">{col.label}</span>
-							{#if isSuper}
+							{#if canEditCols}
 								<button
 									type="button"
 									onclick={() => (colMenu = colMenu === col.id ? '' : col.id)}
@@ -253,7 +264,7 @@
 									title="עריכת העמודה">✎</button>
 							{/if}
 						</div>
-						{#if isSuper && colMenu === col.id}
+						{#if canEditCols && colMenu === col.id}
 							<div class="absolute start-0 top-full z-20 w-56 space-y-2 rounded-xl border border-white/15 bg-[#0f1626] p-3 text-[13px] font-normal shadow-2xl">
 								<input
 									value={col.label}
@@ -356,7 +367,7 @@
 	</table>
 </div>
 
-{#if isSuper}
+{#if canEditCols}
 	<form
 		class="flex items-center justify-end gap-2 border-t border-white/10 bg-[#1b2335]/60 px-2 py-1.5"
 		onsubmit={(e) => {
