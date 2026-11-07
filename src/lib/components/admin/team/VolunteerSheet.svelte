@@ -147,7 +147,7 @@
 	}
 
 	const inputCls =
-		'w-full min-w-0 bg-transparent px-2.5 py-1.5 text-[14px] text-gray-100 outline-none placeholder:text-gray-600 focus:bg-sky-500/10 focus:ring-1 focus:ring-inset focus:ring-sky-400/60 disabled:cursor-default disabled:text-gray-300';
+		'w-full min-w-0 text-ellipsis bg-transparent px-2.5 py-1.5 text-[14px] text-gray-100 outline-none placeholder:text-gray-600 focus:bg-sky-500/10 focus:ring-1 focus:ring-inset focus:ring-sky-400/60 disabled:cursor-default disabled:text-gray-300';
 </script>
 
 <div class="mb-2 flex flex-wrap items-center gap-2">

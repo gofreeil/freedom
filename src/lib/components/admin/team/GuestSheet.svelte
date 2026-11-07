@@ -79,7 +79,7 @@
 	}
 
 	const inputCls =
-		'w-full min-w-0 bg-transparent px-2.5 py-1.5 text-[14px] text-gray-100 outline-none placeholder:text-gray-600 focus:bg-sky-500/10 focus:ring-1 focus:ring-inset focus:ring-sky-400/60';
+		'w-full min-w-0 text-ellipsis bg-transparent px-2.5 py-1.5 text-[14px] text-gray-100 outline-none placeholder:text-gray-600 focus:bg-sky-500/10 focus:ring-1 focus:ring-inset focus:ring-sky-400/60';
 </script>
 
 {#if error && !loaded}
@@ -142,8 +142,9 @@
 				{#each mine as row, ri (row.id)}
 					<tr class="border-b border-white/5 bg-emerald-500/5">
 						<td class="border-s border-white/5 px-1 text-center text-[12px] text-gray-500">{ri + 1}</td>
-						{#each columns as col (col.id)}
-							<td class="border-s border-white/5 px-2.5 py-1.5 text-[14px] text-gray-100" dir={col.kind === 'text' ? 'auto' : 'ltr'}>{row.cells[col.id] ?? ''}</td>
+						{#each columns as col, ci (col.id)}
+							<!-- רק השם מוצג במלואו; שאר העמודות מקוצרות לשורה אחת (התוכן נשמר במלואו) -->
+							<td class="border-s border-white/5 px-2.5 py-1.5 text-[14px] text-gray-100 {ci === 0 ? '' : 'max-w-[11rem] truncate'}" dir={col.kind === 'text' ? 'auto' : 'ltr'} title={ci === 0 ? undefined : row.cells[col.id]}>{row.cells[col.id] ?? ''}</td>
 						{/each}
 						<td class="border-s border-white/5 px-2 text-center text-[12px] font-bold text-emerald-300">✓ נשמרה</td>
 					</tr>
