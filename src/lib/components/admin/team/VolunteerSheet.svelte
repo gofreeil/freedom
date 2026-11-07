@@ -4,7 +4,7 @@
 	// הסופר-אדמין בלבד עורך את הכותרות (שם, סוג, סדר, הוספה ומחיקה של עמודות)
 	// ועורך/מוחק כל שורה.
 	// ============================================================
-	import { COLUMN_KINDS, canEditRow, newId, waLink, type SheetColumn, type SheetRow } from '$lib/teamBoard';
+	import { COLUMN_KINDS, COL_WIDTH, canEditRow, newId, waLink, type SheetColumn, type SheetRow } from '$lib/teamBoard';
 	import type { TeamStore } from './teamStore.svelte';
 
 	let { store }: { store: TeamStore } = $props();
@@ -14,6 +14,39 @@
 	let q = $state('');
 	let colMenu = $state(''); // id העמודה שתפריט הכותרת שלה פתוח
 	let newColLabel = $state('');
+
+	// עמודה מוסתרת: מנהל הרשת רואה פס צר עם חץ להצגה; לשאר הרכזים היא לא קיימת
+	const HIDDEN_W = 22;
+	const shown = $derived(sheet.columns.filter((c) => isSuper || !c.hidden));
+	let drag = $state<{ id: string; width: number } | null>(null);
+	const widthOf = (c: SheetColumn) =>
+		c.hidden ? HIDDEN_W : drag?.id === c.id ? drag.width : (c.width ?? COL_WIDTH.def);
+	const tableW = $derived(36 + 100 + 36 + shown.reduce((n, c) => n + widthOf(c), 0));
+
+	function startResize(e: PointerEvent, col: SheetColumn) {
+		e.preventDefault();
+		const handle = e.currentTarget as HTMLElement;
+		const rtl = getComputedStyle(handle).direction === 'rtl';
+		const x0 = e.clientX;
+		const w0 = col.width ?? COL_WIDTH.def;
+		const clamp = (w: number) => Math.round(Math.min(COL_WIDTH.max, Math.max(COL_WIDTH.min, w)));
+		handle.setPointerCapture(e.pointerId);
+		drag = { id: col.id, width: w0 };
+		const move = (ev: PointerEvent) => {
+			drag = { id: col.id, width: clamp(w0 + (rtl ? x0 - ev.clientX : ev.clientX - x0)) };
+		};
+		const up = () => {
+			handle.removeEventListener('pointermove', move);
+			handle.removeEventListener('pointerup', up);
+			handle.removeEventListener('pointercancel', up);
+			const w = drag?.width ?? w0;
+			if (w !== w0) store.run({ type: 'sheet.col.update', id: col.id, width: w });
+			drag = null;
+		};
+		handle.addEventListener('pointermove', move);
+		handle.addEventListener('pointerup', up);
+		handle.addEventListener('pointercancel', up);
+	}
 
 	const rows = $derived.by(() => {
 		const t = q.trim().toLowerCase();
@@ -103,7 +136,7 @@
 	}
 
 	const inputCls =
-		'w-full min-w-[9rem] bg-transparent px-2.5 py-1.5 text-[14px] text-gray-100 outline-none placeholder:text-gray-600 focus:bg-sky-500/10 focus:ring-1 focus:ring-inset focus:ring-sky-400/60 disabled:cursor-default disabled:text-gray-300';
+		'w-full min-w-0 bg-transparent px-2.5 py-1.5 text-[14px] text-gray-100 outline-none placeholder:text-gray-600 focus:bg-sky-500/10 focus:ring-1 focus:ring-inset focus:ring-sky-400/60 disabled:cursor-default disabled:text-gray-300';
 </script>
 
 <div class="mb-2 flex flex-wrap items-center gap-2">
@@ -121,12 +154,38 @@
 </div>
 
 <div class="overflow-x-auto rounded-xl border border-white/10 bg-[#141c2f]">
-	<table class="w-full border-collapse text-start">
+	<table class="table-fixed border-collapse text-start" style="width:max(100%, {tableW}px)">
+		<colgroup>
+			<col style="width:36px" />
+			{#each shown as col (col.id)}<col style="width:{widthOf(col)}px" />{/each}
+			<col style="width:100px" />
+			<col style="width:36px" />
+		</colgroup>
 		<thead>
 			<tr class="bg-[#1b2335]">
-				<th class="w-9 border-b border-s border-white/10 px-1 py-2 text-center text-[12px] font-bold text-gray-500">#</th>
-				{#each sheet.columns as col, ci (col.id)}
+				<th class="border-b border-s border-white/10 px-1 py-2 text-center text-[12px] font-bold text-gray-500">#</th>
+				{#each shown as col (col.id)}
+					{@const ci = sheet.columns.indexOf(col)}
+					{#if col.hidden}
+						<th class="border-b border-s border-white/10 bg-white/[0.04] p-0 text-center align-middle">
+							<button
+								type="button"
+								onclick={() => store.run({ type: 'sheet.col.update', id: col.id, hidden: false })}
+								class="w-full py-2 text-[11px] leading-none font-black text-amber-300 hover:bg-white/10"
+								title="הצג את העמודה &quot;{col.label}&quot;"
+								aria-label="הצג את העמודה {col.label}">◂▸</button>
+						</th>
+					{:else}
 					<th class="relative border-b border-s border-white/10 p-0 text-start align-top">
+						{#if isSuper}
+							<div
+								role="separator"
+								aria-orientation="vertical"
+								title="גררו לשינוי רוחב"
+								onpointerdown={(e) => startResize(e, col)}
+								class="absolute end-0 top-0 z-10 h-full w-2 cursor-col-resize touch-none hover:bg-sky-400/40 {drag?.id === col.id ? 'bg-sky-400/60' : ''}"
+							></div>
+						{/if}
 						<div class="flex items-center gap-1 px-2.5 py-2 text-[13px] font-black text-amber-200">
 							<span class="truncate">{col.label}</span>
 							{#if isSuper}
@@ -158,10 +217,19 @@
 									<button type="button" disabled={ci === sheet.columns.length - 1} onclick={() => store.run({ type: 'sheet.col.move', id: col.id, dir: 1 })} class="flex-1 rounded-lg border border-white/15 py-1 text-gray-200 hover:bg-white/5 disabled:opacity-30" title="הזז שמאלה">←</button>
 									<button type="button" onclick={() => removeCol(col)} class="flex-1 rounded-lg border border-red-400/30 py-1 text-red-300 hover:bg-red-500/10" title="מחק עמודה">🗑</button>
 								</div>
+								<button
+									type="button"
+									onclick={() => {
+										colMenu = '';
+										store.run({ type: 'sheet.col.update', id: col.id, hidden: true });
+									}}
+									class="w-full rounded-lg border border-white/15 py-1 text-gray-200 hover:bg-white/5"
+									title="העמודה תוסתר מכל הרכזים">הסתר עמודה</button>
 								<button type="button" onclick={() => (colMenu = '')} class="w-full rounded-lg bg-white/10 py-1 font-bold text-white hover:bg-white/15">סגור</button>
 							</div>
 						{/if}
 					</th>
+					{/if}
 				{/each}
 				<th class="border-b border-s border-white/10 px-2.5 py-2 text-start text-[13px] font-black text-gray-400">נוסף ע״י</th>
 				<th class="w-9 border-b border-s border-white/10"></th>
@@ -172,9 +240,13 @@
 				{@const editable = !!store.me && canEditRow(row, store.me)}
 				<tr class="group border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
 					<td class="border-s border-white/5 px-1 text-center text-[12px] text-gray-600">{ri + 1}</td>
-					{#each sheet.columns as col, ci (col.id)}
+					{#each shown as col (col.id)}
+						{@const ci = sheet.columns.indexOf(col)}
 						{@const v = row.cells[col.id] ?? ''}
 						{@const url = href(col, v)}
+						{#if col.hidden}
+							<td class="border-s border-white/5 bg-white/[0.04]"></td>
+						{:else}
 						<td class="border-s border-white/5 p-0">
 							<div class="flex items-center">
 								<input
@@ -192,6 +264,7 @@
 								{/if}
 							</div>
 						</td>
+						{/if}
 					{/each}
 					<td class="border-s border-white/5 px-2.5 text-[12px] whitespace-nowrap text-gray-500">{store.member(row.createdBy).name.split(' ')[0]}</td>
 					<td class="border-s border-white/5 text-center">
@@ -202,7 +275,7 @@
 				</tr>
 			{:else}
 				<tr>
-					<td colspan={sheet.columns.length + 3} class="px-4 py-8 text-center text-[14px] text-gray-500">
+					<td colspan={shown.length + 3} class="px-4 py-8 text-center text-[14px] text-gray-500">
 						{q ? 'לא נמצאו תוצאות' : 'עוד אין מתנדבים בטבלה — לחצו על "+ שורה" כדי להוסיף'}
 					</td>
 				</tr>

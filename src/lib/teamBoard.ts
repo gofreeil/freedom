@@ -119,7 +119,13 @@ export interface SheetColumn {
 	id: string;
 	label: string;
 	kind: ColumnKind;
+	/** מוסתרת (רק מנהל הרשת רואה אותה ויכול להציג מחדש) */
+	hidden?: boolean;
+	/** רוחב בפיקסלים; חסר = ברירת מחדל */
+	width?: number;
 }
+
+export const COL_WIDTH = { def: 170, min: 60, max: 600 } as const;
 
 export interface SheetRow {
 	id: string;
@@ -214,7 +220,7 @@ export type BoardOp =
 	| { type: 'sheet.cell.set'; rowId: string; colId: string; value: string }
 	| { type: 'sheet.row.remove'; id: string }
 	| { type: 'sheet.col.add'; id: string; label: string; kind?: ColumnKind }
-	| { type: 'sheet.col.update'; id: string; label?: string; kind?: ColumnKind }
+	| { type: 'sheet.col.update'; id: string; label?: string; kind?: ColumnKind; hidden?: boolean; width?: number }
 	| { type: 'sheet.col.move'; id: string; dir: -1 | 1 }
 	| { type: 'sheet.col.remove'; id: string };
 
@@ -268,7 +274,11 @@ function normalizeSheet(raw: unknown): Sheet {
 		.map((c): SheetColumn => ({
 			id: s(c.id),
 			label: s(c.label),
-			kind: (KIND_IDS.has(s(c.kind)) ? c.kind : 'text') as ColumnKind
+			kind: (KIND_IDS.has(s(c.kind)) ? c.kind : 'text') as ColumnKind,
+			...(c.hidden === true ? { hidden: true } : {}),
+			...(typeof c.width === 'number' && c.width >= COL_WIDTH.min && c.width <= COL_WIDTH.max
+				? { width: Math.round(c.width) }
+				: {})
 		}));
 	const colIds = new Set(columns.map((c) => c.id));
 	const rows = arr<Record<string, unknown>>(r.rows)
@@ -787,6 +797,15 @@ export function applyOp(board: BoardData, op: BoardOp, actor: Actor, now: string
 			const col = findCol(board, op.id);
 			if (op.label !== undefined) col.label = vtext(op.label, LIMITS.colLabel, 'שם עמודה');
 			if (op.kind !== undefined && KIND_IDS.has(op.kind)) col.kind = op.kind;
+			if (op.hidden !== undefined) {
+				if (op.hidden) col.hidden = true;
+				else delete col.hidden;
+			}
+			if (op.width !== undefined) {
+				const w = Number(op.width);
+				if (!Number.isFinite(w)) throw new BoardError('רוחב לא תקין');
+				col.width = Math.round(Math.min(COL_WIDTH.max, Math.max(COL_WIDTH.min, w)));
+			}
 			break;
 		}
 
