@@ -14,8 +14,6 @@
 	// מצב "ערוך טבלה": רק בו מוצגים כלי העריכה של הכותרות (עיפרון, גרירת רוחב, הוספת עמודה)
 	let editing = $state(false);
 	const canEditCols = $derived(isSuper && editing);
-	// הוספת שורה: לסופר-אדמין רק במצב עריכה; לשאר הרכזים (שאין להם מצב עריכה) תמיד
-	const canAddRow = $derived(!isSuper || editing);
 	let q = $state('');
 	// טבלה שנשמרה לפני שנוספו עמודות ברירת המחדל החדשות — משלימים אותן פעם אחת
 	$effect(() => {
@@ -222,7 +220,7 @@
 			>{editing ? '✓ סיום עריכה' : '✎ ערוך טבלה'}</button>
 		{/if}
 		<button type="button" onclick={exportCsv} class="rounded-lg border border-white/10 px-3 py-1.5 text-[13px] font-bold text-gray-300 hover:bg-white/5">⬇ הורד</button>
-		{#if canAddRow}<button type="button" onclick={addRow} class="rounded-lg bg-sky-500 px-3 py-1.5 text-[13px] font-black text-white hover:bg-sky-400">+ שורה</button>{/if}
+		<button type="button" onclick={addRow} class="rounded-lg bg-sky-500 px-3 py-1.5 text-[13px] font-black text-white hover:bg-sky-400">+ שורה</button>
 	</div>
 </div>
 
@@ -362,7 +360,7 @@
 						{@const ci = sheet.columns.indexOf(col)}
 						<td class="border-s border-white/5 p-0 {col.hidden ? 'bg-white/[0.04]' : ''}">
 							{#if !col.hidden}
-								<input class={inputCls} aria-label="שורה חדשה" readonly={!canAddRow} onfocus={() => canAddRow && addRowAt(ci)} />
+								<input class={inputCls} aria-label="שורה חדשה" onfocus={() => addRowAt(ci)} />
 							{/if}
 						</td>
 					{/each}
