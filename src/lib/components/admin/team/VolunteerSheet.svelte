@@ -148,7 +148,7 @@
 	/>
 	<span class="text-[13px] text-gray-500">{sheet.rows.length} מתנדבים</span>
 	<div class="ms-auto flex gap-2">
-		<button type="button" onclick={exportCsv} class="rounded-lg border border-white/10 px-3 py-1.5 text-[13px] font-bold text-gray-300 hover:bg-white/5">⬇ CSV</button>
+		<button type="button" onclick={exportCsv} class="rounded-lg border border-white/10 px-3 py-1.5 text-[13px] font-bold text-gray-300 hover:bg-white/5">⬇ הורד</button>
 		<button type="button" onclick={addRow} class="rounded-lg bg-sky-500 px-3 py-1.5 text-[13px] font-black text-white hover:bg-sky-400">+ שורה</button>
 	</div>
 </div>
