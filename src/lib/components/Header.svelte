@@ -2,7 +2,7 @@
     import { headerHeight } from '$lib/actions/headerHeight';
     import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
-    import { goto, beforeNavigate, afterNavigate } from "$app/navigation";
+    import { goto, afterNavigate } from "$app/navigation";
     import { onMount } from "svelte";
 
     // משתמש מחובר (מגיע מ-+layout.server דרך +layout.svelte); null = אנונימי
@@ -17,6 +17,7 @@
     ];
 
     let showLangDropdown = $state(false);
+    let showNavMenu = $state(false);
 
     // חיפוש
     let searchQuery     = $state('');
@@ -46,66 +47,16 @@
             if (saved) locale.set(saved);
         } catch {}
 
-        // hover על כפתור אודות - תמונה ב-fixed position
-        const preview = document.getElementById('about-preview') as HTMLElement | null;
-        const btnWrapper = document.getElementById('about-btn-wrapper');
-        // אחרי לחיצה (ניווט) העכבר נשאר על הכפתור — לא להציג שוב עד שהוא יוצא ממנו
-        let suppressed = false;
-        const onEnter = (e: PointerEvent) => {
-            // מגע לא מרחף: pointerenter של אצבע היה משאיר את התמונה תקועה אחרי הלחיצה
-            if (suppressed || !preview || !btnWrapper || e.pointerType !== 'mouse') return;
-            const rect = btnWrapper.getBoundingClientRect();
-            const imgW = 260;
-            let left = rect.left + rect.width / 2 - imgW / 2;
-            if (left < 8) left = 8;
-            if (left + imgW > window.innerWidth - 8) left = window.innerWidth - imgW - 8;
-            preview.style.left = left + 'px';
-            preview.style.top = (rect.bottom + 4) + 'px';
-            preview.style.visibility = 'visible';
-            preview.style.transition = 'opacity 0.2s ease-out, transform 0.2s ease-out';
-            preview.style.opacity = '1';
-            preview.style.transform = 'scale(1)';
-        };
-        const onLeave = () => {
-            suppressed = false;
-            hideAboutPreview();
-        };
-        const onClick = () => {
-            suppressed = true;
-            hideAboutPreview();
-        };
-        btnWrapper?.addEventListener('pointerenter', onEnter);
-        btnWrapper?.addEventListener('pointerleave', onLeave);
-        btnWrapper?.addEventListener('click', onClick);
-        btnWrapper?.addEventListener('pointerdown', onClick);
-        window.addEventListener('pagehide', hideAboutPreview);
-
         document.addEventListener("click", handleClickOutside);
-        return () => {
-            btnWrapper?.removeEventListener('pointerdown', onClick);
-            window.removeEventListener('pagehide', hideAboutPreview);
-            document.removeEventListener("click", handleClickOutside);
-            btnWrapper?.removeEventListener('pointerenter', onEnter);
-            btnWrapper?.removeEventListener('pointerleave', onLeave);
-            btnWrapper?.removeEventListener('click', onClick);
-        };
+        return () => document.removeEventListener("click", handleClickOutside);
     });
-
-    function hideAboutPreview() {
-        const preview = document.getElementById('about-preview') as HTMLElement | null;
-        if (!preview) return;
-        // הסתרה מיידית וקשיחה (בלי אנימציה): אנימציה שנקטעת בניווט השאירה את התמונה תקועה
-        preview.style.transition = 'none';
-        preview.style.opacity = '0';
-        preview.style.visibility = 'hidden';
-        preview.style.transform = 'scale(0.05)';
-    }
 
     function handleClickOutside(event: MouseEvent) {
         const target = event.target as HTMLElement;
         if (!target.closest(".lang-dropdown-container")) {
             showLangDropdown = false;
         }
+        if (!target.closest(".nav-menu-container")) showNavMenu = false;
     }
 
     function handleLangKeydown(event: KeyboardEvent) {
@@ -156,9 +107,8 @@
 	$effect(() => locale.subscribe(l => (_loc = l)));
 	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
-	// סגור תמונת preview של אודות מיד בזמן ניווט (ההדר נשאר במקומו בין דפים)
-	beforeNavigate(() => hideAboutPreview());
-	afterNavigate(() => hideAboutPreview());
+	// התפריט נסגר בכל ניווט
+	afterNavigate(() => (showNavMenu = false));
 
 </script>
 
@@ -302,50 +252,39 @@
                 </a>
             </div>
 <div class="flex items-center gap-2">
-                <!-- הסדר מימין לשמאל: ניהול הרשת · אודות · שפה · משתמש -->
-                <!-- "ניהול הרשת" — לסופר-אדמין ולאדמיני אתרי הרשת בלבד -->
+                <!-- הסדר מימין לשמאל: תפריט (אודות · Freedom TV · ניהול הרשת) · שפה · משתמש -->
+                <!-- שני הקישורים האחרונים — לסופר-אדמין ולאדמיני אתרי הרשת בלבד; לשאר נשאר כפתור "אודות" רגיל -->
                 {#if user?.canManage}
-                    <a
-                        href="/admin"
-                        class="flex items-center gap-2 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm font-bold text-white transition-colors"
-                        title="ניהול הרשת"
-                    >
-                        <span class="login-grad flex h-6 w-6 items-center justify-center rounded-full text-xs">🛡️</span>
-                        <span class="hidden sm:inline">ניהול הרשת</span>
-                    </a>
-                {/if}
-                <!-- כפתור אודות עם תצוגה מקדימה -->
-                <div class="relative" id="about-btn-wrapper">
-                    <!-- קישור ולא כפתור: כך SvelteKit מקדים את טעינת הדף כבר בריחוף
-                         (data-sveltekit-preload-data), והלחיצה עצמה מיידית. -->
+                    <div class="nav-menu-container relative">
+                        <button
+                            type="button"
+                            class="relative flex items-center gap-2 rounded-lg px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105"
+                            style="background:linear-gradient(135deg,#4f46e5,#7c3aed); box-shadow:0 4px 15px rgba(124,58,237,0.4);"
+                            onclick={() => (showNavMenu = !showNavMenu)}
+                            onkeydown={(e) => e.key === 'Escape' && (showNavMenu = false)}
+                            aria-haspopup="menu"
+                            aria-expanded={showNavMenu}
+                        >
+                            {tFn("about")}
+                            <svg class="h-4 w-4 transition-transform {showNavMenu ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        {#if showNavMenu}
+                            <div role="menu" class="absolute end-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl">
+                                <a role="menuitem" href="/about" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">ℹ️</span> {tFn("about")}</a>
+                                <a role="menuitem" href="/admin/tv" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📺</span> Freedom TV</a>
+                                <a role="menuitem" href="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🛡️</span> ניהול הרשת</a>
+                            </div>
+                        {/if}
+                    </div>
+                {:else}
                     <a
                         href="/about"
-                        class="relative flex items-center rounded-lg px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105 hover:tracking-wide"
+                        class="relative flex items-center rounded-lg px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105"
                         style="background:linear-gradient(135deg,#4f46e5,#7c3aed); box-shadow:0 4px 15px rgba(124,58,237,0.4);"
-                        onmouseenter={(e) => (e.currentTarget as HTMLElement).style.boxShadow='0 0 24px 6px rgba(167,139,250,0.7), 0 4px 15px rgba(124,58,237,0.5)'}
-                        onmouseleave={(e) => (e.currentTarget as HTMLElement).style.boxShadow='0 4px 15px rgba(124,58,237,0.4)'}
                     >
                         {tFn("about")}
                     </a>
-                </div>
-                <!-- תמונת preview - position:fixed כדי לחמוק מ-overflow של ההדר -->
-                <div id="about-preview"
-                     style="position:fixed; z-index:9999; pointer-events:none;
-                            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-                            opacity:0; visibility:hidden; transform:scale(0.05);
-                            transform-origin: top center;">
-                    <img
-                        src="/images/ad_neighborhoods.webp"
-                        alt=""
-                        width="462"
-                        height="430"
-                        loading="lazy"
-                        decoding="async"
-                        style="width:260px; height:auto;
-                               -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
-                               mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);"
-                    />
-                </div>
+                {/if}
                 <!-- Language Dropdown -->
                 <div class="lang-dropdown-container relative">
                     <button
