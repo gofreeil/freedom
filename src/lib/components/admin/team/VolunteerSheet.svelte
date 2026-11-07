@@ -323,7 +323,7 @@
 		<input
 			bind:value={newColLabel}
 			maxlength="60"
-			placeholder="עמודה חדשה (למשל: טיקטוק)"
+			placeholder="עמודה חדשה"
 			class="w-56 rounded-lg border border-white/10 bg-[#141c2f] px-3 py-1.5 text-[13px] text-gray-100 outline-none placeholder:text-gray-500 focus:border-sky-400/50"
 		/>
 		<button type="submit" class="rounded-lg border border-white/15 px-3 py-1.5 text-[13px] font-bold text-gray-200 hover:bg-white/5">+ עמודה</button>
