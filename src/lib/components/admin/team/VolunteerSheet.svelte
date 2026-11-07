@@ -153,7 +153,8 @@
 	</div>
 </div>
 
-<div class="overflow-x-auto rounded-xl border border-white/10 bg-[#141c2f]">
+<div class="overflow-hidden rounded-xl border border-white/10 bg-[#141c2f]">
+<div class="overflow-x-auto">
 	<table class="table-fixed border-collapse text-start" style="width:max(100%, {tableW}px)">
 		<colgroup>
 			<col style="width:36px" />
@@ -286,7 +287,7 @@
 
 {#if isSuper}
 	<form
-		class="mt-2 flex items-center gap-2"
+		class="flex items-center justify-end gap-2 border-t border-white/10 bg-[#1b2335]/60 px-2 py-1.5"
 		onsubmit={(e) => {
 			e.preventDefault();
 			addCol();
@@ -299,6 +300,7 @@
 			class="w-56 rounded-lg border border-white/10 bg-[#141c2f] px-3 py-1.5 text-[13px] text-gray-100 outline-none placeholder:text-gray-500 focus:border-sky-400/50"
 		/>
 		<button type="submit" class="rounded-lg border border-white/15 px-3 py-1.5 text-[13px] font-bold text-gray-200 hover:bg-white/5">+ עמודה</button>
-		<span class="text-[12px] text-gray-500">רק מנהל הרשת עורך כותרות</span>
+		<span class="me-auto hidden text-[12px] text-gray-500 sm:inline">רק מנהל הרשת עורך כותרות</span>
 	</form>
 {/if}
+</div>
