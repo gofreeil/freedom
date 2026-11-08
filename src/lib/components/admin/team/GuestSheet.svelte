@@ -16,6 +16,7 @@
 	interface Row {
 		id: string;
 		cells: Record<string, string>;
+		mine?: boolean;
 	}
 
 	let columns = $state<Col[]>([]);
@@ -26,6 +27,7 @@
 	let draft = $state<{ id: string; cells: Record<string, string> } | null>(null);
 	let saving = $state(false);
 	let ok = $state('');
+	let selectedId = $state('');
 
 	const MASK = '********';
 	const MAX_MASKED = 30;
@@ -140,13 +142,16 @@
 					</tr>
 				{/if}
 				{#each mine as row, ri (row.id)}
-					<tr class="border-b border-white/5 bg-emerald-500/5">
+					<tr
+						class="border-b border-white/5 {selectedId === row.id ? 'bg-sky-500/10 outline outline-2 -outline-offset-2 outline-sky-400' : row.mine ? 'bg-emerald-500/5' : ''}"
+						onclick={() => (selectedId = row.id)}
+					>
 						<td class="border-s border-white/5 px-1 text-center text-[12px] text-gray-500">{ri + 1}</td>
 						{#each columns as col, ci (col.id)}
 							<!-- רק השם מוצג במלואו; שאר העמודות מקוצרות לשורה אחת (התוכן נשמר במלואו) -->
 							<td class="border-s border-white/5 px-2.5 py-1.5 text-[14px] text-gray-100 {ci === 0 ? '' : 'max-w-[11rem] truncate'}" dir={col.kind === 'text' ? 'auto' : 'ltr'} title={ci === 0 ? undefined : row.cells[col.id]}>{row.cells[col.id] ?? ''}</td>
 						{/each}
-						<td class="border-s border-white/5 px-2 text-center text-[12px] font-bold text-emerald-300">✓ נשמרה</td>
+						<td class="border-s border-white/5 px-2 text-center text-[12px] font-bold text-emerald-300">{row.mine ? '✓ שלך' : ''}</td>
 					</tr>
 				{/each}
 				{#each Array.from({ length: Math.min(others, MAX_MASKED) }) as _, i (i)}

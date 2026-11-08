@@ -41,7 +41,7 @@
 				type="button"
 				onclick={share}
 				class="ms-auto rounded-lg border border-white/15 px-3 py-1.5 text-[13px] font-bold text-gray-200 hover:bg-white/5"
-				title="העתקת קישור לדף. מי שאינו אדמין יראה כוכביות ויוכל רק להוסיף שורה"
+				title="העתקת קישור לדף. מי שאינו אדמין יראה את הנתונים ויוכל רק להוסיף שורה"
 			>
 				{copied ? '✓ הקישור הועתק' : '🔗 שתף'}
 			</button>

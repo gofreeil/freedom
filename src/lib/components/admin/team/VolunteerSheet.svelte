@@ -29,7 +29,7 @@
 	let drag = $state<{ id: string; width: number } | null>(null);
 	const widthOf = (c: SheetColumn) =>
 		c.hidden ? HIDDEN_W : drag?.id === c.id ? drag.width : (c.width ?? COL_WIDTH.def);
-	const tableW = $derived(36 + 100 + 36 + shown.reduce((n, c) => n + widthOf(c), 0));
+	const tableW = $derived(36 + 36 + shown.reduce((n, c) => n + widthOf(c), 0));
 
 	function startResize(e: PointerEvent, col: SheetColumn) {
 		e.preventDefault();
@@ -65,6 +65,7 @@
 		...(nameCol ? [{ key: nameCol.id, label: 'שם' }] : [])
 	]);
 	let sortKey = $state('');
+	let selectedId = $state('');
 	let sortOpen = $state(false);
 	const sortLabel = $derived(sortOptions.find((o) => o.key === sortKey)?.label ?? '');
 	const cmp = (a: string, b: string) => a.localeCompare(b, 'he');
@@ -230,7 +231,6 @@
 		<colgroup>
 			<col style="width:36px" />
 			{#each shown as col (col.id)}<col style="width:{widthOf(col)}px" />{/each}
-			<col style="width:100px" />
 			<col style="width:36px" />
 		</colgroup>
 		<thead>
@@ -303,14 +303,17 @@
 					</th>
 					{/if}
 				{/each}
-				<th class="border-b border-s border-white/10 px-2.5 py-2 text-start text-[13px] font-black text-gray-400">נוסף ע״י</th>
 				<th class="w-9 border-b border-s border-white/10"></th>
 			</tr>
 		</thead>
 		<tbody>
 			{#each rows as row, ri (row.id)}
 				{@const editable = !!store.me && canEditRow(row, store.me)}
-				<tr class="group border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
+				<tr
+					class="group border-b border-white/5 last:border-0 {selectedId === row.id ? 'bg-sky-500/10 outline outline-2 -outline-offset-2 outline-sky-400' : 'hover:bg-white/[0.02]'}"
+					onclick={() => (selectedId = row.id)}
+					onfocusin={() => (selectedId = row.id)}
+				>
 					<td class="border-s border-white/5 px-1 text-center text-[12px] text-gray-600">{ri + 1}</td>
 					{#each shown as col (col.id)}
 						{@const ci = sheet.columns.indexOf(col)}
@@ -338,7 +341,6 @@
 						</td>
 						{/if}
 					{/each}
-					<td class="border-s border-white/5 px-2.5 text-[12px] whitespace-nowrap text-gray-500">{store.member(row.createdBy).name.split(' ')[0]}</td>
 					<td class="border-s border-white/5 text-center">
 						{#if editable}
 							<button type="button" onclick={() => removeRow(row)} class="px-1.5 text-gray-600 hover:text-red-300" aria-label="מחיקת שורה" title="מחק שורה">✕</button>
@@ -348,7 +350,7 @@
 			{:else}
 				{#if q}
 					<tr>
-						<td colspan={shown.length + 3} class="px-4 py-8 text-center text-[14px] text-gray-500">לא נמצאו תוצאות</td>
+						<td colspan={shown.length + 2} class="px-4 py-8 text-center text-[14px] text-gray-500">לא נמצאו תוצאות</td>
 					</tr>
 				{/if}
 			{/each}
@@ -364,7 +366,6 @@
 							{/if}
 						</td>
 					{/each}
-					<td class="border-s border-white/5"></td>
 					<td class="border-s border-white/5"></td>
 				</tr>
 			{/each}
