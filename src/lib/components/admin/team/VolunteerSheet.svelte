@@ -29,7 +29,8 @@
 	let drag = $state<{ id: string; width: number } | null>(null);
 	const widthOf = (c: SheetColumn) =>
 		c.hidden ? HIDDEN_W : drag?.id === c.id ? drag.width : (c.width ?? COL_WIDTH.def);
-	const tableW = $derived(36 + 100 + (editing ? 36 : 0) + shown.reduce((n, c) => n + widthOf(c), 0));
+	let showDates = $state(false);
+	const tableW = $derived(36 + 100 + (showDates ? 130 : 0) + (editing ? 36 : 0) + shown.reduce((n, c) => n + widthOf(c), 0));
 
 	function startResize(e: PointerEvent, col: SheetColumn) {
 		e.preventDefault();
@@ -66,6 +67,11 @@
 	]);
 	let sortKey = $state('');
 	let selectedId = $state('');
+	// תאריך הוספה: עמודה מוסתרת כברירת מחדל, נחשפת בלחיצה
+	function fmtDate(iso: string) {
+		const d = new Date(iso);
+		return isNaN(d.getTime()) ? '' : d.toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' });
+	}
 	let sortOpen = $state(false);
 	const sortLabel = $derived(sortOptions.find((o) => o.key === sortKey)?.label ?? '');
 	const cmp = (a: string, b: string) => a.localeCompare(b, 'he');
@@ -166,8 +172,8 @@
 	}
 
 	function exportCsv() {
-		const head = [...sheet.columns.map((c) => c.label), 'נוסף על ידי'];
-		const lines = [head, ...sheet.rows.map((r) => [...sheet.columns.map((c) => r.cells[c.id] ?? ''), store.member(r.createdBy).name])];
+		const head = [...sheet.columns.map((c) => c.label), 'נוסף על ידי', 'תאריך הוספה'];
+		const lines = [head, ...sheet.rows.map((r) => [...sheet.columns.map((c) => r.cells[c.id] ?? ''), store.member(r.createdBy).name, fmtDate(r.createdAt)])];
 		const blob = new Blob(['﻿' + lines.map((l) => l.map(csvCell).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' });
 		const a = document.createElement('a');
 		a.href = URL.createObjectURL(blob);
@@ -220,6 +226,7 @@
 				class="rounded-lg border px-3 py-1.5 text-[13px] font-bold transition {editing ? 'border-amber-400/60 bg-amber-400/15 text-amber-200' : 'border-white/10 text-gray-300 hover:bg-white/5'}"
 			>{editing ? '✓ סיום עריכה' : '✎ ערוך טבלה'}</button>
 		{/if}
+		<button type="button" onclick={() => (showDates = !showDates)} aria-pressed={showDates} class="rounded-lg border px-3 py-1.5 text-[13px] font-bold transition {showDates ? 'border-sky-400/60 bg-sky-400/15 text-sky-200' : 'border-white/10 text-gray-300 hover:bg-white/5'}">📅 תאריכים</button>
 		<button type="button" onclick={exportCsv} class="rounded-lg border border-white/10 px-3 py-1.5 text-[13px] font-bold text-gray-300 hover:bg-white/5">⬇ הורד</button>
 	</div>
 </div>
@@ -231,6 +238,7 @@
 			<col style="width:36px" />
 			{#each shown as col (col.id)}<col style="width:{widthOf(col)}px" />{/each}
 			<col style="width:100px" />
+			{#if showDates}<col style="width:130px" />{/if}
 			{#if editing}<col style="width:36px" />{/if}
 		</colgroup>
 		<thead>
@@ -304,6 +312,7 @@
 					{/if}
 				{/each}
 				<th class="border-b border-s border-white/10 px-2.5 py-2 text-start text-[13px] font-black text-gray-400">נוסף ע״י</th>
+				{#if showDates}<th class="border-b border-s border-white/10 px-2.5 py-2 text-start text-[13px] font-black text-gray-400">תאריך הוספה</th>{/if}
 				{#if editing}<th class="w-9 border-b border-s border-white/10"></th>{/if}
 			</tr>
 		</thead>
@@ -343,6 +352,7 @@
 						{/if}
 					{/each}
 					<td class="border-s border-white/5 px-2.5 text-[12px] whitespace-nowrap text-gray-500">{store.member(row.createdBy).name.split(" ")[0]}</td>
+					{#if showDates}<td class="border-s border-white/5 px-2.5 text-[12px] whitespace-nowrap text-gray-500" dir="ltr">{fmtDate(row.createdAt)}</td>{/if}
 					{#if editing}
 					<td class="border-s border-white/5 text-center">
 						{#if editable}
@@ -354,7 +364,7 @@
 			{:else}
 				{#if q}
 					<tr>
-						<td colspan={shown.length + 3} class="px-4 py-8 text-center text-[14px] text-gray-500">לא נמצאו תוצאות</td>
+						<td colspan={shown.length + 3 + (showDates ? 1 : 0)} class="px-4 py-8 text-center text-[14px] text-gray-500">לא נמצאו תוצאות</td>
 					</tr>
 				{/if}
 			{/each}
@@ -371,6 +381,7 @@
 						</td>
 					{/each}
 					<td class="border-s border-white/5"></td>
+					{#if showDates}<td class="border-s border-white/5"></td>{/if}
 					{#if editing}<td class="border-s border-white/5"></td>{/if}
 				</tr>
 			{/each}
