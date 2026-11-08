@@ -143,7 +143,7 @@
 				{/if}
 				{#each mine as row, ri (row.id)}
 					<tr
-						class="border-b border-white/5 {selectedId === row.id ? 'bg-sky-500/10 outline outline-2 -outline-offset-2 outline-sky-400' : row.mine ? 'bg-emerald-500/5' : ''}"
+						class="border-b border-white/5 {selectedId === row.id ? 'bg-sky-500/10 outline outline-2 -outline-offset-2 outline-sky-400' : ri % 2 ? 'bg-white/[0.05]' : ''}"
 						onclick={() => (selectedId = row.id)}
 					>
 						<td class="border-s border-white/5 px-1 text-center text-[12px] text-gray-500">{ri + 1}</td>

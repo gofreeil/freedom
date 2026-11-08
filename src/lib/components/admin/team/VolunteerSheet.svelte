@@ -312,7 +312,7 @@
 			{#each rows as row, ri (row.id)}
 				{@const editable = !!store.me && canEditRow(row, store.me)}
 				<tr
-					class="group border-b border-white/5 last:border-0 {selectedId === row.id ? 'bg-sky-500/10 outline outline-2 -outline-offset-2 outline-sky-400' : 'hover:bg-white/[0.02]'}"
+					class="group border-b border-white/5 last:border-0 {selectedId === row.id ? 'bg-sky-500/10 outline outline-2 -outline-offset-2 outline-sky-400' : ri % 2 ? 'bg-white/[0.05] hover:bg-white/[0.07]' : 'hover:bg-white/[0.03]'}"
 					onclick={() => (selectedId = row.id)}
 					onfocusin={() => (selectedId = row.id)}
 				>
@@ -361,7 +361,7 @@
 			{/each}
 			<!-- שורות ריקות ממוספרות (כמו בגיליון): לחיצה על תא פותחת שורה חדשה -->
 			{#each Array.from({ length: blanks }) as _, bi (bi)}
-				<tr class="border-b border-white/5 last:border-0">
+				<tr class="border-b border-white/5 last:border-0 {(rows.length + bi) % 2 ? 'bg-white/[0.05]' : ''}">
 					<td class="border-s border-white/5 px-1 text-center text-[12px] text-gray-700">{rows.length + bi + 1}</td>
 					{#each shown as col (col.id)}
 						{@const ci = sheet.columns.indexOf(col)}
