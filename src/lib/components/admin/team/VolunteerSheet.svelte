@@ -221,7 +221,6 @@
 			>{editing ? '✓ סיום עריכה' : '✎ ערוך טבלה'}</button>
 		{/if}
 		<button type="button" onclick={exportCsv} class="rounded-lg border border-white/10 px-3 py-1.5 text-[13px] font-bold text-gray-300 hover:bg-white/5">⬇ הורד</button>
-		<button type="button" onclick={addRow} class="rounded-lg bg-sky-500 px-3 py-1.5 text-[13px] font-black text-white hover:bg-sky-400">+ שורה</button>
 	</div>
 </div>
 
@@ -377,6 +376,9 @@
 			{/each}
 		</tbody>
 	</table>
+</div>
+<div class="border-t border-white/10 bg-[#1b2335]/60 px-2 py-1.5">
+	<button type="button" onclick={addRow} class="rounded-lg bg-sky-500 px-3 py-1.5 text-[13px] font-black text-white hover:bg-sky-400">+ הוסף</button>
 </div>
 
 {#if canEditCols}
