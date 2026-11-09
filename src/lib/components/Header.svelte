@@ -298,7 +298,7 @@
                             aria-haspopup="menu"
                             aria-expanded={showNavMenu}
                         >
-                            {tFn("about")}
+                            {tFn("menu")}
                             <svg class="h-4 w-4 transition-transform {showNavMenu ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                         </button>
                         {#if showNavMenu}
