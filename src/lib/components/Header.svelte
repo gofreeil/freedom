@@ -117,8 +117,8 @@
     <div role="menu" class="absolute end-0 top-full z-[160] mt-2 w-52 overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl">
         <a role="menuitem" href="/about" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">ℹ️</span> {tFn("about")}</a>
         {#if user?.canManage}
-            <a role="menuitem" href="/admin/tv" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📺</span> Freedom TV</a>
-            <a role="menuitem" href="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🛡️</span> ניהול הרשת</a>
+            <a role="menuitem" href="/admin/tv" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📺</span> חירות TV</a>
+            <a role="menuitem" href="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🛡️</span> ניהול ומשימות</a>
         {/if}
         <a role="menuitem" href="/budget" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">💰</span> ניהול תקציב</a>
     </div>

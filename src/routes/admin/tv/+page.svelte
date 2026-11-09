@@ -29,12 +29,12 @@
 	}
 </script>
 
-<svelte:head><title>Freedom TV | יוצאים לחירות</title></svelte:head>
+<svelte:head><title>חירות TV | יוצאים לחירות</title></svelte:head>
 
 <div class="mx-auto max-w-6xl px-4 py-6" dir="rtl">
 	<div class="mb-4 flex flex-wrap items-center gap-3">
 		<h1 class="flex items-center gap-2.5 text-xl font-black text-white sm:text-2xl">
-			<span aria-hidden="true">📺</span> Freedom TV
+			<span aria-hidden="true">📺</span> חירות TV
 		</h1>
 		{#if !data.guest}
 			<button
