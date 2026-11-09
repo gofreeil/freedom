@@ -3,6 +3,26 @@ import { jwtExpSeconds } from '$lib/server/strapiAuth';
 import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle } from '@sveltejs/kit';
 
+// נתיבי סריקה של בוטים — לאתר SvelteKit אין אף קובץ כזה (מפעילים כאן רק אחרי בדיקת melecshop,
+// כי לדומיין הישן היו כתובות .php אמיתיות שגוגל זוכר, והן צריכות לקבל 301 ולא 404).
+const JUNK_PATH =
+	/\.(?:php\d*|aspx?|jsp|cgi)$|^\/(?:wp-[^/]*|wordpress|phpmyadmin|cgi-bin|\.env[^/]*|\.git|\.aws|\.ssh)(?:\/|$)/i;
+
+// עוגיית הסשן של Auth.js (גם בגרסה המאובטחת __Secure-, וגם כשהיא מפוצלת ל-.0/.1)
+const SESSION_COOKIE = /(?:^|;\s*)[^=;\s]*session-token[^=;]*=/;
+
+/**
+ * מבקר בלי עוגיית סשן הוא אנונימי בהכרח, ו-Auth.js היה מחזיר לו null בכל מקרה — אבל רק אחרי
+ * שבנה את כל ההגדרות מחדש. הקריאה ל-auth() רצה כאן ב-hook ושוב ב-layout, כלומר פעמיים בכל בקשה,
+ * ורוב הבקשות (בוטים וזרים) אנונימיות. מקצרים: בלי עוגייה — null מיד, בלי לגעת ב-Auth.js.
+ */
+const skipAuthWhenAnonymous: Handle = async ({ event, resolve }) => {
+	if (!SESSION_COOKIE.test(event.request.headers.get('cookie') ?? '')) {
+		event.locals.auth = async () => null;
+	}
+	return resolve(event);
+};
+
 /**
  * עוטפים את ה-handle של Auth.js ב-try/catch: אם ה-JWT בעוגייה לא תקין
  * (למשל AUTH_SECRET שונה) @auth/sveltekit עלול לזרוק ולהפיל את כל הדפים.
@@ -16,6 +36,18 @@ const authWrapped: Handle = async ({ event, resolve }) => {
 		return new Response(null, {
 			status: 301,
 			headers: { location: 'https://gofreeil.com/' },
+		});
+	}
+	// בוטים סורקים נתיבים של וורדפרס/PHP/קבצי סודות שלא קיימים באתר. בלי זה כל בדיקה
+	// כזו מרנדרת את דף ה-404 המלא (כולל ה-layout) ועולה זמן CPU; כאן עונים בשורה אחת,
+	// ו-s-maxage נותן ל-CDN של Vercel לזכור את התשובה, כך שחזרה על אותו נתיב לא מגיעה לפונקציה.
+	if (event.request.method === 'GET' && JUNK_PATH.test(event.url.pathname)) {
+		return new Response('Not found', {
+			status: 404,
+			headers: {
+				'content-type': 'text/plain; charset=utf-8',
+				'cache-control': 'public, s-maxage=86400',
+			},
 		});
 	}
 	try {
@@ -63,4 +95,4 @@ const setSharedSsoCookie: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(authWrapped, setSharedSsoCookie);
+export const handle: Handle = sequence(authWrapped, skipAuthWhenAnonymous, setSharedSsoCookie);
