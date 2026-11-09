@@ -1,12 +1,11 @@
 <script lang="ts">
-	// /club — "מועדון יוצאים לחירות": ההטבות לחבר המועדון. אדמינים בלבד בינתיים;
-	// לכל השאר data.club = null ומוצג "דף זה בבנייה" (ההרשאה והתוכן ב-load).
+	// /club — "מועדון יוצאים לחירות": ההטבות לחבר המועדון. פתוח לכל גולש, מסומן כטיוטא.
 	let { data } = $props();
 
 	// מספור רציף של ההטבות לאורך כל הקטגוריות (1–10)
 	const numbered = $derived.by(() => {
 		let n = 0;
-		return (data.club?.sections ?? []).map((s) => ({
+		return data.club.sections.map((s) => ({
 			...s,
 			benefits: s.benefits.map((b) => ({ ...b, n: ++n }))
 		}));
@@ -19,15 +18,6 @@
 </svelte:head>
 
 <div class="mx-auto max-w-4xl px-4 py-6" dir="rtl">
-	{#if !data.club}
-		<div class="mx-auto max-w-md rounded-2xl border border-white/10 bg-[#141c2f] p-6 text-center">
-			<h1 class="flex items-center justify-center gap-2.5 text-xl font-black text-white">
-				<span aria-hidden="true">🚧</span> דף זה בבנייה
-			</h1>
-			<p class="mt-1.5 text-sm text-gray-400">הדף ייפתח בקרוב.</p>
-			<a href="/" class="mt-3 inline-block rounded-lg border border-white/15 px-3 py-1.5 text-[13px] font-bold text-gray-200 hover:bg-white/5">חזרה לדף הבית</a>
-		</div>
-	{:else}
 		<div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
 			<h1 class="flex items-center gap-2.5 text-xl font-black text-white sm:text-2xl">
 				<span aria-hidden="true">🕊️</span> מועדון יוצאים לחירות
@@ -36,7 +26,7 @@
 				{data.club.price}
 			</span>
 			<span class="rounded-full border border-white/15 px-2.5 py-0.5 text-xs font-bold text-gray-300">
-				🚧 בבנייה — גלוי לאדמינים בלבד
+				🚧 דף זה הינו בבניה ומשמש כטיוטא בלבד
 			</span>
 			<p class="basis-full text-[15px] leading-snug text-gray-300">{data.club.intro}</p>
 		</div>
@@ -55,7 +45,7 @@
 					</h2>
 					<ul class="divide-y divide-white/5">
 						{#each section.benefits as b}
-							<li class="grid grid-cols-[1.75rem_1fr] gap-x-3 gap-y-0.5 px-4 py-1.5md:grid-cols-[1.75rem_17rem_1fr]">
+							<li class="grid grid-cols-[1.75rem_1fr] gap-x-3 gap-y-0.5 px-4 py-1.5 md:grid-cols-[1.75rem_22rem_1fr]">
 								<span class="flex h-7 w-7 items-center justify-center rounded-full bg-amber-400/15 text-sm font-black text-amber-200">
 									{b.n}
 								</span>
@@ -83,5 +73,4 @@
 		</div>
 
 		<p class="mt-4 text-center text-sm font-bold text-gray-300">🕊️ {data.club.motto}</p>
-	{/if}
 </div>
