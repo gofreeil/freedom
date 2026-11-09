@@ -6,7 +6,7 @@
     import { onMount } from "svelte";
 
     // משתמש מחובר (מגיע מ-+layout.server דרך +layout.svelte); null = אנונימי
-    let { user = null }: { user?: { name: string; email: string; image?: string; isSuperAdmin?: boolean; canManage?: boolean; canBudget?: boolean } | null } = $props();
+    let { user = null }: { user?: { name: string; email: string; image?: string; isSuperAdmin?: boolean; canManage?: boolean } | null } = $props();
     // תמונת פרופיל שלא נטענה → עיגול עם האות הראשונה
     let avatarBroken = $state(false);
 
@@ -112,6 +112,18 @@
 
 </script>
 
+<!-- תפריט הדפים הנוספים — משותף לדסקטופ ולמובייל. Freedom TV וניהול הרשת לאדמינים בלבד -->
+{#snippet navMenu()}
+    <div role="menu" class="absolute end-0 top-full z-[160] mt-2 w-52 overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl">
+        <a role="menuitem" href="/about" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">ℹ️</span> {tFn("about")}</a>
+        {#if user?.canManage}
+            <a role="menuitem" href="/admin/tv" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📺</span> Freedom TV</a>
+            <a role="menuitem" href="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🛡️</span> ניהול הרשת</a>
+        {/if}
+        <a role="menuitem" href="/budget" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">💰</span> ניהול תקציב</a>
+    </div>
+{/snippet}
+
 <header use:headerHeight
     class="sticky top-0 z-50 border-b-2 md:border-b-4 border-blue-600 shadow-lg backdrop-blur-lg"
     style="background: linear-gradient(to bottom, rgba(17, 24, 39, 0.88) 0%, rgba(17, 24, 39, 0.88) 66%, rgba(17, 24, 39, 0.1) 100%);"
@@ -157,14 +169,33 @@
                     </a>
 
                     <div class="flex items-center gap-1.5">
-                        <!-- כפתור אודות - מובייל -->
-                        <a
-                            href="/about"
-                            class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
-                            aria-label={tFn("about")}
-                        >
-                            <span class="text-xl font-bold text-white leading-none">ℹ</span>
-                        </a>
+                        <!-- מובייל: למשתמש מחובר — כפתור תפריט (אודות + הדפים הנוספים); לאנונימי — כפתור אודות -->
+                        {#if user}
+                            <div class="nav-menu-container relative">
+                                <button
+                                    type="button"
+                                    class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
+                                    onclick={() => (showNavMenu = !showNavMenu)}
+                                    onkeydown={(e) => e.key === 'Escape' && (showNavMenu = false)}
+                                    aria-label="תפריט"
+                                    aria-haspopup="menu"
+                                    aria-expanded={showNavMenu}
+                                >
+                                    <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-width="2.2" d="M4 7h16M4 12h16M4 17h16" /></svg>
+                                </button>
+                                {#if showNavMenu}
+                                    {@render navMenu()}
+                                {/if}
+                            </div>
+                        {:else}
+                            <a
+                                href="/about"
+                                class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
+                                aria-label={tFn("about")}
+                            >
+                                <span class="text-xl font-bold text-white leading-none">ℹ</span>
+                            </a>
+                        {/if}
 
                         <!-- כפתור דגל שפה - מובייל -->
                         <div class="relative lang-dropdown-container">
@@ -254,8 +285,8 @@
 <div class="flex items-center gap-2">
                 <!-- הסדר מימין לשמאל: תפריט (אודות · Freedom TV · ניהול הרשת) · שפה · משתמש -->
                 <!-- שני הקישורים האחרונים — לסופר-אדמין ולאדמיני אתרי הרשת בלבד; לשאר נשאר כפתור "אודות" רגיל -->
-                <!-- "ניהול תקציב" — לאדמינים וגם לרכזי השכונות (canBudget) -->
-                {#if user?.canManage || user?.canBudget}
+                <!-- "ניהול תקציב" — לכל משתמש מחובר (צפייה); ההצבעה נקבעת בדף עצמו -->
+                {#if user}
                     <div class="nav-menu-container relative">
                         <button
                             type="button"
@@ -270,14 +301,7 @@
                             <svg class="h-4 w-4 transition-transform {showNavMenu ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                         </button>
                         {#if showNavMenu}
-                            <div role="menu" class="absolute end-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl">
-                                <a role="menuitem" href="/about" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">ℹ️</span> {tFn("about")}</a>
-                                {#if user.canManage}
-                                    <a role="menuitem" href="/admin/tv" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📺</span> Freedom TV</a>
-                                    <a role="menuitem" href="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🛡️</span> ניהול הרשת</a>
-                                {/if}
-                                <a role="menuitem" href="/budget" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">💰</span> ניהול תקציב</a>
-                            </div>
+                            {@render navMenu()}
                         {/if}
                     </div>
                 {:else}

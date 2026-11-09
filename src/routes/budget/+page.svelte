@@ -1,7 +1,9 @@
 <script lang="ts">
-	// /budget — "ניהול תקציב" (אדמינים ורכזי שכונות בלבד; ההרשאה ב-load).
+	// /budget — "ניהול תקציב": צפייה לכל משתמש מחובר; הצבעה לאדמינים ולרכזי שכונות (data.canVote).
 	// מוקאפ: נתוני העוגה קבועים כאן, וההצבעה נשמרת בדפדפן בלבד — עד שיחובר מקור נתונים.
 	import { onMount } from 'svelte';
+
+	let { data } = $props();
 
 	const BUDGET = [
 		{ label: 'שרתים ותשתיות', amount: 30_000, color: '#6366f1' },
@@ -115,6 +117,11 @@
 			</ul>
 
 			<!-- הצבעה -->
+			{#if !data.canVote}
+				<p class="mt-3 border-t border-white/10 pt-3 text-xs text-gray-400">
+					ההצבעה על התקציב פתוחה לאדמינים ולרכזי שכונות בלבד.
+				</p>
+			{:else}
 			<div class="mt-3 flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
 				<span class="text-sm font-bold text-white">ההצבעה שלך:</span>
 				{#each VOTES as v}
@@ -133,6 +140,7 @@
 					{vote ? '✓ ההצבעה נרשמה. ' : ''}בשלב ההדגמה ההצבעה נשמרת במכשיר זה בלבד.
 				</span>
 			</div>
+			{/if}
 		</div>
 	</div>
 </div>
