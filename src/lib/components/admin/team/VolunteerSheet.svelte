@@ -388,7 +388,7 @@
 		</tbody>
 	</table>
 </div>
-<div class="border-t border-white/10 bg-[#1b2335]/60 px-2 py-1.5">
+<div class="flex justify-end border-t border-white/10 bg-[#1b2335]/60 px-2 py-1.5">
 	<button type="button" onclick={addRow} class="rounded-lg bg-sky-500 px-3 py-1.5 text-[13px] font-black text-white hover:bg-sky-400">+ הוסף</button>
 </div>
 
