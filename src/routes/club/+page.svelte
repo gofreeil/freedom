@@ -47,6 +47,11 @@
 				<section>
 					<h2 class="flex items-center gap-2 border-b border-white/10 bg-white/5 px-4 py-1 text-[15px] leading-tight font-black text-amber-200">
 						<span aria-hidden="true">{section.icon}</span> {section.title}
+						{#if section.saving}
+							<span class="ms-auto rounded-full bg-emerald-400/15 px-2 py-0.5 text-[13px] font-bold text-emerald-200">
+								{section.saving}
+							</span>
+						{/if}
 					</h2>
 					<ul class="divide-y divide-white/5">
 						{#each section.benefits as b}

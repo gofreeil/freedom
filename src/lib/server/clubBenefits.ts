@@ -18,6 +18,8 @@ export interface ClubBenefit {
 export interface ClubSection {
 	icon: string;
 	title: string;
+	/** תווית קצרה לצד כותרת הקטגוריה (למשל חיסכון חודשי משוער) */
+	saving?: string;
 	benefits: ClubBenefit[];
 }
 
@@ -32,6 +34,9 @@ export const CLUB_SECTIONS: ClubSection[] = [
 	{
 		icon: '💰',
 		title: 'חיסכון בהוצאות החודשיות',
+		// הערכה גסה למשק בית: 2 קווי סלולר (~50), דלק ~120 ליטר (~30), ביטוח רכב
+		// קבוצתי (~30), הנחות בעלי מקצוע (~40). לא כולל מיחזור משכנתא. לעדכן כשיהיו מחירים סגורים.
+		saving: 'חיסכון משוער: כ-150 ש"ח בחודש למשק בית',
 		benefits: [
 			{
 				icon: '📱',
