@@ -45,17 +45,17 @@
 		<div class="divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/10 bg-[#141c2f]/90">
 			{#each numbered as section}
 				<section>
-					<h2 class="flex items-center gap-2 border-b border-white/10 bg-white/5 px-4 py-1.5 text-[15px] leading-tight font-black text-amber-200">
+					<h2 class="flex items-center gap-2 border-b border-white/10 bg-white/5 px-4 py-1 text-[15px] leading-tight font-black text-amber-200">
 						<span aria-hidden="true">{section.icon}</span> {section.title}
 					</h2>
 					<ul class="divide-y divide-white/5">
 						{#each section.benefits as b}
-							<li class="grid grid-cols-[1.75rem_1fr] gap-x-3 gap-y-1 px-4 py-2.5 md:grid-cols-[1.75rem_17rem_1fr]">
+							<li class="grid grid-cols-[1.75rem_1fr] gap-x-3 gap-y-0.5 px-4 py-1.5md:grid-cols-[1.75rem_17rem_1fr]">
 								<span class="flex h-7 w-7 items-center justify-center rounded-full bg-amber-400/15 text-sm font-black text-amber-200">
 									{b.n}
 								</span>
 								<div class="self-center">
-									<h3 class="text-base font-bold leading-snug text-white">
+									<h3 class="text-base font-bold leading-tight text-white">
 										<span aria-hidden="true">{b.icon}</span> {b.title}
 									</h3>
 									{#if b.note}
@@ -64,7 +64,7 @@
 								</div>
 								<svelte:element
 									this={b.ordered ? 'ol' : 'ul'}
-									class="col-start-2 space-y-0.5 self-center ps-4 text-[15px] leading-snug text-gray-300 marker:text-amber-200/60 md:col-start-3 {b.ordered ? 'list-decimal' : 'list-disc'}"
+									class="col-start-2 self-center ps-4 text-[15px] leading-tight text-gray-300 marker:text-amber-200/60 md:col-start-3 {b.ordered ? 'list-decimal' : 'list-disc'}"
 								>
 									{#each b.points as p}
 										<li>{p}</li>
