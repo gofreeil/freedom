@@ -6,7 +6,7 @@
     import { onMount } from "svelte";
 
     // משתמש מחובר (מגיע מ-+layout.server דרך +layout.svelte); null = אנונימי
-    let { user = null }: { user?: { name: string; email: string; image?: string; isSuperAdmin?: boolean; canManage?: boolean } | null } = $props();
+    let { user = null }: { user?: { name: string; email: string; image?: string; isSuperAdmin?: boolean; canManage?: boolean; canBudget?: boolean } | null } = $props();
     // תמונת פרופיל שלא נטענה → עיגול עם האות הראשונה
     let avatarBroken = $state(false);
 
@@ -254,7 +254,8 @@
 <div class="flex items-center gap-2">
                 <!-- הסדר מימין לשמאל: תפריט (אודות · Freedom TV · ניהול הרשת) · שפה · משתמש -->
                 <!-- שני הקישורים האחרונים — לסופר-אדמין ולאדמיני אתרי הרשת בלבד; לשאר נשאר כפתור "אודות" רגיל -->
-                {#if user?.canManage}
+                <!-- "ניהול תקציב" — לאדמינים וגם לרכזי השכונות (canBudget) -->
+                {#if user?.canManage || user?.canBudget}
                     <div class="nav-menu-container relative">
                         <button
                             type="button"
@@ -271,8 +272,11 @@
                         {#if showNavMenu}
                             <div role="menu" class="absolute end-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl">
                                 <a role="menuitem" href="/about" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">ℹ️</span> {tFn("about")}</a>
-                                <a role="menuitem" href="/admin/tv" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📺</span> Freedom TV</a>
-                                <a role="menuitem" href="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🛡️</span> ניהול הרשת</a>
+                                {#if user.canManage}
+                                    <a role="menuitem" href="/admin/tv" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📺</span> Freedom TV</a>
+                                    <a role="menuitem" href="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🛡️</span> ניהול הרשת</a>
+                                {/if}
+                                <a role="menuitem" href="/budget" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">💰</span> ניהול תקציב</a>
                             </div>
                         {/if}
                     </div>

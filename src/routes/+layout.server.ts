@@ -1,5 +1,6 @@
 import { isSuperAdmin } from '$lib/server/superAdmin';
 import { isNetworkAdmin } from '$lib/server/siteAdmins';
+import { isNeighborhoodCoordinator } from '$lib/server/budgetAccess';
 import type { LayoutServerLoad } from './$types';
 
 // חושף את הסשן (אם יש) לכל הדפים — כדי שההאדר יציג מצב מחובר/כפתור התחברות.
@@ -7,6 +8,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	const session = await locals.auth();
 	if (!session?.user) return { user: null };
 	const superAdmin = isSuperAdmin(session.user.email);
+	const canManage = superAdmin || (await isNetworkAdmin(session.user.email));
 	return {
 		user: {
 			id: session.user.id,
@@ -16,7 +18,9 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			image: session.user.image ?? '',
 			isSuperAdmin: superAdmin,
 			// כפתור "ניהול הרשת" בהדר — לסופר-אדמין ולאדמיני אתרי הרשת בלבד
-			canManage: superAdmin || (await isNetworkAdmin(session.user.email))
+			canManage,
+			// "ניהול תקציב" בתפריט ההדר — לאדמינים וגם לרכזי השכונות
+			canBudget: canManage || (await isNeighborhoodCoordinator(session.user.email))
 		}
 	};
 };
