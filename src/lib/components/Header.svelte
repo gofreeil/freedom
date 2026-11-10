@@ -121,6 +121,7 @@
             <a role="menuitem" href="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🛡️</span> ניהול ומשימות</a>
         {/if}
         <a role="menuitem" href="/club" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> מועדון החירות</a>
+        <a role="menuitem" href="/club/charter" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📜</span> אמנת החברים</a>
         <a role="menuitem" href="/budget" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">💰</span> ניהול תקציב</a>
     </div>
 {/snippet}
