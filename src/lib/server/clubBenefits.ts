@@ -18,7 +18,7 @@ export interface ClubBenefit {
 export interface ClubSection {
 	icon: string;
 	title: string;
-	/** תווית קצרה לצד כותרת הקטגוריה (למשל חיסכון חודשי משוער) */
+	/** תווית קצרה בתחתית רשימת הקטגוריה (למשל חיסכון חודשי משוער) */
 	saving?: string;
 	benefits: ClubBenefit[];
 }
@@ -26,7 +26,7 @@ export interface ClubSection {
 export const CLUB_PRICE = '59 ש"ח לחודש';
 
 export const CLUB_INTRO =
-	'חברות במועדון מרכזת במקום אחד חיסכון בהוצאות החודשיות, הגנה בשעת צרה, גישה לצדק מהיר וכלים דיגיטליים עצמאיים.';
+	'חברות במועדון מרכזת במקום אחד חיסכון בהוצאות החודשיות, הגנה בשעת תאונה, גישה לצדק מהיר וכלים דיגיטליים עצמאיים.';
 
 export const CLUB_MOTTO = 'יוצאים לחירות: חברה אחראית, סולידרית וחופשית';
 
@@ -73,7 +73,8 @@ export const CLUB_SECTIONS: ClubSection[] = [
 	},
 	{
 		icon: '🆘',
-		title: 'הגנה בשעת צרה',
+		title: 'הגנה בשעת תאונה',
+		saving: 'שווי ההטבה: כ-50 ש"ח בחודש',
 		benefits: [
 			{
 				icon: '🚗',
