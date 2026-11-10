@@ -10,7 +10,7 @@
 	let { data } = $props();
 
 	const BUDGET = [
-		{ id: 'infra', label: 'שרתים ותשתיות', amount: 30_000, color: '#6366f1' },
+		{ id: 'infra', label: 'עורכי דין', amount: 30_000, color: '#6366f1' },
 		{ id: 'dev', label: 'פיתוח האתרים', amount: 25_000, color: '#a855f7' },
 		{ id: 'marketing', label: 'שיווק ופרסום', amount: 20_000, color: '#f5d57a' },
 		{ id: 'events', label: 'אירועים וקהילה', amount: 15_000, color: '#34d399' },
