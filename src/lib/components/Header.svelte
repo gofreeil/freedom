@@ -16,7 +16,6 @@
         { name: "русский", code: "ru", flag: "ru" },
     ];
 
-    let showLangDropdown = $state(false);
     let showNavMenu = $state(false);
 
     // חיפוש
@@ -53,58 +52,13 @@
 
     function handleClickOutside(event: MouseEvent) {
         const target = event.target as HTMLElement;
-        if (!target.closest(".lang-dropdown-container")) {
-            showLangDropdown = false;
-        }
         if (!target.closest(".nav-menu-container")) showNavMenu = false;
     }
 
-    function handleLangKeydown(event: KeyboardEvent) {
-        if (event.key === 'Escape') {
-            showLangDropdown = false;
-            return;
-        }
-
-        // פתיחת הרשימה עם חץ למטה כשהיא סגורה
-        if (event.key === 'ArrowDown' && !showLangDropdown) {
-            event.preventDefault();
-            showLangDropdown = true;
-            setTimeout(() => {
-                const container = (event.target as HTMLElement).closest('.lang-dropdown-container');
-                const firstOption = container?.querySelector('[role="option"]') as HTMLElement;
-                firstOption?.focus();
-            }, 0);
-            return;
-        }
-
-        if (!showLangDropdown) return;
-
-        const target = event.target as HTMLElement;
-        const container = target.closest('.lang-dropdown-container');
-        if (!container) return;
-
-        const options = Array.from(container.querySelectorAll('[role="option"]')) as HTMLElement[];
-        if (options.length === 0) return;
-
-        const currentIndex = options.indexOf(target);
-
-        if (event.key === 'ArrowDown') {
-            event.preventDefault();
-            options[currentIndex < options.length - 1 ? currentIndex + 1 : 0].focus();
-        } else if (event.key === 'ArrowUp') {
-            event.preventDefault();
-            options[currentIndex > 0 ? currentIndex - 1 : options.length - 1].focus();
-        } else if (event.key === 'Home') {
-            event.preventDefault();
-            options[0].focus();
-        } else if (event.key === 'End') {
-            event.preventDefault();
-            options[options.length - 1].focus();
-        }
-    }
 	// tFn: תרגום reactive - $t אסור ב-Svelte 5
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
+	const isActiveLang = (code: string) => _loc === code || !!_loc?.startsWith(code);
 	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
 	// התפריט נסגר בכל ניווט
@@ -120,9 +74,27 @@
             <a role="menuitem" href="/admin/tv" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📺</span> חירות TV</a>
             <a role="menuitem" href="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🛡️</span> ניהול ומשימות</a>
         {/if}
+        {#if user}
         <a role="menuitem" href="/club" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> מועדון החירות</a>
         <a role="menuitem" href="/club/charter" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📜</span> אמנת החברים</a>
         <a role="menuitem" href="/budget" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">💰</span> ניהול תקציב</a>
+        {/if}
+        <div class="my-1 border-t border-white/10"></div>
+        <div class="flex items-center gap-1 px-2 py-1.5" role="group" aria-label={tFn("choose_language")}>
+            {#each languages as langOption}
+                <button
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={isActiveLang(langOption.code)}
+                    title={langOption.name}
+                    class="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-1.5 py-1.5 text-xs font-bold text-white hover:bg-white/10 {isActiveLang(langOption.code) ? 'bg-white/15 ring-1 ring-white/30' : ''}"
+                    onclick={() => changeLang(langOption)}
+                >
+                    <span class="fi fi-{langOption.flag}" style="font-size: 1.1rem;" aria-hidden="true"></span>
+                    <span>{langOption.name}</span>
+                </button>
+            {/each}
+        </div>
     </div>
 {/snippet}
 
@@ -171,69 +143,20 @@
                     </a>
 
                     <div class="flex items-center gap-1.5">
-                        <!-- מובייל: למשתמש מחובר — כפתור תפריט (אודות + הדפים הנוספים); לאנונימי — כפתור אודות -->
-                        {#if user}
-                            <div class="nav-menu-container relative">
-                                <button
-                                    type="button"
-                                    class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
-                                    onclick={() => (showNavMenu = !showNavMenu)}
-                                    onkeydown={(e) => e.key === 'Escape' && (showNavMenu = false)}
-                                    aria-label="תפריט"
-                                    aria-haspopup="menu"
-                                    aria-expanded={showNavMenu}
-                                >
-                                    <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-width="2.2" d="M4 7h16M4 12h16M4 17h16" /></svg>
-                                </button>
-                                {#if showNavMenu}
-                                    {@render navMenu()}
-                                {/if}
-                            </div>
-                        {:else}
-                            <a
-                                href="/about"
-                                class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
-                                aria-label={tFn("about")}
-                            >
-                                <span class="text-xl font-bold text-white leading-none">ℹ</span>
-                            </a>
-                        {/if}
-
-                        <!-- כפתור דגל שפה - מובייל -->
-                        <div class="relative lang-dropdown-container">
+                        <div class="nav-menu-container relative">
                             <button
-                                onclick={() => (showLangDropdown = !showLangDropdown)}
-                                onkeydown={handleLangKeydown}
-                                class="flex items-center justify-center w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
-                                aria-label={tFn("choose_language")}
-                                aria-haspopup="listbox"
-                                aria-expanded={showLangDropdown}
+                                type="button"
+                                class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
+                                onclick={() => (showNavMenu = !showNavMenu)}
+                                onkeydown={(e) => e.key === 'Escape' && (showNavMenu = false)}
+                                aria-label="תפריט"
+                                aria-haspopup="menu"
+                                aria-expanded={showNavMenu}
                             >
-                                <span
-                                    class="fi fi-{languages.find((l) => l.code === $locale || $locale?.startsWith(l.code))?.flag || 'il'}"
-                                    style="font-size: 1.2rem;"
-                                    aria-hidden="true"
-                                ></span>
+                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-width="2.2" d="M4 7h16M4 12h16M4 17h16" /></svg>
                             </button>
-                            {#if showLangDropdown}
-                                <div
-                                    class="absolute left-0 z-[160] mt-2 w-36 rounded-lg bg-[#0f172a] border border-white/10 shadow-xl"
-                                    role="listbox"
-                                    aria-label={tFn("choose_language")}
-                                >
-                                    {#each languages as langOption}
-                                        <button
-                                            class="flex w-full items-center gap-3 px-3 py-2 text-right text-white hover:bg-white/10 transition-colors"
-                                            onclick={() => { changeLang(langOption); showLangDropdown = false; }}
-                                            onkeydown={handleLangKeydown}
-                                            role="option"
-                                            aria-selected={$locale === langOption.code || $locale?.startsWith(langOption.code)}
-                                        >
-                                            <span class="fi fi-{langOption.flag}" style="font-size: 1.2rem;" aria-hidden="true"></span>
-                                            <span class="text-sm">{langOption.name}</span>
-                                        </button>
-                                    {/each}
-                                </div>
+                            {#if showNavMenu}
+                                {@render navMenu()}
                             {/if}
                         </div>
                     </div>
@@ -288,93 +211,21 @@
                 <!-- הסדר מימין לשמאל: תפריט (אודות · Freedom TV · ניהול הרשת) · שפה · משתמש -->
                 <!-- שני הקישורים האחרונים — לסופר-אדמין ולאדמיני אתרי הרשת בלבד; לשאר נשאר כפתור "אודות" רגיל -->
                 <!-- "ניהול תקציב" — לכל משתמש מחובר (צפייה); ההצבעה נקבעת בדף עצמו -->
-                {#if user}
-                    <div class="nav-menu-container relative">
-                        <button
-                            type="button"
-                            class="relative flex items-center gap-2 rounded-lg px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105"
-                            style="background:linear-gradient(135deg,#4f46e5,#7c3aed); box-shadow:0 4px 15px rgba(124,58,237,0.4);"
-                            onclick={() => (showNavMenu = !showNavMenu)}
-                            onkeydown={(e) => e.key === 'Escape' && (showNavMenu = false)}
-                            aria-haspopup="menu"
-                            aria-expanded={showNavMenu}
-                        >
-                            {tFn("menu")}
-                            <svg class="h-4 w-4 transition-transform {showNavMenu ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                        </button>
-                        {#if showNavMenu}
-                            {@render navMenu()}
-                        {/if}
-                    </div>
-                {:else}
-                    <a
-                        href="/about"
-                        class="relative flex items-center rounded-lg px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105"
-                        style="background:linear-gradient(135deg,#4f46e5,#7c3aed); box-shadow:0 4px 15px rgba(124,58,237,0.4);"
-                    >
-                        {tFn("about")}
-                    </a>
-                {/if}
-                <!-- Language Dropdown -->
-                <div class="lang-dropdown-container relative">
+                <div class="nav-menu-container relative">
                     <button
-                        class="flex items-center rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm text-white transition-colors"
-                        onclick={() => (showLangDropdown = !showLangDropdown)}
-                        onkeydown={handleLangKeydown}
-                        aria-label={tFn("choose_language")}
-                        aria-haspopup="listbox"
-                        aria-expanded={showLangDropdown}
+                        type="button"
+                        class="relative flex items-center gap-2 rounded-lg px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105"
+                        style="background:linear-gradient(135deg,#4f46e5,#7c3aed); box-shadow:0 4px 15px rgba(124,58,237,0.4);"
+                        onclick={() => (showNavMenu = !showNavMenu)}
+                        onkeydown={(e) => e.key === 'Escape' && (showNavMenu = false)}
+                        aria-haspopup="menu"
+                        aria-expanded={showNavMenu}
                     >
-                        <span
-                            class="fi fi-{languages.find(
-                                (l) => l.code === $locale || $locale?.startsWith(l.code),
-                            )?.flag || 'il'} ml-2"
-                            style="font-size: 1.5rem; margin-left: 0.75rem;"
-                            aria-hidden="true"
-                        ></span>
-                        {languages.find((l) => l.code === $locale || $locale?.startsWith(l.code))?.name ||
-                            'עברית'}
-                        <svg
-                            class="mr-1 h-4 w-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M19 9l-7 7-7-7"
-                            />
-                        </svg>
+                        {tFn("menu")}
+                        <svg class="h-4 w-4 transition-transform {showNavMenu ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
-                    {#if showLangDropdown}
-                        <div
-                            class="absolute right-0 z-[160] mt-2 w-44 rounded-lg bg-[#0f172a] border border-white/10 shadow-xl"
-                            role="listbox"
-                            aria-label={tFn("choose_language")}
-                        >
-                            {#each languages as langOption}
-                                <button
-                                    class="flex w-full items-center gap-4 px-4 py-2 text-right text-white hover:bg-white/10 transition-colors"
-                                    onclick={() => {
-                                        changeLang(langOption);
-                                        showLangDropdown = false;
-                                    }}
-                                    onkeydown={handleLangKeydown}
-                                    role="option"
-                                    aria-selected={$locale === langOption.code || $locale?.startsWith(langOption.code)}
-                                >
-                                    <span class="text-sm">{langOption.name}</span>
-                                    <span
-                                        class="fi fi-{langOption.flag}"
-                                        style="font-size: 1.5rem;"
-                                        aria-hidden="true"
-                                    ></span>
-                                </button>
-                            {/each}
-                        </div>
+                    {#if showNavMenu}
+                        {@render navMenu()}
                     {/if}
                 </div>
                 <!-- התחברות / תמונת המשתמש — עיגול כמו בשאר אתרי יוצאים לחירות -->
