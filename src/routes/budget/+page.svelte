@@ -1,29 +1,72 @@
 <script lang="ts">
-	// /budget — "ניהול תקציב": צפייה לכל משתמש מחובר; הצבעה לאדמינים ולרכזי שכונות (data.canVote).
-	// מוקאפ: נתוני העוגה קבועים כאן, וההצבעה נשמרת בדפדפן בלבד — עד שיחובר מקור נתונים.
+	// /budget — "ניהול תקציב": צפייה לכל משתמש מחובר; הצבעה על חלוקת התקציב לאדמינים
+	// ולרכזי שכונות (data.canVote). מוקאפ: הנתונים קבועים כאן, וההצבעה נשמרת בדפדפן
+	// בלבד — עד שיחובר מקור נתונים.
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
+	import BudgetAllocation from '$lib/components/budget/BudgetAllocation.svelte';
+	import { nis, parseAllocation, type Allocation, type Ballot, type BudgetRound } from '$lib/budgetVote';
 
 	let { data } = $props();
 
 	const BUDGET = [
-		{ label: 'שרתים ותשתיות', amount: 30_000, color: '#6366f1' },
-		{ label: 'פיתוח האתרים', amount: 25_000, color: '#a855f7' },
-		{ label: 'שיווק ופרסום', amount: 20_000, color: '#f5d57a' },
-		{ label: 'אירועים וקהילה', amount: 15_000, color: '#34d399' },
-		{ label: 'רזרבה', amount: 10_000, color: '#64748b' }
+		{ id: 'infra', label: 'שרתים ותשתיות', amount: 30_000, color: '#6366f1' },
+		{ id: 'dev', label: 'פיתוח האתרים', amount: 25_000, color: '#a855f7' },
+		{ id: 'marketing', label: 'שיווק ופרסום', amount: 20_000, color: '#f5d57a' },
+		{ id: 'events', label: 'אירועים וקהילה', amount: 15_000, color: '#34d399' },
+		{ id: 'reserve', label: 'רזרבה', amount: 10_000, color: '#64748b' }
 	];
 	const total = BUDGET.reduce((s, b) => s + b.amount, 0);
+	const IDS = BUDGET.map((b) => b.id);
 
-	// פרוסות הדונאט: היקף המעגל מנורמל ל-100, כך שאורך הקשת = האחוז
-	const slices = (() => {
-		let offset = 0;
-		return BUDGET.map((b) => {
-			const pct = (b.amount / total) * 100;
-			const slice = { ...b, pct, offset };
-			offset += pct;
-			return slice;
-		});
-	})();
+	// סבב ההצבעה על חלוקת התקציב (מוקאף): נסגר תמיד בעוד שבועיים, כדי שההדגמה תישאר
+	// פתוחה. הכתובת /budget?closed מציגה את המצב שאחרי הסגירה.
+	const DAY = 86_400_000;
+	const round = $derived<BudgetRound>({
+		id: 'demo',
+		total,
+		categories: BUDGET,
+		eligible: 12,
+		closesAt: new Date(Date.now() + (page.url.searchParams.has('closed') ? -DAY : 14 * DAY)).toISOString()
+	});
+
+	/** הצבעות לדוגמה של שאר המצביעים — אחוז לכל סעיף, לפי סדר BUDGET */
+	const OTHER_VOTES: Allocation[] = [
+		[30, 25, 20, 15, 10],
+		[25, 30, 20, 15, 10],
+		[20, 25, 30, 20, 5],
+		[35, 20, 15, 15, 15],
+		[25, 25, 25, 20, 5],
+		[30, 30, 15, 10, 15],
+		[20, 20, 35, 20, 5]
+	].map((row) => Object.fromEntries(IDS.map((id, i) => [id, row[i]])));
+
+	// ההצבעה שלי — נשמרת בדפדפן בלבד. כשההצבעה תהפוך לאמיתית, שלוש הפעולות האלה
+	// (טעינה, שמירה, ביטול) הן מה שמתחלף בקריאות לשרת; הרכיב עצמו לא משתנה.
+	const VOTE_KEY = 'budget_alloc_vote_mock';
+	let mine = $state<Ballot | null>(null);
+
+	onMount(() => {
+		try {
+			const saved = JSON.parse(localStorage.getItem(VOTE_KEY) ?? 'null');
+			const alloc = parseAllocation(saved?.alloc, IDS);
+			if (alloc) mine = { alloc, at: typeof saved.at === 'string' ? saved.at : '' };
+		} catch {}
+	});
+
+	async function save(alloc: Allocation) {
+		mine = { alloc, at: new Date().toISOString() };
+		try {
+			localStorage.setItem(VOTE_KEY, JSON.stringify(mine));
+		} catch {}
+	}
+
+	async function withdraw() {
+		mine = null;
+		try {
+			localStorage.removeItem(VOTE_KEY);
+		} catch {}
+	}
 
 	// כסף נכנס — שלושה מקורות (מוקאף). הסכום זהה לסך התקציב שבעוגה.
 	const INCOME = [
@@ -53,31 +96,6 @@
 	/** רצועה מהמקור (ימין, x=100) אל עמודת הסך (שמאל, x=0) */
 	const band = (f: { sy: number; ty: number; h: number }) =>
 		`M100,${f.sy} C50,${f.sy} 50,${f.ty} 0,${f.ty} L0,${f.ty + f.h} C50,${f.ty + f.h} 50,${f.sy + f.h} 100,${f.sy + f.h} Z`;
-
-	const nis = (n: number) => `₪${n.toLocaleString('he-IL')}`;
-
-	const VOTE_KEY = 'budget_vote_mock';
-	const VOTES = [
-		{ id: 'for', label: '👍 בעד', on: 'border-emerald-400 bg-emerald-500/20 text-emerald-200' },
-		{ id: 'against', label: '👎 נגד', on: 'border-red-400 bg-red-500/20 text-red-200' },
-		{ id: 'abstain', label: '🤷 נמנע', on: 'border-slate-300 bg-slate-500/25 text-slate-100' }
-	];
-	let vote = $state('');
-	let hovered = $state(-1);
-
-	onMount(() => {
-		try {
-			vote = localStorage.getItem(VOTE_KEY) ?? '';
-		} catch {}
-	});
-
-	function cast(id: string) {
-		vote = vote === id ? '' : id;
-		try {
-			if (vote) localStorage.setItem(VOTE_KEY, vote);
-			else localStorage.removeItem(VOTE_KEY);
-		} catch {}
-	}
 </script>
 
 <svelte:head>
@@ -126,81 +144,14 @@
 		</div>
 	</section>
 
-	<div class="grid items-center gap-5 rounded-2xl border border-white/10 bg-[#141c2f] p-4 sm:grid-cols-[220px_1fr] sm:p-5">
-		<!-- עוגת התקציב -->
-		<div class="relative mx-auto w-48 sm:w-full">
-			<svg viewBox="0 0 42 42" class="-rotate-90" role="img" aria-label="עוגת התקציב לפי סעיפים">
-				{#each slices as s, i}
-					<circle
-						cx="21"
-						cy="21"
-						r="15.9155"
-						fill="none"
-						stroke={s.color}
-						stroke-width={hovered === i ? 7 : 6}
-						stroke-dasharray="{Math.max(s.pct - 0.6, 0)} {100 - Math.max(s.pct - 0.6, 0)}"
-						stroke-dashoffset={-s.offset}
-						opacity={hovered === -1 || hovered === i ? 1 : 0.45}
-						class="transition-all duration-150"
-						role="presentation"
-						onmouseenter={() => (hovered = i)}
-						onmouseleave={() => (hovered = -1)}
-					/>
-				{/each}
-			</svg>
-			<div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-				{#if hovered >= 0}
-					<span class="text-[11px] text-gray-400">{slices[hovered].label}</span>
-					<span class="text-lg font-black text-white">{Math.round(slices[hovered].pct)}%</span>
-				{:else}
-					<span class="text-[11px] text-gray-400">סך התקציב</span>
-					<span class="text-lg font-black text-white">{nis(total)}</span>
-				{/if}
-			</div>
-		</div>
-
-		<div>
-			<!-- מקרא -->
-			<ul class="divide-y divide-white/5 text-sm">
-				{#each slices as s, i}
-					<li
-						class="flex items-center gap-2.5 rounded px-1 py-1.5 {hovered === i ? 'bg-white/5' : ''}"
-						onmouseenter={() => (hovered = i)}
-						onmouseleave={() => (hovered = -1)}
-					>
-						<span class="h-3 w-3 flex-shrink-0 rounded-sm" style="background:{s.color}" aria-hidden="true"></span>
-						<span class="flex-1 font-bold text-white">{s.label}</span>
-						<span class="tabular-nums text-gray-300">{nis(s.amount)}</span>
-						<span class="w-10 text-end tabular-nums text-gray-400">{Math.round(s.pct)}%</span>
-					</li>
-				{/each}
-			</ul>
-
-			<!-- הצבעה -->
-			{#if !data.canVote}
-				<p class="mt-3 border-t border-white/10 pt-3 text-xs text-gray-400">
-					ההצבעה על התקציב פתוחה לאדמינים ולרכזי שכונות בלבד.
-				</p>
-			{:else}
-			<div class="mt-3 flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
-				<span class="text-sm font-bold text-white">ההצבעה שלך:</span>
-				{#each VOTES as v}
-					<button
-						type="button"
-						onclick={() => cast(v.id)}
-						aria-pressed={vote === v.id}
-						class="rounded-lg border px-3 py-1.5 text-[13px] font-bold transition-colors {vote === v.id
-							? v.on
-							: 'border-white/15 text-gray-200 hover:bg-white/5'}"
-					>
-						{v.label}
-					</button>
-				{/each}
-				<span class="basis-full text-xs text-gray-400">
-					{vote ? '✓ ההצבעה נרשמה. ' : ''}בשלב ההדגמה ההצבעה נשמרת במכשיר זה בלבד.
-				</span>
-			</div>
-			{/if}
-		</div>
-	</div>
+	<!-- חלוקת התקציב: עוגה + סעיפים, ולמורשים — הצבעה על החלוקה -->
+	<BudgetAllocation
+		{round}
+		others={OTHER_VOTES}
+		{mine}
+		canVote={data.canVote}
+		{save}
+		{withdraw}
+		note="בהדגמה ההצבעה נשמרת במכשיר זה בלבד"
+	/>
 </div>
