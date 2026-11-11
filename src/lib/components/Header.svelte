@@ -108,6 +108,7 @@
             <a role="menuitem" href="/login" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> התחברות</a>
         {/if}
         <a role="menuitem" href="/about" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">ℹ️</span> {tFn("about")}</a>
+        <a role="menuitem" href="/successes" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">🌟</span> ההצלחות שלנו</a>
         {#if user}
             <a role="menuitem" href="/club" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> מועדון החברים</a>
             <a role="menuitem" href="/club/charter" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">📜</span> אמנת יוצאים לחירות</a>
@@ -154,6 +155,14 @@
             </a>
 
             {#if user.canManage}
+                <a
+                    role="menuitem"
+                    href="/profile?tab=achievements"
+                    onclick={() => (showProfileMenu = false)}
+                    class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
+                >
+                    <span aria-hidden="true">🏆</span> ההישגים שלי
+                </a>
                 <a
                     role="menuitem"
                     href="/admin"
