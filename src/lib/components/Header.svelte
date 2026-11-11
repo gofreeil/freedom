@@ -142,27 +142,15 @@
                 role="menuitem"
                 href="/profile"
                 onclick={() => (showProfileMenu = false)}
-                class="group flex items-center justify-between border-b border-white/10 bg-white/[0.04] px-4 py-3 text-right transition-colors hover:bg-white/[0.08]"
+                class="group block border-b border-white/10 bg-white/[0.03] px-4 py-2.5 text-right transition-colors hover:bg-white/[0.08]"
+                title="מעבר לאזור האישי"
             >
-                <div class="min-w-0 flex-1">
-                    <p class="truncate text-sm font-bold text-white transition-colors group-hover:text-purple-200">
-                        {user.name || 'משתמש מחובר'}
-                    </p>
-                    <span class="mt-1 inline-flex items-center gap-1 rounded-md bg-purple-500/15 px-2 py-0.5 text-xs font-semibold text-purple-300 ring-1 ring-inset ring-purple-500/30 transition-colors group-hover:bg-purple-500/25 group-hover:text-purple-200">
-                        <span aria-hidden="true" class="text-[11px]">👤</span>
-                        אזור אישי
-                    </span>
-                </div>
-                <svg
-                    class="h-4 w-4 flex-shrink-0 text-gray-400 transition-all group-hover:-translate-x-1 group-hover:text-purple-300"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    aria-hidden="true"
-                >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
+                <p class="truncate text-sm font-bold text-white transition-colors group-hover:text-purple-200">
+                    {user.name || 'משתמש מחובר'}
+                </p>
+                <p class="mt-0.5 truncate text-xs text-gray-400 transition-colors group-hover:text-gray-300">
+                    אזור אישי
+                </p>
             </a>
 
             {#if user.canManage}
