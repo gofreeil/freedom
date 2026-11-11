@@ -1,5 +1,31 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import ClubView from '$lib/components/club/ClubView.svelte';
+	import BudgetView from '$lib/components/budget/BudgetView.svelte';
+	import TeamWorkspace from '$lib/components/admin/team/TeamWorkspace.svelte';
+	import NetworkAdmins from '$lib/components/NetworkAdmins.svelte';
+	import NetworkAdminsEditor from '$lib/components/admin/NetworkAdminsEditor.svelte';
+	import TvView from '$lib/components/admin/tv/TvView.svelte';
+
 	let { data } = $props();
+
+	type TabKey = 'club' | 'budget' | 'admin' | 'tv';
+	let activeTab = $state<TabKey>('club');
+
+	onMount(() => {
+		const params = new URLSearchParams(window.location.search);
+		const t = params.get('tab') as TabKey | null;
+		if (t && (t === 'club' || t === 'budget' || ((t === 'admin' || t === 'tv') && data.user.canManage))) {
+			activeTab = t;
+		}
+	});
+
+	function switchTab(t: TabKey) {
+		activeTab = t;
+		const url = new URL(window.location.href);
+		url.searchParams.set('tab', t);
+		window.history.replaceState({}, '', url);
+	}
 
 	async function handleLogout() {
 		try { await fetch('/api/logout', { method: 'POST' }); } catch {}
@@ -16,19 +42,19 @@
 	<title>האזור האישי | יוצאים לחירות</title>
 </svelte:head>
 
-<div class="mx-auto max-w-2xl px-4 py-6" dir="rtl">
-	<div class="rounded-2xl border border-white/10 bg-[#0f1626] p-5 shadow-xl">
+<div class="mx-auto max-w-5xl px-3 sm:px-4 py-4 sm:py-6" dir="rtl">
+	<div class="overflow-hidden rounded-2xl border border-white/10 bg-[#0f1626] shadow-xl">
 		<!-- פרטי משתמש קומפקטיים -->
-		<div class="flex items-center gap-3.5 border-b border-white/10 pb-4">
+		<div class="flex items-center gap-3.5 border-b border-white/10 bg-white/[0.02] p-4 sm:p-5">
 			{#if data.user.image}
-				<img src={data.user.image} alt="" class="h-14 w-14 rounded-full object-cover border-2 border-purple-500/40 shadow-md" />
+				<img src={data.user.image} alt="" class="h-12 w-12 sm:h-14 sm:w-14 rounded-full object-cover border-2 border-purple-500/40 shadow-md" />
 			{:else}
-				<div class="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-xl font-bold text-white shadow-md">
+				<div class="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-lg sm:text-xl font-bold text-white shadow-md">
 					{(data.user.name || data.user.email || 'U').charAt(0).toUpperCase()}
 				</div>
 			{/if}
 			<div class="min-w-0 flex-1">
-				<h1 class="text-lg font-black text-white truncate">{data.user.name || 'האזור האישי'}</h1>
+				<h1 class="text-base sm:text-lg font-black text-white truncate">{data.user.name || 'האזור האישי'}</h1>
 				{#if data.user.email}
 					<p class="text-xs text-gray-400 truncate">{data.user.email}</p>
 				{/if}
@@ -42,63 +68,66 @@
 			</button>
 		</div>
 
-		<!-- כרטיסי ניהול ופעולות בתוך הפרופיל -->
-		<div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+		<!-- שורת לשוניות (כרטיסיות) למעבר תחת אותו דף -->
+		<div class="flex flex-wrap items-center gap-1.5 sm:gap-2 border-b border-white/10 bg-[#141c2f]/70 px-3 py-2 sm:px-5">
+			<button
+				type="button"
+				onclick={() => switchTab('club')}
+				class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'club' ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
+			>
+				<span aria-hidden="true">🕊️</span>
+				<span>מועדון החירות</span>
+			</button>
+
+			<button
+				type="button"
+				onclick={() => switchTab('budget')}
+				class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'budget' ? 'bg-indigo-500/25 text-indigo-200 border border-indigo-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
+			>
+				<span aria-hidden="true">💰</span>
+				<span>ניהול תקציב</span>
+			</button>
+
 			{#if data.user.canManage}
-				<a
-					href="/admin"
-					class="flex items-center gap-3 rounded-xl border border-purple-500/30 bg-purple-950/25 p-3 text-white transition hover:bg-purple-900/35 hover:border-purple-500/50"
+				<button
+					type="button"
+					onclick={() => switchTab('admin')}
+					class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'admin' ? 'bg-purple-500/25 text-purple-200 border border-purple-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
 				>
-					<span class="text-xl" aria-hidden="true">🛡️</span>
-					<div class="min-w-0 flex-1">
-						<span class="block text-sm font-bold">ניהול ומשימות</span>
-						<span class="block text-[11px] text-gray-400">מרכז העבודה של הצוות</span>
-					</div>
-				</a>
-				<a
-					href="/admin/tv"
-					class="flex items-center gap-3 rounded-xl border border-blue-500/30 bg-blue-950/25 p-3 text-white transition hover:bg-blue-900/35 hover:border-blue-500/50"
+					<span aria-hidden="true">🛡️</span>
+					<span>ניהול ומשימות</span>
+				</button>
+
+				<button
+					type="button"
+					onclick={() => switchTab('tv')}
+					class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'tv' ? 'bg-blue-500/25 text-blue-200 border border-blue-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
 				>
-					<span class="text-xl" aria-hidden="true">📺</span>
-					<div class="min-w-0 flex-1">
-						<span class="block text-sm font-bold">חירות TV</span>
-						<span class="block text-[11px] text-gray-400">ניהול שידורים וראיונות</span>
-					</div>
-				</a>
+					<span aria-hidden="true">📺</span>
+					<span>חירות TV</span>
+				</button>
 			{/if}
+		</div>
 
-			<a
-				href="/budget"
-				class="flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-950/20 p-3 text-white transition hover:bg-amber-900/30 hover:border-amber-500/50"
-			>
-				<span class="text-xl" aria-hidden="true">💰</span>
-				<div class="min-w-0 flex-1">
-					<span class="block text-sm font-bold">ניהול תקציב</span>
-					<span class="block text-[11px] text-gray-400">מעקב והצבעה על תקציב</span>
+		<!-- תוכן הכרטיסייה הפתוחה -->
+		<div class="p-2 sm:p-4">
+			{#if activeTab === 'club'}
+				<ClubView club={data.club} />
+			{:else if activeTab === 'budget'}
+				<BudgetView canVote={data.canVote} />
+			{:else if activeTab === 'admin' && data.user.canManage}
+				<div class="py-2">
+					<TeamWorkspace>
+						{#if data.panel}
+							<NetworkAdminsEditor panelData={data.panel} />
+						{:else}
+							<NetworkAdmins />
+						{/if}
+					</TeamWorkspace>
 				</div>
-			</a>
-
-			<a
-				href="/club"
-				class="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3 text-white transition hover:bg-white/10"
-			>
-				<span class="text-xl" aria-hidden="true">🕊️</span>
-				<div class="min-w-0 flex-1">
-					<span class="block text-sm font-bold">מועדון החירות</span>
-					<span class="block text-[11px] text-gray-400">פעילויות וקהילה</span>
-				</div>
-			</a>
-
-			<a
-				href="/club/charter"
-				class="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3 text-white transition hover:bg-white/10"
-			>
-				<span class="text-xl" aria-hidden="true">📜</span>
-				<div class="min-w-0 flex-1">
-					<span class="block text-sm font-bold">אמנת החברים</span>
-					<span class="block text-[11px] text-gray-400">עקרונות הרשת</span>
-				</div>
-			</a>
+			{:else if activeTab === 'tv' && data.user.canManage}
+				<TvView guest={data.tvGuest} />
+			{/if}
 		</div>
 	</div>
 </div>
