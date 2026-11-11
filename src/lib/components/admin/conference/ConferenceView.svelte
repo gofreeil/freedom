@@ -28,18 +28,6 @@
 		protocolId?: string;
 	}
 
-	interface Participant {
-		id: string;
-		name: string;
-		role: string;
-		avatar: string;
-		isHost?: boolean;
-		isSpeaking?: boolean;
-		isMuted?: boolean;
-		isVideoOff?: boolean;
-		bgGradient: string;
-	}
-
 	const ROOM_STORAGE_KEY = 'freedom_conference_room_url';
 	const UPCOMING_STORAGE_KEY = 'freedom_upcoming_conference';
 	const PAST_STORAGE_KEY = 'freedom_past_conferences';
@@ -54,64 +42,10 @@
 	let myMicOn = $state(true);
 	let myCamOn = $state(true);
 	let isScreenSharing = $state(false);
-	let viewMode = $state<'grid' | 'speaker'>('grid');
 	let isFullscreen = $state(false);
 	let videoContainerEl = $state<HTMLDivElement | null>(null);
 
-	const PARTICIPANTS: Participant[] = [
-		{
-			id: 'p1',
-			name: user?.name || 'יהב אנטר',
-			role: 'מארח הוועידה',
-			avatar: '👑',
-			isHost: true,
-			isSpeaking: true,
-			isMuted: false,
-			bgGradient: 'from-blue-900/60 to-purple-950/80'
-		},
-		{
-			id: 'p2',
-			name: 'רכז מחוז ירושלים',
-			role: 'רכז שטח',
-			avatar: '🦁',
-			isMuted: true,
-			bgGradient: 'from-amber-950/60 to-slate-900/90'
-		},
-		{
-			id: 'p3',
-			name: 'חירות TV — חדר שידור',
-			role: 'מדיה והפקה',
-			avatar: '📺',
-			isSpeaking: false,
-			isMuted: false,
-			bgGradient: 'from-red-950/60 to-zinc-900/90'
-		},
-		{
-			id: 'p4',
-			name: 'רכזת תל אביב והמרכז',
-			role: 'רכזת קהילות',
-			avatar: '🏙️',
-			isMuted: true,
-			bgGradient: 'from-emerald-950/60 to-teal-950/90'
-		},
-		{
-			id: 'p5',
-			name: 'רכז מחוז צפון',
-			role: 'רכז שטח',
-			avatar: '🌲',
-			isMuted: true,
-			bgGradient: 'from-cyan-950/60 to-sky-950/90'
-		},
-		{
-			id: 'p6',
-			name: 'צוות טכנולוגיה ורשת',
-			role: 'פיתוח ומערכות',
-			avatar: '💻',
-			isMuted: true,
-			isVideoOff: true,
-			bgGradient: 'from-indigo-950/60 to-blue-950/90'
-		}
-	];
+	const hostName = $derived(user?.name || 'יהב אנטר');
 
 	let upcoming = $state<UpcomingConference>({
 		title: 'ועידת הנהלה ורכזי רשת — סנכרון חודשי',
@@ -301,126 +235,74 @@
 			<div class="flex items-center gap-1 sm:gap-2">
 				<button
 					type="button"
-					onclick={() => (viewMode = viewMode === 'grid' ? 'speaker' : 'grid')}
-					class="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-bold text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
-					title="החלפת פריסת תצוגה"
-				>
-					{viewMode === 'grid' ? '🔲 תצוגת דובר' : '▦ תצוגת רשת'}
-				</button>
-				<button
-					type="button"
 					onclick={toggleFullscreen}
-					class="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-bold text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
+					class="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
 					title="מסך מלא"
 				>
-					{isFullscreen ? '⛶ צא' : '⛶ מלא'}
+					{isFullscreen ? '⛶ צא ממסך מלא' : '⛶ מסך מלא'}
 				</button>
 			</div>
 		</div>
 
-		<!-- אזור המשתתפים בוידאו (רשת משבצות וידאו) -->
-		<div class="relative z-10 flex-1 p-2 sm:p-3">
-			{#if viewMode === 'grid'}
-				<div class="grid h-full w-full grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
-					{#each PARTICIPANTS as p, idx}
-						<div
-							class="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border bg-gradient-to-br {p.bgGradient} p-3 shadow-md transition-all {p.isSpeaking
-								? 'border-emerald-400/80 ring-2 ring-emerald-400/30'
-								: 'border-white/10 hover:border-white/20'}"
-							style="min-height: 155px;"
-						>
-							<!-- אינדיקטור דובר פעיל -->
-							{#if p.isSpeaking}
-								<div class="absolute top-2 start-2 flex items-center gap-1 rounded-md bg-emerald-950/80 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300 ring-1 ring-emerald-500/40">
-									<span class="inline-flex gap-0.5 items-end h-2.5">
-										<span class="w-0.5 bg-emerald-400 h-2 animate-pulse"></span>
-										<span class="w-0.5 bg-emerald-400 h-3 animate-pulse"></span>
-										<span class="w-0.5 bg-emerald-400 h-1.5 animate-pulse"></span>
-									</span>
-									<span>מדבר/ת</span>
-								</div>
-							{/if}
-
-							<!-- סימון מארח -->
-							{#if p.isHost}
-								<div class="absolute top-2 end-2 rounded bg-purple-500/20 px-1.5 py-0.5 text-[10px] font-bold text-purple-200 border border-purple-400/30">
-									מארח
-								</div>
-							{/if}
-
-							<!-- אוואטר מרכזי -->
-							<div class="relative mb-2 flex items-center justify-center">
-								<div class="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-white/10 text-2xl sm:text-3xl shadow-inner border border-white/20">
-									{p.avatar}
-								</div>
-								{#if p.isSpeaking}
-									<span class="absolute inset-0 rounded-full border-2 border-emerald-400/60 animate-ping" style="animation-duration: 2s;"></span>
-								{/if}
-							</div>
-
-							<!-- שם ופרטי משתתף תחתונים -->
-							<div class="absolute bottom-2 inset-x-2 flex items-center justify-between rounded-lg bg-black/60 px-2 py-1 text-[11px] backdrop-blur-sm">
-								<div class="flex items-center gap-1.5 truncate">
-									<span class="font-bold text-white truncate">{p.name}</span>
-									<span class="text-[10px] text-gray-400 hidden sm:inline">({p.role})</span>
-								</div>
-
-								<div class="flex items-center gap-1 shrink-0">
-									{#if p.isMuted}
-										<span class="text-red-400" title="מושתק">🔇</span>
-									{:else}
-										<span class="text-emerald-400" title="מיקרופון פעיל">🎙️</span>
-									{/if}
-								</div>
-							</div>
-						</div>
-					{/each}
+		<!-- אזור חדר הוידאו היחיד (חדר אחד גדול) -->
+		<div class="relative z-10 flex-1 p-2 sm:p-3 flex flex-col">
+			<div
+				class="group relative flex-1 flex flex-col items-center justify-center overflow-hidden rounded-xl border border-emerald-400/80 ring-2 ring-emerald-400/25 bg-gradient-to-br from-blue-950/70 via-[#0a1020] to-purple-950/80 p-6 shadow-2xl transition-all"
+				style="min-height: 320px;"
+			>
+				<!-- תגיות עליונות בתוך החדר -->
+				<div class="absolute top-3 start-3 flex items-center gap-2">
+					<div class="flex items-center gap-1.5 rounded-lg bg-emerald-950/85 px-2.5 py-1 text-xs font-bold text-emerald-300 ring-1 ring-emerald-500/40 backdrop-blur-sm">
+						<span class="inline-flex gap-0.5 items-end h-3">
+							<span class="w-0.5 bg-emerald-400 h-2 animate-pulse"></span>
+							<span class="w-0.5 bg-emerald-400 h-3.5 animate-pulse"></span>
+							<span class="w-0.5 bg-emerald-400 h-2 animate-pulse"></span>
+						</span>
+						<span>מדבר/ת</span>
+					</div>
+					<span class="rounded-lg bg-purple-500/25 px-2 py-1 text-xs font-bold text-purple-200 border border-purple-400/30 backdrop-blur-sm">
+						מארח הוועידה
+					</span>
 				</div>
-			{:else}
-				<!-- תצוגת דובר מרכזי (Speaker View) -->
-				<div class="flex h-full flex-col gap-2">
-					<!-- חלון הדובר המרכזי -->
-					<div class="relative flex-1 flex flex-col items-center justify-center overflow-hidden rounded-xl border border-emerald-400/80 ring-2 ring-emerald-400/30 bg-gradient-to-br from-blue-950/80 via-[#0d1424] to-purple-950/80 p-6 shadow-xl" style="min-height: 250px;">
-						<div class="absolute top-3 start-3 flex items-center gap-1.5 rounded-md bg-emerald-950/80 px-2 py-1 text-xs font-bold text-emerald-300 ring-1 ring-emerald-500/40">
-							<span class="inline-flex gap-0.5 items-end h-3">
-								<span class="w-0.5 bg-emerald-400 h-2.5 animate-pulse"></span>
-								<span class="w-0.5 bg-emerald-400 h-4 animate-pulse"></span>
-								<span class="w-0.5 bg-emerald-400 h-2 animate-pulse"></span>
-							</span>
-							<span>דובר פעיל: {PARTICIPANTS[0].name}</span>
-						</div>
 
-						<div class="relative flex h-28 w-28 items-center justify-center rounded-full bg-white/10 text-5xl shadow-2xl border-2 border-emerald-400/50">
-							{PARTICIPANTS[0].avatar}
-							<span class="absolute inset-0 rounded-full border-2 border-emerald-400/60 animate-ping" style="animation-duration: 2.5s;"></span>
-						</div>
-						<p class="mt-3 text-base font-black text-white">{PARTICIPANTS[0].name}</p>
-						<p class="text-xs text-gray-300">{PARTICIPANTS[0].role}</p>
+				<div class="absolute top-3 end-3 flex items-center gap-1.5 rounded-lg bg-black/60 px-2.5 py-1 text-xs text-gray-300 backdrop-blur-sm">
+					<span>👥 12 מחוברים</span>
+				</div>
 
-						<div class="absolute bottom-3 end-3 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs text-emerald-400 font-bold">
-							🎙️ פעיל
+				<!-- אוואטר מרכזי של חדר הועידה -->
+				<div class="relative my-auto flex flex-col items-center justify-center py-4">
+					<div class="relative mb-3 flex items-center justify-center">
+						<div class="flex h-24 w-24 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500/30 via-purple-600/25 to-teal-500/25 text-5xl sm:text-6xl shadow-2xl border-2 border-emerald-400/60 ring-4 ring-emerald-400/15">
+							👑
 						</div>
+						<!-- גלי שמע קונצנטריים סביב האוואטר -->
+						<span class="absolute inset-0 rounded-full border-2 border-emerald-400/50 animate-ping" style="animation-duration: 2.2s;"></span>
+						<span class="absolute -inset-3 rounded-full border border-emerald-400/30 animate-pulse" style="animation-duration: 1.8s;"></span>
 					</div>
 
-					<!-- פס משתתפים קטן למטה -->
-					<div class="flex items-center gap-2 overflow-x-auto pb-1">
-						{#each PARTICIPANTS.slice(1) as p}
-							<div class="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 shrink-0 text-xs">
-								<span>{p.avatar}</span>
-								<span class="font-bold text-gray-200">{p.name}</span>
-								<span>{p.isMuted ? '🔇' : '🎙️'}</span>
-							</div>
-						{/each}
+					<h3 class="text-lg sm:text-xl font-black text-white">{hostName}</h3>
+					<p class="text-xs sm:text-sm text-gray-300 mt-0.5">חדר ועידה ראשי • {upcoming.title}</p>
+				</div>
+
+				<!-- שורת סטטוס תחתונה בתוך החדר -->
+				<div class="absolute bottom-3 inset-x-3 flex items-center justify-between rounded-xl bg-black/60 px-3 py-1.5 text-xs backdrop-blur-md border border-white/5">
+					<div class="flex items-center gap-2">
+						<span class="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+						<span class="font-bold text-white">{hostName} (מארח הוועידה)</span>
+					</div>
+
+					<div class="flex items-center gap-2 text-emerald-400 font-bold">
+						<span>🎙️ מיקרופון פעיל</span>
 					</div>
 				</div>
-			{/if}
 
-			<!-- באנר מוקאפ שקוף ועדין -->
-			<div class="pointer-events-none absolute bottom-4 start-1/2 -translate-x-1/2 z-20">
-				<span class="inline-flex items-center gap-1.5 rounded-full border border-teal-400/30 bg-[#0f1626]/90 px-3 py-1 text-[11px] font-bold text-teal-200 shadow-xl backdrop-blur-md">
-					<span>🎭</span>
-					<span>מוקאפ ועידת וידאו (הדמיית זום) — חדר הוועידה החי יוטמע כאן</span>
-				</span>
+				<!-- באנר מוקאפ עדין -->
+				<div class="pointer-events-none absolute bottom-12 start-1/2 -translate-x-1/2 z-20">
+					<span class="inline-flex items-center gap-1.5 rounded-full border border-teal-400/30 bg-[#0f1626]/90 px-3 py-1 text-[11px] font-bold text-teal-200 shadow-xl backdrop-blur-md">
+						<span>🎭</span>
+						<span>מוקאפ ועידת וידאו (חדר יחיד) — חדר הוועידה החי יוטמע כאן</span>
+					</span>
+				</div>
 			</div>
 		</div>
 
