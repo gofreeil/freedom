@@ -55,6 +55,16 @@
 						<span class="block text-[11px] text-gray-400">מרכז העבודה של הצוות</span>
 					</div>
 				</a>
+				<a
+					href="/admin/tv"
+					class="flex items-center gap-3 rounded-xl border border-blue-500/30 bg-blue-950/25 p-3 text-white transition hover:bg-blue-900/35 hover:border-blue-500/50"
+				>
+					<span class="text-xl" aria-hidden="true">📺</span>
+					<div class="min-w-0 flex-1">
+						<span class="block text-sm font-bold">חירות TV</span>
+						<span class="block text-[11px] text-gray-400">ניהול שידורים וראיונות</span>
+					</div>
+				</a>
 			{/if}
 
 			<a
