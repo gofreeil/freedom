@@ -116,16 +116,16 @@
 
 <!-- תפריט הדפים הנוספים — משותף לדסקטופ ולמובייל. Freedom TV לאדמינים בלבד -->
 {#snippet navMenu()}
-    <div role="menu" class="absolute end-0 top-full z-[160] mt-2 w-52 overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl">
+    <div role="menu" class="absolute end-0 top-full z-[160] mt-2 w-56 overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl">
         {#if !user}
-            <a role="menuitem" href="/login" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> התחברות</a>
+            <a role="menuitem" href="/login" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> התחברות</a>
         {/if}
-        <a role="menuitem" href="/about" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">ℹ️</span> {tFn("about")}</a>
+        <a role="menuitem" href="/about" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">ℹ️</span> {tFn("about")}</a>
         {#if user}
-            <a role="menuitem" href="/club" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> מועדון החירות</a>
-            <a role="menuitem" href="/club/charter" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📜</span> אמנת החברים</a>
+            <a role="menuitem" href="/club" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> מועדון החירות</a>
+            <a role="menuitem" href="/club/charter" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">📜</span> אמנת החברים</a>
         {/if}
-        <div class="my-1 border-t border-white/10"></div>
+        <div class="my-1.5 border-t border-white/30"></div>
         <div class="flex items-center gap-1 px-2 py-1.5" role="group" aria-label={tFn("choose_language")}>
             {#each languages as langOption}
                 <button
@@ -133,10 +133,10 @@
                     role="menuitemradio"
                     aria-checked={isActiveLang(langOption.code)}
                     title={langOption.name}
-                    class="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-1.5 py-1.5 text-xs font-bold text-white hover:bg-white/10 {isActiveLang(langOption.code) ? 'bg-white/15 ring-1 ring-white/30' : ''}"
+                    class="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-1.5 py-1 text-[11px] font-bold text-white hover:bg-white/10 {isActiveLang(langOption.code) ? 'bg-white/15 ring-1 ring-white/30' : ''}"
                     onclick={() => changeLang(langOption)}
                 >
-                    <span class="fi fi-{langOption.flag}" style="font-size: 1.1rem;" aria-hidden="true"></span>
+                    <span class="fi fi-{langOption.flag}" style="font-size: 0.95rem;" aria-hidden="true"></span>
                     <span>{langOption.name}</span>
                 </button>
             {/each}
