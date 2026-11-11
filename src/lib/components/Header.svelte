@@ -52,19 +52,6 @@
         if (e.key === 'Escape') { showMobileSearch = false; searchQuery = ''; }
     }
 
-    async function handleLogout() {
-        showProfileMenu = false;
-        try {
-            await fetch('/api/logout', { method: 'POST' });
-        } catch {}
-        try {
-            const { signOut } = await import('@auth/sveltekit/client');
-            await signOut({ callbackUrl: '/' });
-        } catch {
-            window.location.href = '/';
-        }
-    }
-
     function changeLang(language: { name: string; code: string }) {
         locale.set(language.code);
         try { localStorage.setItem('lang', language.code); } catch {}
@@ -194,17 +181,6 @@
             >
                 <span aria-hidden="true">👤</span> אזור אישי מלא
             </a>
-
-            <div class="my-1 border-t border-white/10"></div>
-
-            <button
-                type="button"
-                role="menuitem"
-                onclick={handleLogout}
-                class="flex w-full items-center gap-2.5 px-4 py-2.5 text-right text-sm font-bold text-red-400 transition-colors hover:bg-white/10 hover:text-red-300 cursor-pointer"
-            >
-                <span aria-hidden="true">🚪</span> התנתקות
-            </button>
         {/if}
     </div>
 {/snippet}
