@@ -68,6 +68,11 @@
 <!-- תפריט הדפים הנוספים — משותף לדסקטופ ולמובייל. Freedom TV וניהול הרשת לאדמינים בלבד -->
 {#snippet navMenu()}
     <div role="menu" class="absolute end-0 top-full z-[160] mt-2 w-52 overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl">
+        {#if user}
+            <a role="menuitem" href="/profile" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">👤</span> אזור אישי</a>
+        {:else}
+            <a role="menuitem" href="/login" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> התחברות</a>
+        {/if}
         <a role="menuitem" href="/about" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">ℹ️</span> {tFn("about")}</a>
         {#if user?.canManage}
             <a role="menuitem" href="/admin/tv" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📺</span> חירות TV</a>
@@ -95,6 +100,47 @@
             {/each}
         </div>
     </div>
+{/snippet}
+
+<!-- כפתור פרופיל / התחברות -->
+{#snippet userAuthButton(isMobile = false)}
+    {#if user}
+        <a
+            href="/profile"
+            class="flex-shrink-0 rounded-full transition-transform hover:scale-105"
+            title={user.name || user.email}
+            aria-label={user.name || user.email}
+        >
+            {#if user.image && !avatarBroken}
+                <img
+                    src={user.image}
+                    alt=""
+                    width={isMobile ? "32" : "36"}
+                    height={isMobile ? "32" : "36"}
+                    decoding="async"
+                    referrerpolicy="no-referrer"
+                    class="{isMobile ? 'h-8 w-8' : 'h-9 w-9'} rounded-full object-cover border-2 border-purple-500/40 shadow-lg"
+                    onerror={() => (avatarBroken = true)}
+                />
+            {:else}
+                <span class="login-grad flex {isMobile ? 'h-8 w-8 text-xs' : 'h-9 w-9 text-sm'} items-center justify-center rounded-full border border-white/10 font-bold text-white shadow-lg" aria-hidden="true">
+                    {(user.name || user.email).charAt(0).toUpperCase()}
+                </span>
+            {/if}
+        </a>
+    {:else}
+        <a
+            href="/login"
+            class="login-grad flex items-center {isMobile ? 'justify-center w-8 h-8 rounded-lg text-sm' : 'gap-1.5 rounded-lg px-3 py-2 text-sm'} font-bold text-white transition-all hover:brightness-110"
+            title="התחברות"
+            aria-label="התחברות"
+        >
+            <span>🕊️</span>
+            {#if !isMobile}
+                <span class="hidden sm:inline">התחברות</span>
+            {/if}
+        </a>
+    {/if}
 {/snippet}
 
 <header use:headerHeight
@@ -142,6 +188,7 @@
                     </a>
 
                     <div class="flex items-center gap-1.5">
+                        {@render userAuthButton(true)}
                         <div class="nav-menu-container relative">
                             <button
                                 type="button"
@@ -228,39 +275,7 @@
                     {/if}
                 </div>
                 <!-- התחברות / תמונת המשתמש — עיגול כמו בשאר אתרי יוצאים לחירות -->
-                {#if user}
-                    <a
-                        href="/profile"
-                        class="flex-shrink-0 rounded-full transition-transform hover:scale-105"
-                        title={user.name || user.email}
-                        aria-label={user.name || user.email}
-                    >
-                        {#if user.image && !avatarBroken}
-                            <img
-                                src={user.image}
-                                alt=""
-                                width="36"
-                                height="36"
-                                decoding="async"
-                                referrerpolicy="no-referrer"
-                                class="h-9 w-9 rounded-full object-cover border-2 border-purple-500/40 shadow-lg"
-                                onerror={() => (avatarBroken = true)}
-                            />
-                        {:else}
-                            <span class="login-grad flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-sm font-bold text-white shadow-lg" aria-hidden="true">
-                                {(user.name || user.email).charAt(0).toUpperCase()}
-                            </span>
-                        {/if}
-                    </a>
-                {:else}
-                    <a
-                        href="/login"
-                        class="login-grad flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-bold text-white transition-all hover:brightness-110"
-                    >
-                        <span>🕊️</span>
-                        <span class="hidden sm:inline">התחברות</span>
-                    </a>
-                {/if}
+                {@render userAuthButton(false)}
             </div>
         </div>
     </div>
