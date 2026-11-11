@@ -17,6 +17,24 @@
 
     let showNavMenu = $state(false);
     let showProfileMenu = $state(false);
+    let profileCloseTimer: ReturnType<typeof setTimeout> | undefined;
+
+    function handleProfileMouseEnter() {
+        if (profileCloseTimer) {
+            clearTimeout(profileCloseTimer);
+            profileCloseTimer = undefined;
+        }
+        showProfileMenu = true;
+        showNavMenu = false;
+    }
+
+    function handleProfileMouseLeave() {
+        if (profileCloseTimer) clearTimeout(profileCloseTimer);
+        profileCloseTimer = setTimeout(() => {
+            showProfileMenu = false;
+            profileCloseTimer = undefined;
+        }, 220);
+    }
 
     // חיפוש
     let searchQuery     = $state('');
@@ -60,13 +78,22 @@
         } catch {}
 
         document.addEventListener("click", handleClickOutside);
-        return () => document.removeEventListener("click", handleClickOutside);
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+            if (profileCloseTimer) clearTimeout(profileCloseTimer);
+        };
     });
 
     function handleClickOutside(event: MouseEvent) {
         const target = event.target as HTMLElement;
         if (!target.closest(".nav-menu-container")) showNavMenu = false;
-        if (!target.closest(".profile-menu-container")) showProfileMenu = false;
+        if (!target.closest(".profile-menu-container")) {
+            showProfileMenu = false;
+            if (profileCloseTimer) {
+                clearTimeout(profileCloseTimer);
+                profileCloseTimer = undefined;
+            }
+        }
     }
 
 	// tFn: תרגום reactive - $t אסור ב-Svelte 5
@@ -79,6 +106,10 @@
 	afterNavigate(() => {
         showNavMenu = false;
         showProfileMenu = false;
+        if (profileCloseTimer) {
+            clearTimeout(profileCloseTimer);
+            profileCloseTimer = undefined;
+        }
     });
 
 </script>
@@ -113,11 +144,11 @@
     </div>
 {/snippet}
 
-<!-- תפריט הפרופיל והאזור האישי שנפתח בלחיצה על תמונת המשתמש -->
+<!-- תפריט הפרופיל והאזור האישי שנפתח בריחוף מעל תמונת המשתמש (קיצור דרך) -->
 {#snippet profileMenu()}
     <div
         role="menu"
-        class="absolute left-0 top-full z-[160] mt-2 w-60 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl"
+        class="absolute left-0 top-full z-[160] mt-2 w-60 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl before:absolute before:-top-3 before:inset-x-0 before:h-3 before:content-['']"
     >
         {#if user}
             <div class="border-b border-white/10 bg-white/[0.03] px-4 py-2.5 text-right">
@@ -131,6 +162,7 @@
                 <a
                     role="menuitem"
                     href="/admin"
+                    onclick={() => (showProfileMenu = false)}
                     class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
                 >
                     <span aria-hidden="true">🛡️</span> ניהול ומשימות
@@ -138,6 +170,7 @@
                 <a
                     role="menuitem"
                     href="/admin/tv"
+                    onclick={() => (showProfileMenu = false)}
                     class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
                 >
                     <span aria-hidden="true">📺</span> חירות TV
@@ -147,6 +180,7 @@
             <a
                 role="menuitem"
                 href="/budget"
+                onclick={() => (showProfileMenu = false)}
                 class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
             >
                 <span aria-hidden="true">💰</span> ניהול תקציב
@@ -155,6 +189,7 @@
             <a
                 role="menuitem"
                 href="/profile"
+                onclick={() => (showProfileMenu = false)}
                 class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
             >
                 <span aria-hidden="true">👤</span> אזור אישי מלא
@@ -174,17 +209,20 @@
     </div>
 {/snippet}
 
-<!-- כפתור פרופיל / התחברות -->
+<!-- כפתור פרופיל / התחברות: בריחוף נפתח תפריט קיצור, בלחיצה נכנסים ישירות לדף הפרופיל -->
 {#snippet userAuthButton(isMobile = false)}
     {#if user}
-        <div class="profile-menu-container relative">
-            <button
-                type="button"
-                onclick={() => {
-                    showProfileMenu = !showProfileMenu;
-                    if (showProfileMenu) showNavMenu = false;
-                }}
-                class="flex-shrink-0 rounded-full transition-transform hover:scale-105 cursor-pointer block focus:outline-none focus:ring-2 focus:ring-purple-400/50"
+        <div
+            class="profile-menu-container relative"
+            role="group"
+            aria-label="תפריט פרופיל מהיר"
+            onmouseenter={handleProfileMouseEnter}
+            onmouseleave={handleProfileMouseLeave}
+        >
+            <a
+                href="/profile"
+                onclick={() => (showProfileMenu = false)}
+                class="flex-shrink-0 rounded-full transition-transform hover:scale-105 block focus:outline-none focus:ring-2 focus:ring-purple-400/50"
                 title={user.name || user.email}
                 aria-label={user.name || user.email}
                 aria-haspopup="menu"
@@ -206,7 +244,7 @@
                         {(user.name || user.email).charAt(0).toUpperCase()}
                     </span>
                 {/if}
-            </button>
+            </a>
             {#if showProfileMenu}
                 {@render profileMenu()}
             {/if}
