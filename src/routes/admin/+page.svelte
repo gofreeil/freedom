@@ -13,7 +13,7 @@
 
 <svelte:head><title>ניהול ומשימות | יוצאים לחירות</title></svelte:head>
 
-<div class="mx-auto max-w-6xl px-4 py-6" dir="rtl">
+<div class="mx-auto max-w-7xl px-3 sm:px-4 py-6" dir="rtl">
 	<h1 class="mb-6 flex items-center gap-2.5 text-xl font-black text-white sm:text-2xl">
 		<span aria-hidden="true">🛡️</span> ניהול ומשימות
 	</h1>

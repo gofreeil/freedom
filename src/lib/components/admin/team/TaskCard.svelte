@@ -11,7 +11,8 @@
 		onopen,
 		ondragstart,
 		ondragend,
-		dragging = false
+		dragging = false,
+		isLarge = false
 	}: {
 		task: BoardTask;
 		store: TeamStore;
@@ -19,6 +20,7 @@
 		ondragstart?: (e: DragEvent, task: BoardTask) => void;
 		ondragend?: () => void;
 		dragging?: boolean;
+		isLarge?: boolean;
 	} = $props();
 
 	const today = todayStr();
@@ -47,7 +49,7 @@
 		}
 	}}
 	data-task-id={task.id}
-	class="group relative cursor-pointer rounded-xl border bg-[#0f172a] p-3 text-start shadow-sm transition hover:border-white/25 hover:bg-[#131c33] {dragging
+	class="group relative cursor-pointer rounded-xl border bg-[#0f172a] {isLarge ? 'p-3.5 sm:p-4' : 'p-2.5'} text-start shadow-sm transition hover:border-white/25 hover:bg-[#131c33] {dragging
 		? 'opacity-40'
 		: ''} {task.status === 'done' ? 'border-white/5 opacity-75' : 'border-white/10'}"
 >
@@ -69,7 +71,9 @@
 
 	<div class="flex items-start gap-2">
 		<p
-			class="line-clamp-3 flex-1 text-[14px] leading-snug font-semibold {task.status === 'done'
+			class="line-clamp-3 flex-1 {isLarge
+				? 'text-[16px] sm:text-[17.5px] leading-snug font-bold'
+				: 'text-[13px] leading-snug font-semibold'} {task.status === 'done'
 				? 'text-gray-400 line-through decoration-gray-600'
 				: 'text-white'}"
 		>
@@ -77,13 +81,13 @@
 		</p>
 	</div>
 
-	<div class="mt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
+	<div class="mt-2.5 flex flex-wrap items-center {isLarge ? 'gap-2 text-[12px] sm:text-[13px]' : 'gap-1 text-[10.5px]'}">
 		{#if task.priority === 'urgent' || task.priority === 'high'}
-			<span class="rounded-md border px-1.5 py-0.5 font-bold {prio.cls}">{prio.label}</span>
+			<span class="rounded-md border {isLarge ? 'px-2 py-0.5' : 'px-1.5 py-0.5'} font-bold {prio.cls}">{prio.label}</span>
 		{/if}
 		{#if task.due}
 			<span
-				class="rounded-md border px-1.5 py-0.5 font-semibold {overdue
+				class="rounded-md border {isLarge ? 'px-2 py-0.5' : 'px-1.5 py-0.5'} font-semibold {overdue
 					? 'border-red-500/40 bg-red-500/15 text-red-300'
 					: soon
 						? 'border-amber-500/40 bg-amber-500/10 text-amber-200'
@@ -94,25 +98,25 @@
 			</span>
 		{/if}
 		{#if site}
-			<span class="flex max-w-[9rem] items-center gap-1 rounded-md border border-white/10 bg-[#1b2335] px-1.5 py-0.5 text-gray-300" title={site.name}>
-				{#if site.image}<img src={site.image} alt="" class="h-3.5 w-3.5 rounded-sm object-cover" />{/if}
+			<span class="flex {isLarge ? 'max-w-[12rem] px-2 py-0.5' : 'max-w-[7.5rem] px-1.5 py-0.5'} items-center gap-1 rounded-md border border-white/10 bg-[#1b2335] text-gray-300" title={site.name}>
+				{#if site.image}<img src={site.image} alt="" class="{isLarge ? 'h-4 w-4' : 'h-3.5 w-3.5'} rounded-sm object-cover" />{/if}
 				<span class="truncate">{site.name}</span>
 			</span>
 		{/if}
 		{#if checks}
-			<span class="rounded-md border border-white/10 bg-[#1b2335] px-1.5 py-0.5 text-gray-300" title="רשימת תיוג">☑ {checks}</span>
+			<span class="rounded-md border border-white/10 bg-[#1b2335] {isLarge ? 'px-2 py-0.5' : 'px-1.5 py-0.5'} text-gray-300" title="רשימת תיוג">☑ {checks}</span>
 		{/if}
 		{#if comments}
-			<span class="rounded-md border border-white/10 bg-[#1b2335] px-1.5 py-0.5 text-gray-300" title="תגובות">💬 {comments}</span>
+			<span class="rounded-md border border-white/10 bg-[#1b2335] {isLarge ? 'px-2 py-0.5' : 'px-1.5 py-0.5'} text-gray-300" title="תגובות">💬 {comments}</span>
 		{/if}
 
 		{#if task.assignees.length}
 			<span class="ms-auto flex -space-x-2 space-x-reverse">
 				{#each task.assignees.slice(0, 3) as id (id)}
-					<MemberAvatar member={store.member(id)} cls="h-6 w-6 text-[10px]" ring />
+					<MemberAvatar member={store.member(id)} cls={isLarge ? 'h-7 w-7 text-[11px]' : 'h-5.5 w-5.5 text-[9px]'} ring />
 				{/each}
 				{#if task.assignees.length > 3}
-					<span class="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold text-gray-200 ring-2 ring-[#0b1220]">
+					<span class="flex {isLarge ? 'h-7 w-7 text-[11px]' : 'h-5.5 w-5.5 text-[9px]'} items-center justify-center rounded-full bg-white/10 font-bold text-gray-200 ring-2 ring-[#0b1220]">
 						+{task.assignees.length - 3}
 					</span>
 				{/if}

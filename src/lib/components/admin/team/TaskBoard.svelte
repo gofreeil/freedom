@@ -288,21 +288,21 @@
 		</p>
 	</div>
 {:else if view === 'board'}
-	<!-- ── לוח: בנייד גלילה אופקית בין העמודות, במחשב ארבע עמודות ── -->
-	<div class="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0">
+	<!-- ── לוח: עמודת "לביצוע" מורחבת עם פונטים מוגדלים, שאר העמודות מוקטנות בשווה ── -->
+	<div class="board-grid -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 lg:mx-0 lg:grid lg:overflow-visible lg:px-0">
 		{#each columns as col (col.id)}
 			<section
 				aria-label={col.label}
-				class="flex w-[82%] flex-shrink-0 snap-start flex-col rounded-2xl border bg-[#141c2f] p-2.5 transition sm:w-[46%] lg:w-auto {dropAt?.status === col.id
+				class="flex {col.id === 'todo' ? 'w-[90%] sm:w-[58%] p-3.5' : 'w-[72%] sm:w-[38%] p-2.5'} flex-shrink-0 snap-start flex-col rounded-2xl border bg-[#141c2f] transition lg:w-auto {dropAt?.status === col.id
 					? 'border-sky-500/50 bg-sky-500/[0.04]'
 					: 'border-white/10'}"
 				ondragover={(e) => onDragOver(e, col.id)}
 				ondrop={(e) => onDrop(e, col.id)}
 			>
-				<header class="mb-2 flex items-center gap-2 px-1">
-					<span aria-hidden="true">{col.icon}</span>
-					<h3 class="text-[14px] font-black text-white">{col.label}</h3>
-					<span class="rounded-full bg-white/10 px-2 text-[12px] font-bold text-gray-300">{col.tasks.length}</span>
+				<header class="mb-2.5 flex items-center gap-2 px-1">
+					<span class="{col.id === 'todo' ? 'text-xl' : 'text-base'}" aria-hidden="true">{col.icon}</span>
+					<h3 class="{col.id === 'todo' ? 'text-[17px] sm:text-[18px]' : 'text-[14px]'} font-black text-white">{col.label}</h3>
+					<span class="rounded-full bg-white/10 px-2 {col.id === 'todo' ? 'text-[13px] py-0.5' : 'text-[12px]'} font-bold text-gray-300">{col.tasks.length}</span>
 				</header>
 
 				<div class="flex min-h-[4rem] flex-1 flex-col gap-2">
@@ -317,6 +317,7 @@
 							ondragstart={onDragStart}
 							ondragend={onDragEnd}
 							dragging={dragId === task.id}
+							isLarge={col.id === 'todo'}
 						/>
 					{/each}
 					{#if dropAt?.status === col.id && dropAt.beforeId === null}
@@ -408,3 +409,11 @@
 		</button>
 	{/if}
 {/if}
+
+<style>
+	@media (min-width: 1024px) {
+		.board-grid {
+			grid-template-columns: minmax(0, 1.8fr) minmax(0, 0.73fr) minmax(0, 0.73fr) minmax(0, 0.73fr);
+		}
+	}
+</style>
