@@ -27,10 +27,23 @@
 	] as const;
 	type Tab = (typeof TABS)[number]['id'];
 
+	const isSuper = $derived(Boolean(page.data.user?.isSuperAdmin || store.me?.isSuper));
+	const visibleTabs = $derived(TABS.filter((t) => t.id !== 'coordinators' || isSuper));
+
 	const initialTab = page.url.searchParams.get('tab');
-	let tab = $state<Tab>(TABS.some((t) => t.id === initialTab) ? (initialTab as Tab) : 'tasks');
+	let tab = $state<Tab>(
+		TABS.some((t) => t.id === initialTab && (t.id !== 'coordinators' || Boolean(page.data.user?.isSuperAdmin)))
+			? (initialTab as Tab)
+			: 'tasks'
+	);
 	let openTaskId = $state(page.url.searchParams.get('task') ?? '');
 	let presetReportTask = $state('');
+
+	$effect(() => {
+		if (!isSuper && tab === 'coordinators') {
+			tab = 'tasks';
+		}
+	});
 
 	onMount(() => {
 		store.load();
@@ -107,7 +120,7 @@
 <!-- ── לשוניות ── -->
 <div class="-mx-4 mb-5 overflow-x-auto px-4 [scrollbar-width:none]">
 	<div class="flex min-w-max gap-1 border-b border-white/10" role="tablist" aria-label="אזורי ניהול">
-		{#each TABS as t (t.id)}
+		{#each visibleTabs as t (t.id)}
 			<button
 				type="button"
 				role="tab"
@@ -130,7 +143,7 @@
 </div>
 
 <div role="tabpanel" id="panel-{tab}" aria-labelledby="tab-{tab}">
-	{#if tab === 'coordinators'}
+	{#if tab === 'coordinators' && isSuper}
 		{@render children()}
 	{:else if store.loadError && !store.loaded}
 		<div class="rounded-2xl border border-red-500/25 bg-red-500/10 p-4 text-sm text-red-200">
