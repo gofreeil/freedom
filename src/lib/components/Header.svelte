@@ -112,8 +112,8 @@
             <a role="menuitem" href="/club" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> מועדון החירות</a>
             <a role="menuitem" href="/club/charter" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">📜</span> אמנת החברים</a>
         {/if}
-        <div class="mt-3.5 mb-2.5 border-t border-white/30"></div>
-        <div class="flex items-center gap-1 px-2 py-1.5" role="group" aria-label={tFn("choose_language")}>
+        <div class="mt-5 mb-3 border-t border-white/20"></div>
+        <div class="flex items-center gap-1.5 px-2.5 pb-2 pt-0.5" role="group" aria-label={tFn("choose_language")}>
             {#each languages as langOption}
                 <button
                     type="button"
