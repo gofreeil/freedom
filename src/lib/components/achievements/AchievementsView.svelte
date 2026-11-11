@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
 	interface UserProp {
 		name?: string;
 		email?: string;
@@ -33,51 +31,74 @@
 
 	let { user = {}, canManage = false }: { user?: UserProp; canManage?: boolean } = $props();
 
-	const STORAGE_KEY = 'freedom_achievements_v1';
+	const userStorageKey = $derived(
+		`freedom_my_achievements_${(user.email || user.name || 'guest').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_')}`
+	);
 
-	const INITIAL_POSTS: AchievementPost[] = [
-		{
-			id: 'ach-1',
-			authorName: 'צוות הנהלת חירות',
-			authorRole: 'הנהלת הרשת',
-			createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-			category: 'הישג ציבורי',
-			content: 'גאים להכריז על השקת מערכת התקציב השקוף של יוצאים לחירות! 🚀\nהפלטפורמה מאפשרת לכל חבר קהילה לצפות בשקיפות של 100% בכל שקל שנכנס ויוצא, להצביע על הקצאות תקציביות ולהשפיע ישירות על סדר העדיפויות.',
-			imageUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80',
-			reactions: { '👍': 42, '❤️': 28, '🔥': 19, '🚀': 35 },
-			comments: [
-				{
-					id: 'c-1',
-					userName: 'רועי כהן',
-					text: 'צעד ענק לשקיפות אמיתית בישראל! כל הכבוד לצוות.',
-					createdAt: new Date(Date.now() - 1000 * 60 * 60 * 20).toISOString()
-				}
-			]
-		},
-		{
-			id: 'ach-2',
-			authorName: 'מערך ההסברה והדיגיטל',
-			authorRole: 'רכז תקשורת',
-			createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6).toISOString(),
-			category: 'חשיפה תקשורתית',
-			content: 'שידור הבכורה של "חירות TV" שבר שיאי צפייה! 📺\nמעל 15,000 צפיות בשידור החי בדיון על זכויות הפרט והמאבק בריכוזיות. תודה לכל האורחים והצופים שהשתתפו והגיבו בלייב.',
-			imageUrl: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=1200&q=80',
-			reactions: { '👍': 64, '🔥': 41, '👏': 30 },
-			comments: []
-		}
-	];
+	function getInitialPosts(userName: string, userAvatar?: string, userRole?: string): AchievementPost[] {
+		const name = userName || 'רכז הרשת';
+		const role = userRole || (canManage ? 'רכז / אדמין' : 'חבר פעיל');
+		return [
+			{
+				id: 'my-ach-1',
+				authorName: name,
+				authorEmail: user.email || '',
+				authorAvatar: userAvatar || user.image || '',
+				authorRole: role,
+				createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
+				category: 'הובלת פרויקט',
+				content: 'השלמתי בהצלחה את הובלת סבב ההשקה וההטמעה של המערך הדיגיטלי החדש! 🎯\nבמהלך החודש האחרון ריכזתי את הצוות, יישרנו קו על כל המשימות הפתוחות והגענו ליעד שהצבנו.',
+				imageUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80',
+				reactions: { '👍': 18, '❤️': 12, '🔥': 9, '👏': 15 },
+				comments: []
+			},
+			{
+				id: 'my-ach-2',
+				authorName: name,
+				authorEmail: user.email || '',
+				authorAvatar: userAvatar || user.image || '',
+				authorRole: role,
+				createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 8).toISOString(),
+				category: 'פעילות שטח',
+				content: 'מפגש שטח מוצלח עם פעילים ורכזי מחוזות. סגרנו שיתופי פעולה חשובים וחילקנו חומרי הסברה לחודש הקרוב.',
+				imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80',
+				reactions: { '👍': 24, '🔥': 14, '🚀': 11 },
+				comments: []
+			}
+		];
+	}
 
 	let posts = $state<AchievementPost[]>([]);
 	let isLoaded = $state(false);
+
+	$effect(() => {
+		const key = userStorageKey;
+		try {
+			const saved = localStorage.getItem(key);
+			if (saved) {
+				const parsed = JSON.parse(saved);
+				if (Array.isArray(parsed) && parsed.length > 0) {
+					posts = parsed;
+					isLoaded = true;
+					return;
+				}
+			}
+			posts = getInitialPosts(user.name || '', user.image, canManage ? 'רכז / אדמין' : 'חבר פעיל');
+		} catch {
+			posts = getInitialPosts(user.name || '', user.image, canManage ? 'רכז / אדמין' : 'חבר פעיל');
+		} finally {
+			isLoaded = true;
+		}
+	});
 
 	// פילטרים
 	let selectedCategory = $state<string>('הכל');
 	let searchQuery = $state('');
 
-	// טופס פוסט חדש (לאדמינים)
+	// טופס פוסט חדש (לאדמינים/רכזים)
 	let showComposer = $state(false);
 	let newContent = $state('');
-	let newCategory = $state('הישג ציבורי');
+	let newCategory = $state('הובלת פרויקט');
 	let newImageUrl = $state('');
 	let imagePreview = $state('');
 	let fileInputRef = $state<HTMLInputElement | null>(null);
@@ -98,33 +119,13 @@
 	// חיווי העתקה
 	let copyNotice = $state<string | null>(null);
 
-	const CATEGORIES = ['הכל', 'הישג ציבורי', 'חשיפה תקשורתית', 'פעילות שטח', 'הישג משפטי', 'קהילה וטכנולוגיה'];
+	const CATEGORIES = ['הכל', 'הובלת פרויקט', 'פעילות שטח', 'גיוס והסברה', 'פיתוח וטכנולוגיה', 'ניהול וארגון'];
 	const EMOJI_REACTIONS = ['👍', '❤️', '👏', '🚀', '🔥'];
-
-	onMount(() => {
-		try {
-			const saved = localStorage.getItem(STORAGE_KEY);
-			if (saved) {
-				const parsed = JSON.parse(saved);
-				if (Array.isArray(parsed) && parsed.length > 0) {
-					posts = parsed;
-				} else {
-					posts = INITIAL_POSTS;
-				}
-			} else {
-				posts = INITIAL_POSTS;
-			}
-		} catch {
-			posts = INITIAL_POSTS;
-		} finally {
-			isLoaded = true;
-		}
-	});
 
 	function savePosts(newPosts: AchievementPost[]) {
 		posts = newPosts;
 		try {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(newPosts));
+			localStorage.setItem(userStorageKey, JSON.stringify(newPosts));
 		} catch (e) {
 			console.error('Failed to save achievements to localStorage', e);
 		}
@@ -140,7 +141,6 @@
 			return;
 		}
 
-		// מגבלת גודל 5MB
 		if (file.size > 5 * 1024 * 1024) {
 			alert('גודל התמונה מוגבל לעד 5MB');
 			return;
@@ -167,10 +167,10 @@
 
 		const post: AchievementPost = {
 			id: `ach-${Date.now()}`,
-			authorName: user.name || 'מנהל רשת',
+			authorName: user.name || 'רכז הרשת',
 			authorEmail: user.email || '',
 			authorAvatar: user.image || '',
-			authorRole: canManage ? 'אדמין הרשת' : 'חבר תנועה',
+			authorRole: canManage ? 'רכז / אדמין' : 'חבר פעיל',
 			createdAt: new Date().toISOString(),
 			category: newCategory,
 			content: newContent.trim(),
@@ -181,7 +181,6 @@
 
 		savePosts([post, ...posts]);
 
-		// איפוס
 		newContent = '';
 		newImageUrl = '';
 		imagePreview = '';
@@ -223,17 +222,14 @@
 			const prev = p.userReaction;
 
 			if (prev === emoji) {
-				// ביטול
 				r[emoji] = Math.max(0, (r[emoji] || 1) - 1);
 				if (r[emoji] === 0) delete r[emoji];
 				return { ...p, reactions: r, userReaction: undefined };
 			} else {
-				// הורדת הקודם אם קיים
 				if (prev && r[prev]) {
 					r[prev] = Math.max(0, r[prev] - 1);
 					if (r[prev] === 0) delete r[prev];
 				}
-				// הוספת החדש
 				r[emoji] = (r[emoji] || 0) + 1;
 				return { ...p, reactions: r, userReaction: emoji };
 			}
@@ -250,7 +246,7 @@
 			if (p.id !== postId) return p;
 			const newComm: AchievementComment = {
 				id: `c-${Date.now()}`,
-				userName: user.name || 'חבר תנועה',
+				userName: user.name || 'מגיב',
 				userAvatar: user.image || '',
 				text,
 				createdAt: new Date().toISOString()
@@ -306,7 +302,6 @@
 			const matchQuery =
 				!q ||
 				p.content.toLowerCase().includes(q) ||
-				p.authorName.toLowerCase().includes(q) ||
 				p.category.toLowerCase().includes(q);
 			return matchCategory && matchQuery;
 		})
@@ -322,10 +317,10 @@
 				<h2 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
 					ההישגים שלי
 					<span class="rounded-full bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-300 border border-amber-500/30">
-						עדכוני עשייה
+						הישגים אישיים
 					</span>
 				</h2>
-				<p class="text-[12px] text-gray-400">הישגים, הצלחות ואבני דרך של פעילות התנועה</p>
+				<p class="text-[12px] text-gray-400">תיעוד ההישגים, ההצלחות והעשייה האישית שלך כרכז בתנועה</p>
 			</div>
 		</div>
 
@@ -340,7 +335,7 @@
 		{/if}
 	</div>
 
-	<!-- תיבת יצירת פוסט בסגנון פייסבוק (לאדמינים) -->
+	<!-- תיבת יצירת פוסט אישי בסגנון פייסבוק -->
 	{#if canManage && showComposer}
 		<form
 			onsubmit={handleCreatePost}
@@ -355,8 +350,8 @@
 					</div>
 				{/if}
 				<div class="min-w-0 flex-1">
-					<p class="text-xs sm:text-sm font-bold text-white truncate">{user.name || 'הזנת הישג חדש'}</p>
-					<span class="text-[10px] text-amber-300">פרסום הישג רשמי</span>
+					<p class="text-xs sm:text-sm font-bold text-white truncate">{user.name || 'תיעוד הישג אישי'}</p>
+					<span class="text-[10px] text-amber-300">פרסום הישג אישי שלך כרכז</span>
 				</div>
 				<select
 					bind:value={newCategory}
@@ -372,7 +367,7 @@
 				bind:value={newContent}
 				required
 				rows="3"
-				placeholder="שתפו הישג, הצלחה או אבן דרך... מה השגנו ואיך זה משפיע?"
+				placeholder="שתף הישג אישי, הצלחה בהובלה או משימה משמעותית שהשלמת כרכז..."
 				class="w-full rounded-xl border border-white/10 bg-[#0f1626] p-2.5 text-xs sm:text-sm text-white placeholder-gray-400 focus:border-amber-400/60 focus:outline-none resize-y leading-relaxed"
 			></textarea>
 
@@ -441,7 +436,7 @@
 			<input
 				type="search"
 				bind:value={searchQuery}
-				placeholder="חיפוש בהישגים..."
+				placeholder="חיפוש בהישגים שלך..."
 				class="w-full rounded-lg border border-white/15 bg-white/5 py-1 pe-2.5 ps-7 text-xs sm:text-sm text-white placeholder-gray-400 focus:border-amber-400/60 focus:outline-none"
 			/>
 			<span class="pointer-events-none absolute inset-y-0 start-2 flex items-center text-xs text-gray-400" aria-hidden="true">
@@ -464,7 +459,7 @@
 		</div>
 	</div>
 
-	<!-- רשימת הפוסטים (סגנון פיד פייסבוק) -->
+	<!-- רשימת הפוסטים האישיים (סגנון פיד פייסבוק) -->
 	<div class="space-y-3">
 		{#if !isLoaded}
 			<div class="h-32 animate-pulse rounded-2xl bg-[#141c2f]" aria-hidden="true"></div>
@@ -472,7 +467,10 @@
 			<div class="rounded-2xl border border-white/10 bg-[#141c2f] p-6 text-center">
 				<span class="text-3xl" aria-hidden="true">🏅</span>
 				<p class="mt-2 text-sm sm:text-base font-bold text-gray-200">
-					{searchQuery || selectedCategory !== 'הכל' ? 'לא נמצאו הישגים התואמים לחיפוש' : 'עדיין לא פורסמו הישגים'}
+					{searchQuery || selectedCategory !== 'הכל' ? 'לא נמצאו הישגים התואמים לחיפוש' : 'עדיין לא תיעדת הישגים אישיים'}
+				</p>
+				<p class="mt-1 text-xs text-gray-400">
+					כאן מופיעים ההישגים האישיים שלך כרכז/אדמין בתנועה.
 				</p>
 				{#if canManage && !searchQuery && selectedCategory === 'הכל'}
 					<button
@@ -480,7 +478,7 @@
 						onclick={() => (showComposer = true)}
 						class="mt-3 inline-flex items-center gap-1.5 rounded-xl border border-amber-400/40 bg-amber-500/20 px-3.5 py-1.5 text-xs font-bold text-amber-200 hover:bg-amber-500/30 transition cursor-pointer"
 					>
-						<span>➕ פרסום ההישג הראשון</span>
+						<span>➕ הוספת ההישג הראשון שלך</span>
 					</button>
 				{/if}
 			</div>
@@ -515,7 +513,7 @@
 							</div>
 						</div>
 
-						<!-- תפריט פעולות לאדמין -->
+						<!-- תפריט פעולות לרכז/אדמין -->
 						{#if canManage}
 							<div class="flex items-center gap-1">
 								<button
