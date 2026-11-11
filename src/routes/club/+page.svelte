@@ -17,18 +17,20 @@
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<div class="mx-auto max-w-4xl px-4 py-6" dir="rtl">
+<div class="mx-auto max-w-4xl px-4 py-4 sm:py-6" dir="rtl">
+		<div class="mb-1.5">
+			<span class="inline-flex items-center gap-1.5 rounded-full border border-amber-400/25 bg-amber-400/10 px-2.5 py-0.5 text-xs font-medium text-amber-200/90">
+				🚧 דף זה הינו בבניה ומשמש כטיוטא בלבד
+			</span>
+		</div>
+
 		<div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
 			<h1 class="flex items-center gap-2.5 text-xl font-black text-white sm:text-2xl">
 				<span aria-hidden="true">🕊️</span> מועדון יוצאים לחירות
 			</h1>
-			<span class="rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-0.5 text-xs font-bold text-amber-200">
+			<span class="rounded-xl border-2 border-amber-400 bg-amber-400/20 px-3.5 py-1 text-base sm:text-xl font-black text-amber-300 shadow-md shadow-amber-400/25">
 				{data.club.price}
 			</span>
-			<span class="rounded-full border border-white/15 px-2.5 py-0.5 text-xs font-bold text-gray-300">
-				🚧 דף זה הינו בבניה ומשמש כטיוטא בלבד
-			</span>
-			<a href="/club/charter" class="rounded-full border border-sky-400/40 bg-sky-400/10 px-2.5 py-0.5 text-xs font-bold text-sky-200 hover:bg-sky-400/20">📜 אמנת החברים</a>
 			<p class="basis-full text-[15px] leading-snug text-gray-300">{data.club.intro}</p>
 		</div>
 
@@ -75,5 +77,13 @@
 			{/each}
 		</div>
 
-		<p class="mt-4 text-center text-sm font-bold text-gray-300">🕊️ {data.club.motto}</p>
+		<div class="mt-4 flex flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-right">
+			<p class="text-sm font-bold text-gray-300">🕊️ {data.club.motto}</p>
+			<a
+				href="/club/charter"
+				class="inline-flex items-center gap-1.5 rounded-full border border-sky-400/40 bg-sky-400/10 px-3 py-1 text-xs font-bold text-sky-200 transition-colors hover:bg-sky-400/20 hover:text-white"
+			>
+				📜 אמנת החברים
+			</a>
+		</div>
 </div>
