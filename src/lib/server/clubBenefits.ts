@@ -84,6 +84,7 @@ export const CLUB_SECTIONS: ClubSection[] = [
 	{
 		icon: '⚖️',
 		title: 'צדק וזכויות',
+		saving: 'שווי ההטבה: כ-30 ש"ח בחודש',
 		benefits: [
 			{
 				icon: '🏛️',
@@ -98,6 +99,7 @@ export const CLUB_SECTIONS: ClubSection[] = [
 	{
 		icon: '💻',
 		title: 'כלים לעסקים',
+		saving: 'שווי ההטבה: כ-150 ש"ח בחודש',
 		benefits: [
 			{
 				icon: '🤝',
