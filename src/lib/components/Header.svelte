@@ -188,7 +188,6 @@
                     </a>
 
                     <div class="flex items-center gap-1.5">
-                        {@render userAuthButton(true)}
                         <div class="nav-menu-container relative">
                             <button
                                 type="button"
@@ -205,6 +204,7 @@
                                 {@render navMenu()}
                             {/if}
                         </div>
+                        {@render userAuthButton(true)}
                     </div>
                 </div>
         </div>
