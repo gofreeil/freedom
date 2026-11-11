@@ -34,7 +34,7 @@ export const CLUB_SECTIONS: ClubSection[] = [
 	{
 		icon: '💰',
 		title: 'חיסכון בהוצאות החודשיות',
-		saving: 'חיסכון משוער: כ-250 ש"ח ומעלה בחודש',
+		saving: 'חיסכון משוער: בין 250 ש"ח ל-1,000 ש"ח בחודש',
 		benefits: [
 			{
 				icon: '📱',
