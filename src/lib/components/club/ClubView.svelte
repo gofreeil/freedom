@@ -95,29 +95,29 @@
 	</div>
 
 	<!-- במה דמי החבר תומכים (תרומת האתרים לעם ישראל) -->
-	<div class="mt-3.5 rounded-2xl border border-white/10 bg-[#141c2f]/80 p-3 sm:p-4">
-		<h3 class="mb-1 text-center text-[15px] font-black text-amber-200 sm:text-base">
+	<div class="mt-3.5 rounded-2xl border border-white/10 bg-[#141c2f]/80 p-4 sm:p-5">
+		<h3 class="mb-1.5 text-center text-lg font-black text-amber-200 sm:text-xl md:text-2xl">
 			🕊️ {club.motto}
 		</h3>
-		<p class="mb-2.5 text-center text-xs text-gray-400">
+		<p class="mb-3 text-center text-sm font-medium text-gray-300 sm:text-base">
 			בדמי החבר (59 ש"ח) אתם לא רק חוסכים לעצמכם – אתם מחזיקים ומפתחים את רשת הפלטפורמות החופשית של עם ישראל:
 		</p>
-		<div class="grid grid-cols-1 gap-2 text-[13px] sm:grid-cols-3">
-			<div class="rounded-xl border border-white/5 bg-white/[0.03] p-2.5">
-				<span class="block text-[13px] font-bold text-sky-200">🤝 קהילה וערבות הדדית</span>
-				<p class="mt-1 text-xs leading-relaxed text-gray-300">
+		<div class="grid grid-cols-1 gap-3.5 text-center sm:grid-cols-3 sm:gap-5">
+			<div>
+				<span class="block text-base font-bold text-sky-200 sm:text-lg">🤝 קהילה וערבות הדדית</span>
+				<p class="mt-1 text-sm leading-relaxed text-gray-200 sm:text-base">
 					גיבוש שכונות, בתי דין ופיוס לשלום בית, גמ"ח ארצי, שידוכים והשבת אבידה.
 				</p>
 			</div>
-			<div class="rounded-xl border border-white/5 bg-white/[0.03] p-2.5">
-				<span class="block text-[13px] font-bold text-purple-200">⚖️ משילות וזכויות</span>
-				<p class="mt-1 text-xs leading-relaxed text-gray-300">
+			<div>
+				<span class="block text-base font-bold text-purple-200 sm:text-lg">⚖️ משילות וזכויות</span>
+				<p class="mt-1 text-sm leading-relaxed text-gray-200 sm:text-base">
 					ביקורת רשויות וחשיפת שחיתויות, ועדי שכונות מאוחדים, דירוג עובדי ציבור ומשאלי עם.
 				</p>
 			</div>
-			<div class="rounded-xl border border-white/5 bg-white/[0.03] p-2.5">
-				<span class="block text-[13px] font-bold text-emerald-200">🛒 כלכלה והורדת יוקר המחיה</span>
-				<p class="mt-1 text-xs leading-relaxed text-gray-300">
+			<div>
+				<span class="block text-base font-bold text-emerald-200 sm:text-lg">🛒 כלכלה והורדת יוקר המחיה</span>
+				<p class="mt-1 text-sm leading-relaxed text-gray-200 sm:text-base">
 					שבירת מונופולים ברכישות קבוצתיות, בעלי מקצוע כשירים ומסחר ישיר ללא פערי תיווך.
 				</p>
 			</div>
@@ -127,7 +127,7 @@
 	<div class="mt-3 flex justify-center">
 		<a
 			href="/club/charter"
-			class="inline-flex items-center gap-1.5 rounded-full border border-sky-400/40 bg-sky-400/10 px-3.5 py-1 text-xs font-bold text-sky-200 transition-colors hover:bg-sky-400/20 hover:text-white"
+			class="inline-flex items-center gap-1.5 rounded-full border border-sky-400/40 bg-sky-400/10 px-4 py-1.5 text-sm font-bold text-sky-200 transition-colors hover:bg-sky-400/20 hover:text-white"
 		>
 			📜 אמנת יוצאים לחירות
 		</a>
