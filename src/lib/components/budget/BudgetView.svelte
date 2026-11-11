@@ -170,8 +170,19 @@
 							{pct}%
 						</span>
 					</div>
-					<div class="mt-1.5 text-sm sm:text-base font-black tabular-nums text-white">
-						{nis(item.amount)}
+					<div class="mt-1.5 flex items-center justify-between">
+						<span class="text-sm sm:text-base font-black tabular-nums text-white">
+							{nis(item.amount)}
+						</span>
+						<span
+							class="flex h-5 w-5 items-center justify-center rounded-full"
+							style="background: {item.color}20; color: {item.color}"
+							aria-hidden="true"
+						>
+							<svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+							</svg>
+						</span>
 					</div>
 				</div>
 			{/each}
