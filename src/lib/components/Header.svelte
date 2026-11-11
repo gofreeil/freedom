@@ -16,6 +16,7 @@
     ];
 
     let showNavMenu = $state(false);
+    let showProfileMenu = $state(false);
 
     // חיפוש
     let searchQuery     = $state('');
@@ -31,6 +32,19 @@
     function handleSearchKey(e: KeyboardEvent) {
         if (e.key === 'Enter') doSearch();
         if (e.key === 'Escape') { showMobileSearch = false; searchQuery = ''; }
+    }
+
+    async function handleLogout() {
+        showProfileMenu = false;
+        try {
+            await fetch('/api/logout', { method: 'POST' });
+        } catch {}
+        try {
+            const { signOut } = await import('@auth/sveltekit/client');
+            await signOut({ callbackUrl: '/' });
+        } catch {
+            window.location.href = '/';
+        }
     }
 
     function changeLang(language: { name: string; code: string }) {
@@ -52,6 +66,7 @@
     function handleClickOutside(event: MouseEvent) {
         const target = event.target as HTMLElement;
         if (!target.closest(".nav-menu-container")) showNavMenu = false;
+        if (!target.closest(".profile-menu-container")) showProfileMenu = false;
     }
 
 	// tFn: תרגום reactive - $t אסור ב-Svelte 5
@@ -60,12 +75,15 @@
 	const isActiveLang = (code: string) => _loc === code || !!_loc?.startsWith(code);
 	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
-	// התפריט נסגר בכל ניווט
-	afterNavigate(() => (showNavMenu = false));
+	// התפריטים נסגרים בכל ניווט
+	afterNavigate(() => {
+        showNavMenu = false;
+        showProfileMenu = false;
+    });
 
 </script>
 
-<!-- תפריט הדפים הנוספים — משותף לדסקטופ ולמובייל. Freedom TV וניהול הרשת לאדמינים בלבד -->
+<!-- תפריט הדפים הנוספים — משותף לדסקטופ ולמובייל. Freedom TV לאדמינים בלבד -->
 {#snippet navMenu()}
     <div role="menu" class="absolute end-0 top-full z-[160] mt-2 w-52 overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl">
         {#if user}
@@ -76,12 +94,10 @@
         <a role="menuitem" href="/about" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">ℹ️</span> {tFn("about")}</a>
         {#if user?.canManage}
             <a role="menuitem" href="/admin/tv" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📺</span> חירות TV</a>
-            <a role="menuitem" href="/admin" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🛡️</span> ניהול ומשימות</a>
         {/if}
         {#if user}
-        <a role="menuitem" href="/club" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> מועדון החירות</a>
-        <a role="menuitem" href="/club/charter" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📜</span> אמנת החברים</a>
-        <a role="menuitem" href="/budget" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">💰</span> ניהול תקציב</a>
+            <a role="menuitem" href="/club" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> מועדון החירות</a>
+            <a role="menuitem" href="/club/charter" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10"><span aria-hidden="true">📜</span> אמנת החברים</a>
         {/if}
         <div class="my-1 border-t border-white/10"></div>
         <div class="flex items-center gap-1 px-2 py-1.5" role="group" aria-label={tFn("choose_language")}>
@@ -102,32 +118,97 @@
     </div>
 {/snippet}
 
+<!-- תפריט הפרופיל והאזור האישי שנפתח בלחיצה על תמונת המשתמש -->
+{#snippet profileMenu()}
+    <div
+        role="menu"
+        class="absolute left-0 top-full z-[160] mt-2 w-60 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl"
+    >
+        {#if user}
+            <div class="border-b border-white/10 bg-white/[0.03] px-4 py-2.5 text-right">
+                <p class="truncate text-sm font-bold text-white">{user.name || 'משתמש מחובר'}</p>
+                {#if user.email}
+                    <p class="truncate text-xs text-gray-400">{user.email}</p>
+                {/if}
+            </div>
+
+            {#if user.canManage}
+                <a
+                    role="menuitem"
+                    href="/admin"
+                    class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
+                >
+                    <span aria-hidden="true">🛡️</span> ניהול ומשימות
+                </a>
+            {/if}
+
+            <a
+                role="menuitem"
+                href="/budget"
+                class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
+            >
+                <span aria-hidden="true">💰</span> ניהול תקציב
+            </a>
+
+            <a
+                role="menuitem"
+                href="/profile"
+                class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
+            >
+                <span aria-hidden="true">👤</span> אזור אישי מלא
+            </a>
+
+            <div class="my-1 border-t border-white/10"></div>
+
+            <button
+                type="button"
+                role="menuitem"
+                onclick={handleLogout}
+                class="flex w-full items-center gap-2.5 px-4 py-2.5 text-right text-sm font-bold text-red-400 transition-colors hover:bg-white/10 hover:text-red-300 cursor-pointer"
+            >
+                <span aria-hidden="true">🚪</span> התנתקות
+            </button>
+        {/if}
+    </div>
+{/snippet}
+
 <!-- כפתור פרופיל / התחברות -->
 {#snippet userAuthButton(isMobile = false)}
     {#if user}
-        <a
-            href="/profile"
-            class="flex-shrink-0 rounded-full transition-transform hover:scale-105"
-            title={user.name || user.email}
-            aria-label={user.name || user.email}
-        >
-            {#if user.image && !avatarBroken}
-                <img
-                    src={user.image}
-                    alt=""
-                    width={isMobile ? "36" : "48"}
-                    height={isMobile ? "36" : "48"}
-                    decoding="async"
-                    referrerpolicy="no-referrer"
-                    class="{isMobile ? 'h-9 w-9' : 'h-12 w-12'} rounded-full object-cover border-2 border-purple-500/40 shadow-lg"
-                    onerror={() => (avatarBroken = true)}
-                />
-            {:else}
-                <span class="login-grad flex {isMobile ? 'h-9 w-9 text-xs' : 'h-12 w-12 text-lg'} items-center justify-center rounded-full border border-white/10 font-bold text-white shadow-lg" aria-hidden="true">
-                    {(user.name || user.email).charAt(0).toUpperCase()}
-                </span>
+        <div class="profile-menu-container relative">
+            <button
+                type="button"
+                onclick={() => {
+                    showProfileMenu = !showProfileMenu;
+                    if (showProfileMenu) showNavMenu = false;
+                }}
+                class="flex-shrink-0 rounded-full transition-transform hover:scale-105 cursor-pointer block focus:outline-none focus:ring-2 focus:ring-purple-400/50"
+                title={user.name || user.email}
+                aria-label={user.name || user.email}
+                aria-haspopup="menu"
+                aria-expanded={showProfileMenu}
+            >
+                {#if user.image && !avatarBroken}
+                    <img
+                        src={user.image}
+                        alt=""
+                        width={isMobile ? "36" : "48"}
+                        height={isMobile ? "36" : "48"}
+                        decoding="async"
+                        referrerpolicy="no-referrer"
+                        class="{isMobile ? 'h-9 w-9' : 'h-12 w-12'} rounded-full object-cover border-2 border-purple-500/40 shadow-lg"
+                        onerror={() => (avatarBroken = true)}
+                    />
+                {:else}
+                    <span class="login-grad flex {isMobile ? 'h-9 w-9 text-xs' : 'h-12 w-12 text-lg'} items-center justify-center rounded-full border border-white/10 font-bold text-white shadow-lg" aria-hidden="true">
+                        {(user.name || user.email).charAt(0).toUpperCase()}
+                    </span>
+                {/if}
+            </button>
+            {#if showProfileMenu}
+                {@render profileMenu()}
             {/if}
-        </a>
+        </div>
     {:else}
         <a
             href="/login"
@@ -192,7 +273,7 @@
                             <button
                                 type="button"
                                 class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
-                                onclick={() => (showNavMenu = !showNavMenu)}
+                                onclick={() => { showNavMenu = !showNavMenu; if (showNavMenu) showProfileMenu = false; }}
                                 onkeydown={(e) => e.key === 'Escape' && (showNavMenu = false)}
                                 aria-label="תפריט"
                                 aria-haspopup="menu"
@@ -262,7 +343,7 @@
                         type="button"
                         class="relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-bold text-white transition-all duration-300 hover:scale-105"
                         style="background:linear-gradient(135deg,#4f46e5,#7c3aed); box-shadow:0 4px 15px rgba(124,58,237,0.4);"
-                        onclick={() => (showNavMenu = !showNavMenu)}
+                        onclick={() => { showNavMenu = !showNavMenu; if (showNavMenu) showProfileMenu = false; }}
                         onkeydown={(e) => e.key === 'Escape' && (showNavMenu = false)}
                         aria-haspopup="menu"
                         aria-expanded={showNavMenu}
