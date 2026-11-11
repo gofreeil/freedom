@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import ClubView from '$lib/components/club/ClubView.svelte';
 	import BudgetView from '$lib/components/budget/BudgetView.svelte';
 	import TeamWorkspace from '$lib/components/admin/team/TeamWorkspace.svelte';
 	import NetworkAdmins from '$lib/components/NetworkAdmins.svelte';
@@ -9,13 +8,13 @@
 
 	let { data } = $props();
 
-	type TabKey = 'club' | 'budget' | 'admin' | 'tv';
-	let activeTab = $state<TabKey>('club');
+	type TabKey = 'admin' | 'budget' | 'tv';
+	let activeTab = $state<TabKey>(data.user.canManage ? 'admin' : 'budget');
 
 	onMount(() => {
 		const params = new URLSearchParams(window.location.search);
 		const t = params.get('tab') as TabKey | null;
-		if (t && (t === 'club' || t === 'budget' || ((t === 'admin' || t === 'tv') && data.user.canManage))) {
+		if (t && (t === 'budget' || ((t === 'admin' || t === 'tv') && data.user.canManage))) {
 			activeTab = t;
 		}
 	});
@@ -70,14 +69,16 @@
 
 		<!-- שורת לשוניות (כרטיסיות) למעבר תחת אותו דף -->
 		<div class="flex flex-wrap items-center gap-1.5 sm:gap-2 border-b border-white/10 bg-[#141c2f]/70 px-3 py-2 sm:px-5">
-			<button
-				type="button"
-				onclick={() => switchTab('club')}
-				class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'club' ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
-			>
-				<span aria-hidden="true">🕊️</span>
-				<span>מועדון החירות</span>
-			</button>
+			{#if data.user.canManage}
+				<button
+					type="button"
+					onclick={() => switchTab('admin')}
+					class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'admin' ? 'bg-purple-500/25 text-purple-200 border border-purple-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
+				>
+					<span aria-hidden="true">🛡️</span>
+					<span>ניהול ומשימות</span>
+				</button>
+			{/if}
 
 			<button
 				type="button"
@@ -91,15 +92,6 @@
 			{#if data.user.canManage}
 				<button
 					type="button"
-					onclick={() => switchTab('admin')}
-					class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'admin' ? 'bg-purple-500/25 text-purple-200 border border-purple-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
-				>
-					<span aria-hidden="true">🛡️</span>
-					<span>ניהול ומשימות</span>
-				</button>
-
-				<button
-					type="button"
 					onclick={() => switchTab('tv')}
 					class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'tv' ? 'bg-blue-500/25 text-blue-200 border border-blue-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
 				>
@@ -111,11 +103,7 @@
 
 		<!-- תוכן הכרטיסייה הפתוחה -->
 		<div class="p-2 sm:p-4">
-			{#if activeTab === 'club'}
-				<ClubView club={data.club} />
-			{:else if activeTab === 'budget'}
-				<BudgetView canVote={data.canVote} />
-			{:else if activeTab === 'admin' && data.user.canManage}
+			{#if activeTab === 'admin' && data.user.canManage}
 				<div class="py-2">
 					<TeamWorkspace>
 						{#if data.panel}
@@ -125,6 +113,8 @@
 						{/if}
 					</TeamWorkspace>
 				</div>
+			{:else if activeTab === 'budget'}
+				<BudgetView canVote={data.canVote} />
 			{:else if activeTab === 'tv' && data.user.canManage}
 				<TvView guest={data.tvGuest} />
 			{/if}
