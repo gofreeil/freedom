@@ -104,15 +104,10 @@
 <!-- תפריט הדפים הנוספים — משותף לדסקטופ ולמובייל. Freedom TV לאדמינים בלבד -->
 {#snippet navMenu()}
     <div role="menu" class="absolute end-0 top-full z-[160] mt-2 w-56 overflow-hidden rounded-xl border border-white/15 bg-[#0f1626] py-1 shadow-2xl">
-        {#if !user}
-            <a role="menuitem" href="/login" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> התחברות</a>
-        {/if}
         <a role="menuitem" href="/about" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">ℹ️</span> {tFn("about")}</a>
         <a role="menuitem" href="/successes" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">🌟</span> ההצלחות שלנו</a>
-        {#if user}
-            <a role="menuitem" href="/club" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> מועדון החברים</a>
-            <a role="menuitem" href="/club/charter" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">📜</span> אמנת יוצאים לחירות</a>
-        {/if}
+        <a role="menuitem" href="/club" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">🕊️</span> מועדון החברים</a>
+        <a role="menuitem" href="/club/charter" class="flex items-center gap-2.5 px-4 py-2.5 text-base font-bold text-white hover:bg-white/10"><span aria-hidden="true">📜</span> אמנת יוצאים לחירות</a>
         <div class="mt-5 mb-3 border-t border-white/20"></div>
         <div class="flex items-center gap-1.5 px-2.5 pb-2 pt-0.5" role="group" aria-label={tFn("choose_language")}>
             {#each languages as langOption}
