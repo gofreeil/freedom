@@ -68,7 +68,7 @@
 
 	const INCOME = [
 		{ label: 'דמי חבר במועדון', amount: 55_000, color: '#34d399' },
-		{ label: 'תרומות', amount: 30_000, color: '#38bdf8' },
+		{ label: 'מעשר מעסקים', amount: 30_000, color: '#38bdf8' },
 		{ label: 'עמלות קבוצות רכישה', amount: 15_000, color: '#f5d57a' }
 	];
 	const incomeTotal = INCOME.reduce((s, b) => s + b.amount, 0);
@@ -84,7 +84,7 @@
 			tx1: 98
 		},
 		{
-			// תרומות (30%) — מרכז
+			// מעשר מעסקים (30%) — מרכז
 			color: '#38bdf8',
 			sx0: 41,
 			sx1: 59,
