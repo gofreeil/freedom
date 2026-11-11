@@ -7,16 +7,17 @@
 	import TvView from '$lib/components/admin/tv/TvView.svelte';
 	import ProtocolsView from '$lib/components/admin/protocols/ProtocolsView.svelte';
 	import AchievementsView from '$lib/components/achievements/AchievementsView.svelte';
+	import ConferenceView from '$lib/components/admin/conference/ConferenceView.svelte';
 
 	let { data } = $props();
 
-	type TabKey = 'admin' | 'budget' | 'tv' | 'protocols' | 'achievements';
+	type TabKey = 'admin' | 'budget' | 'tv' | 'protocols' | 'conference' | 'achievements';
 	let activeTab = $state<TabKey>(data.user.canManage ? 'admin' : 'budget');
 
 	onMount(() => {
 		const params = new URLSearchParams(window.location.search);
 		const t = params.get('tab') as TabKey | null;
-		if (t && (t === 'budget' || t === 'achievements' || ((t === 'admin' || t === 'tv' || t === 'protocols') && data.user.canManage))) {
+		if (t && (t === 'budget' || t === 'achievements' || ((t === 'admin' || t === 'tv' || t === 'protocols' || t === 'conference') && data.user.canManage))) {
 			activeTab = t;
 		}
 	});
@@ -117,6 +118,14 @@
 					<span aria-hidden="true">📜</span>
 					<span>פרוטוקולים</span>
 				</button>
+				<button
+					type="button"
+					onclick={() => switchTab('conference')}
+					class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'conference' ? 'bg-teal-500/25 text-teal-200 border border-teal-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
+				>
+					<span aria-hidden="true">🎙️</span>
+					<span>ועידה</span>
+				</button>
 			{/if}
 		</div>
 
@@ -140,6 +149,8 @@
 				<TvView guest={data.tvGuest} />
 			{:else if activeTab === 'protocols' && data.user.canManage}
 				<ProtocolsView />
+			{:else if activeTab === 'conference' && data.user.canManage}
+				<ConferenceView user={data.user} />
 			{/if}
 		</div>
 	</div>

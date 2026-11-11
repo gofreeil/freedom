@@ -170,6 +170,22 @@
                 >
                     <span aria-hidden="true">📺</span> חירות TV
                 </a>
+                <a
+                    role="menuitem"
+                    href="/protocols"
+                    onclick={() => (showProfileMenu = false)}
+                    class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
+                >
+                    <span aria-hidden="true">📜</span> פרוטוקולים
+                </a>
+                <a
+                    role="menuitem"
+                    href="/profile?tab=conference"
+                    onclick={() => (showProfileMenu = false)}
+                    class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
+                >
+                    <span aria-hidden="true">🎙️</span> ועידה
+                </a>
             {/if}
 
             <a
