@@ -6,16 +6,17 @@
 	import NetworkAdminsEditor from '$lib/components/admin/NetworkAdminsEditor.svelte';
 	import TvView from '$lib/components/admin/tv/TvView.svelte';
 	import ProtocolsView from '$lib/components/admin/protocols/ProtocolsView.svelte';
+	import AchievementsView from '$lib/components/achievements/AchievementsView.svelte';
 
 	let { data } = $props();
 
-	type TabKey = 'admin' | 'budget' | 'tv' | 'protocols';
+	type TabKey = 'admin' | 'budget' | 'tv' | 'protocols' | 'achievements';
 	let activeTab = $state<TabKey>(data.user.canManage ? 'admin' : 'budget');
 
 	onMount(() => {
 		const params = new URLSearchParams(window.location.search);
 		const t = params.get('tab') as TabKey | null;
-		if (t && (t === 'budget' || ((t === 'admin' || t === 'tv' || t === 'protocols') && data.user.canManage))) {
+		if (t && (t === 'budget' || t === 'achievements' || ((t === 'admin' || t === 'tv' || t === 'protocols') && data.user.canManage))) {
 			activeTab = t;
 		}
 	});
@@ -90,6 +91,15 @@
 				<span>ניהול תקציב</span>
 			</button>
 
+			<button
+				type="button"
+				onclick={() => switchTab('achievements')}
+				class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'achievements' ? 'bg-amber-500/25 text-amber-200 border border-amber-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
+			>
+				<span aria-hidden="true">🏆</span>
+				<span>ההישגים שלי</span>
+			</button>
+
 			{#if data.user.canManage}
 				<button
 					type="button"
@@ -124,6 +134,8 @@
 				</div>
 			{:else if activeTab === 'budget'}
 				<BudgetView canVote={data.canVote} />
+			{:else if activeTab === 'achievements'}
+				<AchievementsView user={data.user} canManage={data.user.canManage} />
 			{:else if activeTab === 'tv' && data.user.canManage}
 				<TvView guest={data.tvGuest} />
 			{:else if activeTab === 'protocols' && data.user.canManage}
