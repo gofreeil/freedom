@@ -5,16 +5,17 @@
 	import NetworkAdmins from '$lib/components/NetworkAdmins.svelte';
 	import NetworkAdminsEditor from '$lib/components/admin/NetworkAdminsEditor.svelte';
 	import TvView from '$lib/components/admin/tv/TvView.svelte';
+	import ProtocolsView from '$lib/components/admin/protocols/ProtocolsView.svelte';
 
 	let { data } = $props();
 
-	type TabKey = 'admin' | 'budget' | 'tv';
+	type TabKey = 'admin' | 'budget' | 'tv' | 'protocols';
 	let activeTab = $state<TabKey>(data.user.canManage ? 'admin' : 'budget');
 
 	onMount(() => {
 		const params = new URLSearchParams(window.location.search);
 		const t = params.get('tab') as TabKey | null;
-		if (t && (t === 'budget' || ((t === 'admin' || t === 'tv') && data.user.canManage))) {
+		if (t && (t === 'budget' || ((t === 'admin' || t === 'tv' || t === 'protocols') && data.user.canManage))) {
 			activeTab = t;
 		}
 	});
@@ -98,6 +99,14 @@
 					<span aria-hidden="true">📺</span>
 					<span>חירות TV</span>
 				</button>
+				<button
+					type="button"
+					onclick={() => switchTab('protocols')}
+					class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'protocols' ? 'bg-amber-500/25 text-amber-200 border border-amber-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
+				>
+					<span aria-hidden="true">📜</span>
+					<span>פרוטוקולים</span>
+				</button>
 			{/if}
 		</div>
 
@@ -117,6 +126,8 @@
 				<BudgetView canVote={data.canVote} />
 			{:else if activeTab === 'tv' && data.user.canManage}
 				<TvView guest={data.tvGuest} />
+			{:else if activeTab === 'protocols' && data.user.canManage}
+				<ProtocolsView />
 			{/if}
 		</div>
 	</div>
