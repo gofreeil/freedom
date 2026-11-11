@@ -75,6 +75,17 @@
 					{/if}
 				</section>
 			{/each}
+
+			{#if data.club.totalSaving}
+				<div class="flex flex-wrap items-center justify-between gap-3 border-t-2 border-emerald-400/30 bg-emerald-500/10 px-4 py-2.5 sm:px-6 sm:py-3">
+					<span class="text-base sm:text-xl font-black text-emerald-200">
+						סה"כ שווי ההטבה:
+					</span>
+					<span class="rounded-xl border border-emerald-400/50 bg-emerald-400/20 px-3.5 py-1 text-lg sm:text-2xl font-black text-emerald-300 shadow-md shadow-emerald-400/20">
+						{data.club.totalSaving}
+					</span>
+				</div>
+			{/if}
 		</div>
 
 		<div class="mt-4 flex flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-right">

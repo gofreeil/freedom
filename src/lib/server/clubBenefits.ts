@@ -30,6 +30,8 @@ export const CLUB_INTRO =
 
 export const CLUB_MOTTO = 'כל אלו אתם מקבלים מה אתם נותנים ב59 ש"ח בחודש?';
 
+export const CLUB_TOTAL_SAVING = 'בין 580 ש"ח ל-1,330 ש"ח בחודש';
+
 export const CLUB_SECTIONS: ClubSection[] = [
 	{
 		icon: '💰',
