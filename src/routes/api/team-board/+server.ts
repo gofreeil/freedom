@@ -9,7 +9,7 @@ import { isSuperAdmin } from '$lib/server/superAdmin';
 import { isNetworkAdmin } from '$lib/server/siteAdmins';
 import { friendlyName } from '$lib/server/strapiAuth';
 import { readBoard, mutateBoard, teamRoster, BoardStorageError } from '$lib/server/teamBoard';
-import { BoardError, type Actor, type BoardOp } from '$lib/teamBoard';
+import { BoardError, type Actor, type BoardOp, type BoardTask, type Member } from '$lib/teamBoard';
 import type { RequestHandler } from './$types';
 
 type Auth = { actor: Actor; jwt: string } | { error: Response };
@@ -47,6 +47,26 @@ function failure(e: unknown): Response {
 	return json({ error: 'תקלה בשרת — נסו שוב' }, { status: 502 });
 }
 
+function filterTasksForCoordinator(
+	tasks: BoardTask[],
+	actorId: string,
+	team: Member[]
+): BoardTask[] {
+	const me = team.find((m) => m.id === actorId);
+	const siteIds = new Set(me?.siteIds ?? []);
+	return tasks.filter((t) => {
+		// שויך מפורשות לרכז
+		if (t.assignees.includes(actorId)) return true;
+		// נוצר על ידי הרכז
+		if (t.createdBy === actorId) return true;
+		// שייך לאתר שהרכז מנהל
+		if (t.siteId && siteIds.has(t.siteId)) return true;
+		// שויך לתפקיד רכז האתר (למשל site:freedom_club)
+		if (t.assignees.some((a) => a.startsWith('site:') && siteIds.has(a.slice(5)))) return true;
+		return false;
+	});
+}
+
 export const GET: RequestHandler = async ({ locals, setHeaders }) => {
 	const auth = await authorize(locals);
 	if ('error' in auth) return auth.error;
@@ -54,6 +74,9 @@ export const GET: RequestHandler = async ({ locals, setHeaders }) => {
 	try {
 		const { board, rev } = await readBoard(auth.jwt);
 		const team = await teamRoster(board);
+		if (!auth.actor.isSuper) {
+			board.tasks = filterTasksForCoordinator(board.tasks, auth.actor.id, team);
+		}
 		return json({ me: auth.actor, team, board, rev });
 	} catch (e) {
 		return failure(e);
@@ -71,6 +94,10 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	}
 	try {
 		const { board, rev } = await mutateBoard(auth.jwt, op, auth.actor);
+		if (!auth.actor.isSuper) {
+			const team = await teamRoster(board);
+			board.tasks = filterTasksForCoordinator(board.tasks, auth.actor.id, team);
+		}
 		return json({ board, rev });
 	} catch (e) {
 		return failure(e);

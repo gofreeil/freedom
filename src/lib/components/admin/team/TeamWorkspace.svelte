@@ -28,11 +28,17 @@
 	type Tab = (typeof TABS)[number]['id'];
 
 	const isSuper = $derived(Boolean(page.data.user?.isSuperAdmin || store.me?.isSuper));
-	const visibleTabs = $derived(TABS.filter((t) => t.id !== 'coordinators' || isSuper));
+	const visibleTabs = $derived(
+		TABS.filter((t) => t.id === 'tasks' || t.id === 'reports' || isSuper)
+	);
 
 	const initialTab = page.url.searchParams.get('tab');
 	let tab = $state<Tab>(
-		TABS.some((t) => t.id === initialTab && (t.id !== 'coordinators' || Boolean(page.data.user?.isSuperAdmin)))
+		TABS.some(
+			(t) =>
+				t.id === initialTab &&
+				(t.id === 'tasks' || t.id === 'reports' || Boolean(page.data.user?.isSuperAdmin))
+		)
 			? (initialTab as Tab)
 			: 'tasks'
 	);
@@ -40,7 +46,7 @@
 	let presetReportTask = $state('');
 
 	$effect(() => {
-		if (!isSuper && tab === 'coordinators') {
+		if (!isSuper && (tab === 'coordinators' || tab === 'overview')) {
 			tab = 'tasks';
 		}
 	});
@@ -166,7 +172,7 @@
 		<TaskBoard {store} onopen={openTask} />
 	{:else if tab === 'reports'}
 		<ReportsFeed {store} presetTaskId={presetReportTask} onpresetused={() => (presetReportTask = '')} onopentask={openTask} />
-	{:else if tab === 'overview'}
+	{:else if tab === 'overview' && isSuper}
 		<TeamOverview {store} onfilter={filterByAssignee} />
 	{/if}
 </div>
