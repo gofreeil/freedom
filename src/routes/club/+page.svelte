@@ -28,7 +28,7 @@
 			<h1 class="flex items-center gap-2.5 text-xl font-black text-white sm:text-2xl">
 				<span aria-hidden="true">🕊️</span> מועדון יוצאים לחירות
 			</h1>
-			<span class="rounded-xl border-2 border-amber-400 bg-amber-400/20 px-3.5 py-1 text-base sm:text-xl font-black text-amber-300 shadow-md shadow-amber-400/25">
+			<span class="rounded-xl border-2 border-red-500 bg-red-500/20 px-3.5 py-1 text-base sm:text-xl font-black text-red-400 shadow-md shadow-red-500/30">
 				{data.club.price}
 			</span>
 			<p class="basis-full text-[15px] leading-snug text-gray-300">{data.club.intro}</p>
