@@ -91,6 +91,27 @@
 
 	const band = (f: { sy: number; ty: number; h: number }) =>
 		`M100,${f.sy} C50,${f.sy} 50,${f.ty} 0,${f.ty} L0,${f.ty + f.h} C50,${f.ty + f.h} 50,${f.sy + f.h} 100,${f.sy + f.h} Z`;
+
+	const EXPENSE_FLOW_H = 156;
+	const expenseRowH = EXPENSE_FLOW_H / BUDGET.length;
+	const expenseFlowUsable = 132;
+	const expenseFlowPad = (EXPENSE_FLOW_H - expenseFlowUsable) / 2;
+	const expenseFlows = (() => {
+		let ty = expenseFlowPad;
+		return BUDGET.map((b, i) => {
+			const pct = (b.amount / total) * 100;
+			const th = (b.amount / total) * expenseFlowUsable;
+			const cy = (i + 0.5) * expenseRowH;
+			const rh = Math.max(6, Math.min(20, (b.amount / total) * 36));
+			const sy = cy - rh / 2;
+			const f = { ...b, pct, sy, rh, ty, th };
+			ty += th;
+			return f;
+		});
+	})();
+
+	const expenseBand = (f: { sy: number; rh: number; ty: number; th: number }) =>
+		`M100,${f.sy} C50,${f.sy} 50,${f.ty} 0,${f.ty} L0,${f.ty + f.th} C50,${f.ty + f.th} 50,${f.sy + f.rh} 100,${f.sy + f.rh} Z`;
 </script>
 
 <div class="mx-auto max-w-4xl px-2 sm:px-4 py-2 sm:py-4" dir="rtl">
@@ -130,6 +151,37 @@
 			>
 				<span class="text-[11px] text-gray-400">סך ההכנסות</span>
 				<span class="text-base font-black text-white">{nis(incomeTotal)}</span>
+			</div>
+		</div>
+	</section>
+
+	<!-- הוצאות: סעיפי ההוצאות שיוצאים מקופת התקציב -->
+	<section class="mb-3 rounded-2xl border border-white/10 bg-[#141c2f] p-4 sm:p-5">
+		<h3 class="mb-2 text-sm font-black text-white">הוצאות — לפי סעיף</h3>
+		<div class="flex items-stretch" style="height:{EXPENSE_FLOW_H}px">
+			<ul class="flex-shrink-0 text-[13px]">
+				{#each expenseFlows as f}
+					<li
+						class="flex items-center gap-2 border-e-4 pe-2"
+						style="height:{expenseRowH}px; border-color:{f.color}"
+					>
+						<span class="font-bold text-white">{f.label}</span>
+						<span class="tabular-nums text-gray-300">{nis(f.amount)}</span>
+						<span class="hidden tabular-nums text-gray-400 sm:inline">{Math.round(f.pct)}%</span>
+					</li>
+				{/each}
+			</ul>
+			<svg viewBox="0 0 100 {EXPENSE_FLOW_H}" preserveAspectRatio="none" class="h-full min-w-0 flex-1" aria-hidden="true">
+				{#each expenseFlows as f}
+					<path d={expenseBand(f)} fill={f.color} opacity="0.4" />
+				{/each}
+			</svg>
+			<div
+				class="flex flex-shrink-0 flex-col items-center justify-center rounded-lg border-s-4 border-rose-400/80 bg-rose-500/15 px-3 text-center"
+				style="height:{expenseFlowUsable}px; margin-top:{expenseFlowPad}px"
+			>
+				<span class="text-[11px] text-gray-400">סך ההוצאות</span>
+				<span class="text-base font-black text-white">{nis(total)}</span>
 			</div>
 		</div>
 	</section>
