@@ -129,7 +129,7 @@
 			href="/club/charter"
 			class="inline-flex items-center gap-1.5 rounded-full border border-sky-400/40 bg-sky-400/10 px-3.5 py-1 text-xs font-bold text-sky-200 transition-colors hover:bg-sky-400/20 hover:text-white"
 		>
-			📜 אמנת החברים
+			📜 אמנת יוצאים לחירות
 		</a>
 	</div>
 </div>
