@@ -115,15 +115,15 @@
                 <img
                     src={user.image}
                     alt=""
-                    width={isMobile ? "34" : "44"}
-                    height={isMobile ? "34" : "44"}
+                    width={isMobile ? "36" : "48"}
+                    height={isMobile ? "36" : "48"}
                     decoding="async"
                     referrerpolicy="no-referrer"
-                    class="{isMobile ? 'h-[34px] w-[34px]' : 'h-11 w-11'} rounded-full object-cover border-2 border-purple-500/40 shadow-lg"
+                    class="{isMobile ? 'h-9 w-9' : 'h-12 w-12'} rounded-full object-cover border-2 border-purple-500/40 shadow-lg"
                     onerror={() => (avatarBroken = true)}
                 />
             {:else}
-                <span class="login-grad flex {isMobile ? 'h-[34px] w-[34px] text-xs' : 'h-11 w-11 text-base'} items-center justify-center rounded-full border border-white/10 font-bold text-white shadow-lg" aria-hidden="true">
+                <span class="login-grad flex {isMobile ? 'h-9 w-9 text-xs' : 'h-12 w-12 text-lg'} items-center justify-center rounded-full border border-white/10 font-bold text-white shadow-lg" aria-hidden="true">
                     {(user.name || user.email).charAt(0).toUpperCase()}
                 </span>
             {/if}
@@ -187,7 +187,7 @@
                         </div>
                     </a>
 
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2.5">
                         <div class="nav-menu-container relative">
                             <button
                                 type="button"
@@ -253,7 +253,7 @@
                     <p class="text-lg text-gray-100 font-extrabold group-hover:opacity-80 transition-opacity">{tFn("app_description")}</p>
                 </a>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-8">
                 <!-- הסדר מימין לשמאל: תפריט (אודות · Freedom TV · ניהול הרשת) · שפה · משתמש -->
                 <!-- שני הקישורים האחרונים — לסופר-אדמין ולאדמיני אתרי הרשת בלבד; לשאר נשאר כפתור "אודות" רגיל -->
                 <!-- "ניהול תקציב" — לכל משתמש מחובר (צפייה); ההצבעה נקבעת בדף עצמו -->
