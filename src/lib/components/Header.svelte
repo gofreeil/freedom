@@ -115,15 +115,15 @@
                 <img
                     src={user.image}
                     alt=""
-                    width={isMobile ? "32" : "36"}
-                    height={isMobile ? "32" : "36"}
+                    width={isMobile ? "34" : "44"}
+                    height={isMobile ? "34" : "44"}
                     decoding="async"
                     referrerpolicy="no-referrer"
-                    class="{isMobile ? 'h-8 w-8' : 'h-9 w-9'} rounded-full object-cover border-2 border-purple-500/40 shadow-lg"
+                    class="{isMobile ? 'h-[34px] w-[34px]' : 'h-11 w-11'} rounded-full object-cover border-2 border-purple-500/40 shadow-lg"
                     onerror={() => (avatarBroken = true)}
                 />
             {:else}
-                <span class="login-grad flex {isMobile ? 'h-8 w-8 text-xs' : 'h-9 w-9 text-sm'} items-center justify-center rounded-full border border-white/10 font-bold text-white shadow-lg" aria-hidden="true">
+                <span class="login-grad flex {isMobile ? 'h-[34px] w-[34px] text-xs' : 'h-11 w-11 text-base'} items-center justify-center rounded-full border border-white/10 font-bold text-white shadow-lg" aria-hidden="true">
                     {(user.name || user.email).charAt(0).toUpperCase()}
                 </span>
             {/if}
@@ -131,7 +131,7 @@
     {:else}
         <a
             href="/login"
-            class="login-grad flex items-center {isMobile ? 'justify-center w-8 h-8 rounded-lg text-sm' : 'gap-1.5 rounded-lg px-3 py-2 text-sm'} font-bold text-white transition-all hover:brightness-110"
+            class="login-grad flex items-center {isMobile ? 'justify-center w-8 h-8 rounded-lg text-sm' : 'gap-1.5 rounded-lg px-3 py-1.5 text-sm'} font-bold text-white transition-all hover:brightness-110"
             title="התחברות"
             aria-label="התחברות"
         >
@@ -187,7 +187,7 @@
                         </div>
                     </a>
 
-                    <div class="flex items-center gap-1.5">
+                    <div class="flex items-center gap-2">
                         <div class="nav-menu-container relative">
                             <button
                                 type="button"
@@ -253,14 +253,14 @@
                     <p class="text-lg text-gray-100 font-extrabold group-hover:opacity-80 transition-opacity">{tFn("app_description")}</p>
                 </a>
             </div>
-<div class="flex items-center gap-2">
+            <div class="flex items-center gap-4">
                 <!-- הסדר מימין לשמאל: תפריט (אודות · Freedom TV · ניהול הרשת) · שפה · משתמש -->
                 <!-- שני הקישורים האחרונים — לסופר-אדמין ולאדמיני אתרי הרשת בלבד; לשאר נשאר כפתור "אודות" רגיל -->
                 <!-- "ניהול תקציב" — לכל משתמש מחובר (צפייה); ההצבעה נקבעת בדף עצמו -->
                 <div class="nav-menu-container relative">
                     <button
                         type="button"
-                        class="relative flex items-center gap-2 rounded-lg px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105"
+                        class="relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-bold text-white transition-all duration-300 hover:scale-105"
                         style="background:linear-gradient(135deg,#4f46e5,#7c3aed); box-shadow:0 4px 15px rgba(124,58,237,0.4);"
                         onclick={() => (showNavMenu = !showNavMenu)}
                         onkeydown={(e) => e.key === 'Escape' && (showNavMenu = false)}
@@ -268,7 +268,7 @@
                         aria-expanded={showNavMenu}
                     >
                         {tFn("menu")}
-                        <svg class="h-4 w-4 transition-transform {showNavMenu ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        <svg class="h-3.5 w-3.5 transition-transform {showNavMenu ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     {#if showNavMenu}
                         {@render navMenu()}
