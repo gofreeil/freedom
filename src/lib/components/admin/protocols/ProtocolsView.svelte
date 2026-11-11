@@ -11,6 +11,7 @@
 		summary: string;
 		decisions: string[];
 		fullText?: string;
+		videoUrl?: string;
 		status: 'approved' | 'in_progress';
 	}
 
@@ -33,6 +34,39 @@
 	let newSummary = $state('');
 	let newDecisions = $state('');
 	let newFullText = $state('');
+	let newVideoUrl = $state('');
+
+	function getEmbedUrl(rawUrl?: string): string | null {
+		if (!rawUrl) return null;
+		const url = rawUrl.trim();
+		if (!url) return null;
+
+		// YouTube: watch, embed, shorts, youtu.be
+		const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+		if (yt && yt[1]) {
+			return `https://www.youtube-nocookie.com/embed/${yt[1]}`;
+		}
+
+		// Vimeo
+		const vimeo = url.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/[^\/]*\/videos\/|video\/|)(\d+)/);
+		if (vimeo && vimeo[1]) {
+			return `https://player.vimeo.com/video/${vimeo[1]}`;
+		}
+
+		return url;
+	}
+
+	function isDirectVideo(url?: string): boolean {
+		if (!url) return false;
+		return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url.trim());
+	}
+
+	function promptEditVideo(p: Protocol) {
+		const next = prompt('הזינו קישור לוידאו (YouTube, Vimeo או קישור ישיר):', p.videoUrl || '');
+		if (next === null) return;
+		p.videoUrl = next.trim() || undefined;
+		saveToStorage([...protocols]);
+	}
 
 	onMount(() => {
 		try {
@@ -86,6 +120,7 @@
 			summary: newSummary.trim() || newTitle.trim(),
 			decisions: decisionsList.length > 0 ? decisionsList : ['ההחלטות מתועדות בפרוטוקול המלא.'],
 			fullText: newFullText.trim() || undefined,
+			videoUrl: newVideoUrl.trim() || undefined,
 			status: 'approved'
 		};
 
@@ -99,6 +134,7 @@
 		newDecisions = '';
 		newParticipants = '';
 		newFullText = '';
+		newVideoUrl = '';
 	}
 
 	async function share() {
@@ -269,6 +305,14 @@
 							<time datetime={p.date} class="tabular-nums text-gray-300 font-semibold text-sm sm:text-base">
 								{new Date(p.date).toLocaleDateString('he-IL', { day: 'numeric', month: 'numeric', year: 'numeric' })}
 							</time>
+							{#if p.videoUrl}
+								<span
+									class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold bg-purple-500/15 text-purple-200 border border-purple-400/30"
+									title="קיימת הקלטת וידאו לפרוטוקול זה"
+								>
+									🎥 וידאו
+								</span>
+							{/if}
 							<span
 								class="hidden sm:inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs sm:text-sm font-bold {p.status === 'approved'
 									? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
@@ -295,6 +339,69 @@
 							</div>
 
 							<p class="mb-4 text-base sm:text-lg text-gray-100 leading-relaxed">{p.summary}</p>
+
+							<!-- אזור וידאו / הקלטת ישיבה -->
+							{#if p.videoUrl}
+								<div class="mb-4 rounded-xl border border-white/10 bg-[#0a0f1d] p-3 sm:p-4">
+									<div class="mb-2.5 flex items-center justify-between gap-2">
+										<h3 class="flex items-center gap-2 text-sm sm:text-base font-black text-amber-200">
+											<span>🎥</span>
+											<span>הקלטת וידאו של הישיבה</span>
+										</h3>
+										<div class="flex items-center gap-2">
+											<button
+												type="button"
+												onclick={() => promptEditVideo(p)}
+												class="rounded-lg border border-white/10 px-2.5 py-1 text-xs font-bold text-gray-300 hover:bg-white/5 hover:text-amber-300 cursor-pointer"
+											>
+												✏️ עריכת קישור
+											</button>
+											<button
+												type="button"
+												onclick={() => {
+													if (confirm('האם להסיר את הוידאו מפרוטוקול זה?')) {
+														p.videoUrl = undefined;
+														saveToStorage([...protocols]);
+													}
+												}}
+												class="rounded-lg border border-red-500/20 px-2.5 py-1 text-xs font-bold text-red-400 hover:bg-red-950/30 cursor-pointer"
+											>
+												✕ הסרה
+											</button>
+										</div>
+									</div>
+
+									<div class="relative aspect-video w-full overflow-hidden rounded-lg bg-black/60 shadow-lg">
+										{#if isDirectVideo(p.videoUrl)}
+											<video src={p.videoUrl} controls class="h-full w-full object-contain">
+												<track kind="captions" />
+											</video>
+										{:else}
+											<iframe
+												src={getEmbedUrl(p.videoUrl)}
+												title={`הקלטת וידאו: ${p.title}`}
+												class="h-full w-full border-0"
+												allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+												allowfullscreen
+											></iframe>
+										{/if}
+									</div>
+								</div>
+							{:else}
+								<div class="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-dashed border-white/15 bg-white/[0.015] p-3 sm:p-3.5">
+									<div class="flex items-center gap-2.5 text-xs sm:text-sm text-gray-300">
+										<span class="flex h-7 w-7 items-center justify-center rounded-lg bg-white/5 text-base" aria-hidden="true">📹</span>
+										<span>טרם צורפה הקלטת וידאו לישיבה זו</span>
+									</div>
+									<button
+										type="button"
+										onclick={() => promptEditVideo(p)}
+										class="rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-xs sm:text-sm font-bold text-amber-200 hover:bg-amber-400/20 transition cursor-pointer"
+									>
+										➕ הוספת קישור לוידאו
+									</button>
+								</div>
+							{/if}
 
 							<!-- החלטות מרכזיות -->
 							<div class="rounded-xl border border-white/10 bg-[#0f1626] p-4 mb-4">
@@ -440,6 +547,17 @@
 						placeholder="תקציר תמציתי של הנושאים שעלו..."
 						class="w-full rounded-lg border border-white/15 bg-white/5 px-3.5 py-2 text-sm sm:text-base text-white placeholder-gray-500 focus:border-amber-400/60 focus:outline-none"
 					></textarea>
+				</div>
+
+				<div>
+					<label for="p-video" class="block font-bold text-gray-200 mb-1.5 text-sm">קישור לוידאו / הקלטת ישיבה (YouTube / שידור - אופציונלי)</label>
+					<input
+						id="p-video"
+						type="url"
+						bind:value={newVideoUrl}
+						placeholder="למשל: https://www.youtube.com/watch?v=... או https://youtu.be/..."
+						class="w-full rounded-lg border border-white/15 bg-white/5 px-3.5 py-2 text-sm sm:text-base text-white placeholder-gray-500 focus:border-amber-400/60 focus:outline-none"
+					/>
 				</div>
 
 				<div>
