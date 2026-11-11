@@ -201,11 +201,15 @@
 </script>
 
 <section class="rounded-2xl border border-white/10 bg-[#141c2f] p-4 sm:p-5">
-	{#if canVote}
-		<header class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-white/10 pb-3">
-			<h2 class="text-sm font-black text-white">
-				<span aria-hidden="true">🗳️</span> איך לחלק את התקציב?
-			</h2>
+	<header class="mb-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-b border-white/10 pb-2.5">
+		<div class="flex items-center gap-2.5">
+			<span class="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500/15 text-sm ring-1 ring-indigo-500/30" aria-hidden="true">🗳️</span>
+			<div class="flex items-baseline gap-2">
+				<h2 class="text-sm font-black text-white sm:text-base">חלוקה</h2>
+				<span class="text-xs text-gray-400">{canVote ? 'איך לחלק את התקציב' : 'עוגת התקציב לפי סעיפים'}</span>
+			</div>
+		</div>
+		{#if canVote}
 			<div class="ms-auto flex flex-wrap items-center gap-1.5 text-xs">
 				<!-- בנייד הניסוח מקוצר, כדי ששתי התגיות ייכנסו בשורה אחת -->
 				<span class="rounded-full border px-2.5 py-0.5 font-bold {closed ? TONE.off : TONE.ok}">
@@ -228,8 +232,12 @@
 					</span>
 				</span>
 			</div>
-		</header>
-	{/if}
+		{:else}
+			<span class="rounded-full border border-indigo-400/30 bg-indigo-400/10 px-2.5 py-0.5 text-xs font-bold text-indigo-300">
+				סבב נוכחי
+			</span>
+		{/if}
+	</header>
 
 	<div class="grid items-center gap-x-5 gap-y-3 {canVote ? 'sm:grid-cols-[184px_1fr]' : 'sm:grid-cols-[220px_1fr]'}">
 		<!-- עוגת התקציב -->

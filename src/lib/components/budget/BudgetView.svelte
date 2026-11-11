@@ -126,7 +126,18 @@
 
 	<!-- כסף נכנס: שלושה מקורות שמתנקזים לקופת התקציב -->
 	<section class="mb-3 rounded-2xl border border-white/10 bg-[#141c2f] p-4 sm:p-5">
-		<h3 class="mb-2 text-sm font-black text-white">כסף נכנס — לפי מקור</h3>
+		<header class="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+			<div class="flex items-center gap-2.5">
+				<span class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/15 text-sm ring-1 ring-emerald-500/30" aria-hidden="true">💰</span>
+				<div class="flex items-baseline gap-2">
+					<h3 class="text-sm font-black text-white sm:text-base">הכנסות</h3>
+					<span class="text-xs text-gray-400">כסף נכנס לפי מקור</span>
+				</div>
+			</div>
+			<span class="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-0.5 text-xs font-bold text-emerald-300">
+				3 מקורות
+			</span>
+		</header>
 		<div class="flex items-stretch" style="height:{FLOW_H}px">
 			<ul class="flex-shrink-0 text-[13px]">
 				{#each flows as f, i}
@@ -157,7 +168,18 @@
 
 	<!-- הוצאות: סעיפי ההוצאות שיוצאים מקופת התקציב -->
 	<section class="mb-3 rounded-2xl border border-white/10 bg-[#141c2f] p-4 sm:p-5">
-		<h3 class="mb-2 text-sm font-black text-white">הוצאות — לפי סעיף</h3>
+		<header class="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+			<div class="flex items-center gap-2.5">
+				<span class="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/15 text-sm ring-1 ring-rose-500/30" aria-hidden="true">💸</span>
+				<div class="flex items-baseline gap-2">
+					<h3 class="text-sm font-black text-white sm:text-base">הוצאות</h3>
+					<span class="text-xs text-gray-400">כסף יוצא לפי סעיף</span>
+				</div>
+			</div>
+			<span class="rounded-full border border-rose-400/30 bg-rose-400/10 px-2.5 py-0.5 text-xs font-bold text-rose-300">
+				6 סעיפים
+			</span>
+		</header>
 		<div class="flex items-stretch" style="height:{EXPENSE_FLOW_H}px">
 			<ul class="flex-shrink-0 text-[13px]">
 				{#each expenseFlows as f}
