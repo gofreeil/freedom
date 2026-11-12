@@ -116,17 +116,17 @@
 	{#if businessSection}
 		<details class="group mt-3.5">
 			<summary
-				class="mx-auto flex w-fit cursor-pointer list-none items-center gap-3 rounded-2xl border-2 border-amber-400/40 bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-amber-500/15 px-6 py-2.5 text-base sm:text-lg font-black text-amber-200 shadow-lg shadow-amber-500/10 transition hover:border-amber-400/70 hover:bg-amber-400/20 hover:scale-[1.01] active:scale-[0.99] select-none [&::-webkit-details-marker]:hidden"
+				class="mx-auto flex w-fit cursor-pointer list-none items-center gap-3 rounded-2xl border border-sky-400/50 bg-sky-950/70 px-6 py-2.5 text-base sm:text-lg font-black text-sky-200 transition hover:border-sky-300 hover:bg-sky-900/60 select-none [&::-webkit-details-marker]:hidden"
 			>
 				<span aria-hidden="true" class="text-xl sm:text-2xl">💻</span>
 				<span>מסלול לעסקים בתוספת 35 ש"ח</span>
-				<span class="rounded-full border border-amber-400/40 bg-amber-400/20 px-3 py-0.5 text-xs font-bold text-amber-100">
+				<span class="rounded-full border border-sky-400/40 bg-sky-500/20 px-3 py-0.5 text-xs font-bold text-sky-100">
 					<span class="group-open:hidden">לחץ לפתיחה ▾</span>
 					<span class="hidden group-open:inline">סגירה ▴</span>
 				</span>
 			</summary>
-			<div class="mt-2.5 overflow-hidden rounded-2xl border border-amber-400/30 bg-[#141c2f]/90 shadow-xl">
-				<h3 class="flex items-center gap-2 border-b border-amber-400/20 bg-amber-400/10 px-4 py-1.5 text-[15px] leading-tight font-black text-amber-200">
+			<div class="mt-2.5 overflow-hidden rounded-2xl border border-sky-400/30 bg-[#141c2f]/90">
+				<h3 class="flex items-center gap-2 border-b border-sky-400/20 bg-sky-500/10 px-4 py-1.5 text-[15px] leading-tight font-black text-sky-200">
 					<span aria-hidden="true">{businessSection.icon}</span> {businessSection.title}
 				</h3>
 				{@render sectionBody(businessSection)}
