@@ -25,6 +25,21 @@
 				background-color: #04150d;
 			}
 		</style>
+		<!-- הגנה מפני "אתר בלי עיצוב": אם קובץ CSS/JS מ-_app נכשל בטעינה (פריסה חדשה שהחליפה
+		     את ה-hash, או רשת רעה), טוענים את הדף מחדש פעם אחת בלבד (מוגן ב-sessionStorage). -->
+		<script>
+			addEventListener('error', function (e) {
+				var t = e.target;
+				if (!t || !t.tagName) return;
+				var u = t.href || t.src || '';
+				if (u.indexOf('/_app/') === -1) return;
+				try {
+					if (sessionStorage.getItem('asset-reload')) return;
+					sessionStorage.setItem('asset-reload', '1');
+				} catch (_) { return; }
+				location.reload();
+			}, true);
+		</script>
 		<!-- Google Analytics — נכס משותף לכל אתרי "יוצאים לחירות". ההפרדה בין
 		     האתרים נעשית לפי hostName, ולכן אותו מזהה משמש את כולם. -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-YTEG7S0H9N"></script>
