@@ -21,6 +21,8 @@ export interface ClubSection {
 	/** תווית קצרה בתחתית רשימת הקטגוריה (למשל חיסכון חודשי משוער) */
 	saving?: string;
 	benefits: ClubBenefit[];
+	/** האם הקטגוריה מופיעה כטבלה נפתחת (ברירת מחדל: סגורה, נפתחת בלחיצה) */
+	collapsible?: boolean;
 }
 
 export const CLUB_PRICE = '59 ש"ח לחודש';
@@ -100,8 +102,9 @@ export const CLUB_SECTIONS: ClubSection[] = [
 	},
 	{
 		icon: '💻',
-		title: 'כלים לעסקים',
+		title: 'מסלול לעסקים בתוספת 35 ש"ח',
 		saving: 'שווי ההטבה: כ-150 ש"ח בחודש',
+		collapsible: true,
 		benefits: [
 			{
 				icon: '🤝',

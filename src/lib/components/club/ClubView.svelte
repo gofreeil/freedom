@@ -23,6 +23,41 @@
 	});
 </script>
 
+{#snippet sectionBody(section: (typeof numbered)[number])}
+	<ul class="divide-y divide-white/5">
+		{#each section.benefits as b}
+			<li class="grid grid-cols-[1.75rem_1fr] gap-x-3 gap-y-0.5 px-4 py-1.5 md:grid-cols-[1.75rem_22rem_1fr]">
+				<span class="flex h-7 w-7 items-center justify-center rounded-full bg-amber-400/15 text-sm font-black text-amber-200">
+					{b.n}
+				</span>
+				<div class="self-center">
+					<h4 class="text-base font-bold leading-tight text-white">
+						<span aria-hidden="true">{b.icon}</span> {b.title}
+					</h4>
+					{#if b.note}
+						<p class="mt-0.5 text-[13px] italic text-amber-200/80">{b.note}</p>
+					{/if}
+				</div>
+				<svelte:element
+					this={b.ordered ? 'ol' : 'ul'}
+					class="col-start-2 self-center ps-4 text-[15px] leading-tight text-gray-300 marker:text-amber-200/60 md:col-start-3 {b.ordered ? 'list-decimal' : 'list-disc'}"
+				>
+					{#each b.points as p}
+						<li>{p}</li>
+					{/each}
+				</svelte:element>
+			</li>
+		{/each}
+	</ul>
+	{#if section.saving}
+		<p class="flex justify-end border-t border-white/5 px-4 py-1">
+			<span class="rounded-full bg-emerald-400/15 px-2 py-0.5 text-[13px] font-bold text-emerald-200">
+				{section.saving}
+			</span>
+		</p>
+	{/if}
+{/snippet}
+
 <div class="mx-auto max-w-4xl px-2 sm:px-4 py-2 sm:py-4" dir="rtl">
 	<div class="mb-1.5">
 		<span class="inline-flex items-center gap-1.5 rounded-full border border-amber-400/25 bg-amber-400/10 px-2.5 py-0.5 text-xs font-medium text-amber-200/90">
@@ -43,43 +78,30 @@
 	<!-- רשימה אחת רציפה: כותרת קטגוריה, ומתחתיה שורות מופרדות בקו דק -->
 	<div class="divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/10 bg-[#141c2f]/90">
 		{#each numbered as section}
-			<section>
-				<h3 class="flex items-center gap-2 border-b border-white/10 bg-white/5 px-4 py-1 text-[15px] leading-tight font-black text-amber-200">
-					<span aria-hidden="true">{section.icon}</span> {section.title}
-				</h3>
-				<ul class="divide-y divide-white/5">
-					{#each section.benefits as b}
-						<li class="grid grid-cols-[1.75rem_1fr] gap-x-3 gap-y-0.5 px-4 py-1.5 md:grid-cols-[1.75rem_22rem_1fr]">
-							<span class="flex h-7 w-7 items-center justify-center rounded-full bg-amber-400/15 text-sm font-black text-amber-200">
-								{b.n}
-							</span>
-							<div class="self-center">
-								<h4 class="text-base font-bold leading-tight text-white">
-									<span aria-hidden="true">{b.icon}</span> {b.title}
-								</h4>
-								{#if b.note}
-									<p class="mt-0.5 text-[13px] italic text-amber-200/80">{b.note}</p>
-								{/if}
-							</div>
-							<svelte:element
-								this={b.ordered ? 'ol' : 'ul'}
-								class="col-start-2 self-center ps-4 text-[15px] leading-tight text-gray-300 marker:text-amber-200/60 md:col-start-3 {b.ordered ? 'list-decimal' : 'list-disc'}"
-							>
-								{#each b.points as p}
-									<li>{p}</li>
-								{/each}
-							</svelte:element>
-						</li>
-					{/each}
-				</ul>
-				{#if section.saving}
-					<p class="flex justify-end border-t border-white/5 px-4 py-1">
-						<span class="rounded-full bg-emerald-400/15 px-2 py-0.5 text-[13px] font-bold text-emerald-200">
-							{section.saving}
+			{#if section.collapsible}
+				<details class="group">
+					<summary
+						class="flex cursor-pointer list-none items-center justify-between bg-white/5 px-4 py-1.5 text-[15px] leading-tight font-black text-amber-200 transition hover:bg-white/10 select-none group-open:border-b group-open:border-white/10 [&::-webkit-details-marker]:hidden"
+					>
+						<span class="flex items-center gap-2">
+							<span aria-hidden="true">{section.icon}</span>
+							<span>{section.title}</span>
 						</span>
-					</p>
-				{/if}
-			</section>
+						<span class="flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-xs font-semibold text-amber-200">
+							<span class="group-open:hidden">לחץ לפתיחה ▾</span>
+							<span class="hidden group-open:inline">סגירה ▴</span>
+						</span>
+					</summary>
+					{@render sectionBody(section)}
+				</details>
+			{:else}
+				<section>
+					<h3 class="flex items-center gap-2 border-b border-white/10 bg-white/5 px-4 py-1 text-[15px] leading-tight font-black text-amber-200">
+						<span aria-hidden="true">{section.icon}</span> {section.title}
+					</h3>
+					{@render sectionBody(section)}
+				</section>
+			{/if}
 		{/each}
 
 		{#if club.totalSaving}
