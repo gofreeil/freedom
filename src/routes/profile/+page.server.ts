@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import { isSuperAdmin } from '$lib/server/superAdmin';
 import { isNetworkAdmin, getSiteAdmins, type SiteAdminsMap } from '$lib/server/siteAdmins';
 import { canVoteBudget } from '$lib/server/budgetAccess';
-import { CLUB_INTRO, CLUB_MOTTO, CLUB_PRICE, CLUB_SECTIONS, CLUB_TOTAL_SAVING } from '$lib/server/clubBenefits';
+import { CLUB_BUSINESS_TRACK, CLUB_INTRO, CLUB_MOTTO, CLUB_PRICE, CLUB_SECTIONS, CLUB_TOTAL_SAVING } from '$lib/server/clubBenefits';
 import { SITES } from '$lib/sitesData';
 import { displayAvatarUrl } from '$lib/server/avatarProxy';
 import { gravatarUrl } from '$lib/server/gravatar';
@@ -75,6 +75,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			intro: CLUB_INTRO,
 			motto: CLUB_MOTTO,
 			sections: CLUB_SECTIONS,
+			businessTrack: CLUB_BUSINESS_TRACK,
 			totalSaving: CLUB_TOTAL_SAVING
 		},
 		canVote: await canVoteBudget(email),

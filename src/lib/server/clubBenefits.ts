@@ -32,7 +32,31 @@ export const CLUB_INTRO =
 
 export const CLUB_MOTTO = 'כל אלו אתם מקבלים מה אתם נותנים ב59 ש"ח בחודש?';
 
-export const CLUB_TOTAL_SAVING = 'בין 580 ש"ח ל-1,330 ש"ח בחודש';
+export const CLUB_TOTAL_SAVING = 'בין 430 ש"ח ל-1,180 ש"ח בחודש';
+
+export const CLUB_BUSINESS_TRACK: ClubSection = {
+	icon: '💻',
+	title: 'כלים לעסקים',
+	saving: 'שווי ההטבה: כ-150 ש"ח בחודש',
+	collapsible: true,
+	benefits: [
+		{
+			icon: '🤝',
+			title: 'פרסום העסק שלך באתר בעלי המקצוע הכשירים',
+			points: ['חשיפה לכל חברי הקהילה ודירוג מהלקוחות']
+		},
+		{
+			icon: '🛒',
+			title: 'מכור את מוצרך בקניון החירות שלנו',
+			points: ['אפשרות לפתוח חנות משלך וליהנות מהחשיפה שקיימת בקניון יוצאים לחירות']
+		},
+		{
+			icon: '🎥',
+			title: 'שימוש בתוכנות מתקדמות',
+			points: ['תוכנה לניהול המדיה החברתית, שידורים חיים ושיחות ועידה בוידאו']
+		}
+	]
+};
 
 export const CLUB_SECTIONS: ClubSection[] = [
 	{
@@ -100,27 +124,5 @@ export const CLUB_SECTIONS: ClubSection[] = [
 			}
 		]
 	},
-	{
-		icon: '💻',
-		title: 'מסלול לעסקים בתוספת 35 ש"ח',
-		saving: 'שווי ההטבה: כ-150 ש"ח בחודש',
-		collapsible: true,
-		benefits: [
-			{
-				icon: '🤝',
-				title: 'פרסום העסק שלך באתר בעלי המקצוע הכשירים',
-				points: ['חשיפה לכל חברי הקהילה ודירוג מהלקוחות']
-			},
-			{
-				icon: '🛒',
-				title: 'מכור את מוצרך בקניון החירות שלנו',
-				points: ['אפשרות לפתוח חנות משלך וליהנות מהחשיפה שקיימת בקניון יוצאים לחירות']
-			},
-			{
-				icon: '🎥',
-				title: 'שימוש בתוכנות מתקדמות',
-				points: ['תוכנה לניהול המדיה החברתית, שידורים חיים ושיחות ועידה בוידאו']
-			}
-		]
-	}
+	CLUB_BUSINESS_TRACK
 ];

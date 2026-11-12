@@ -7,23 +7,37 @@
 			intro: string;
 			motto: string;
 			sections: ClubSection[];
+			businessTrack?: ClubSection;
 			totalSaving?: string;
 		};
 	}
 
 	let { club }: Props = $props();
 
-	// מספור רציף של ההטבות לאורך כל הקטגוריות (1–9)
-	const numbered = $derived.by(() => {
+	// מספור רציף של המסלול הרגיל (1–6)
+	const regularSections = $derived.by(() => {
 		let n = 0;
-		return club.sections.map((s) => ({
-			...s,
-			benefits: s.benefits.map((b) => ({ ...b, n: ++n }))
-		}));
+		return club.sections
+			.filter((s) => !s.collapsible)
+			.map((s) => ({
+				...s,
+				benefits: s.benefits.map((b) => ({ ...b, n: ++n }))
+			}));
+	});
+
+	// מסלול לעסקים בנפרד (7–9)
+	const businessSection = $derived.by(() => {
+		const raw = club.businessTrack ?? club.sections.find((s) => s.collapsible);
+		if (!raw) return null;
+		let n = regularSections.reduce((sum, s) => sum + s.benefits.length, 0);
+		return {
+			...raw,
+			benefits: raw.benefits.map((b) => ({ ...b, n: ++n }))
+		};
 	});
 </script>
 
-{#snippet sectionBody(section: (typeof numbered)[number])}
+{#snippet sectionBody(section: (typeof regularSections)[number])}
 	<ul class="divide-y divide-white/5">
 		{#each section.benefits as b}
 			<li class="grid grid-cols-[1.75rem_1fr] gap-x-3 gap-y-0.5 px-4 py-1.5 md:grid-cols-[1.75rem_22rem_1fr]">
@@ -77,31 +91,13 @@
 
 	<!-- רשימה אחת רציפה: כותרת קטגוריה, ומתחתיה שורות מופרדות בקו דק -->
 	<div class="divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/10 bg-[#141c2f]/90">
-		{#each numbered as section}
-			{#if section.collapsible}
-				<details class="group">
-					<summary
-						class="flex cursor-pointer list-none items-center justify-between bg-white/5 px-4 py-1.5 text-[15px] leading-tight font-black text-amber-200 transition hover:bg-white/10 select-none group-open:border-b group-open:border-white/10 [&::-webkit-details-marker]:hidden"
-					>
-						<span class="flex items-center gap-2">
-							<span aria-hidden="true">{section.icon}</span>
-							<span>{section.title}</span>
-						</span>
-						<span class="flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-xs font-semibold text-amber-200">
-							<span class="group-open:hidden">לחץ לפתיחה ▾</span>
-							<span class="hidden group-open:inline">סגירה ▴</span>
-						</span>
-					</summary>
-					{@render sectionBody(section)}
-				</details>
-			{:else}
-				<section>
-					<h3 class="flex items-center gap-2 border-b border-white/10 bg-white/5 px-4 py-1 text-[15px] leading-tight font-black text-amber-200">
-						<span aria-hidden="true">{section.icon}</span> {section.title}
-					</h3>
-					{@render sectionBody(section)}
-				</section>
-			{/if}
+		{#each regularSections as section}
+			<section>
+				<h3 class="flex items-center gap-2 border-b border-white/10 bg-white/5 px-4 py-1 text-[15px] leading-tight font-black text-amber-200">
+					<span aria-hidden="true">{section.icon}</span> {section.title}
+				</h3>
+				{@render sectionBody(section)}
+			</section>
 		{/each}
 
 		{#if club.totalSaving}
@@ -115,6 +111,28 @@
 			</div>
 		{/if}
 	</div>
+
+	<!-- מסלול לעסקים בנפרד: כפתור מוגדל וממורכז שנפתח בלחיצה -->
+	{#if businessSection}
+		<details class="group mt-3.5">
+			<summary
+				class="mx-auto flex w-fit cursor-pointer list-none items-center gap-3 rounded-2xl border-2 border-amber-400/40 bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-amber-500/15 px-6 py-2.5 text-base sm:text-lg font-black text-amber-200 shadow-lg shadow-amber-500/10 transition hover:border-amber-400/70 hover:bg-amber-400/20 hover:scale-[1.01] active:scale-[0.99] select-none [&::-webkit-details-marker]:hidden"
+			>
+				<span aria-hidden="true" class="text-xl sm:text-2xl">💻</span>
+				<span>מסלול לעסקים בתוספת 35 ש"ח</span>
+				<span class="rounded-full border border-amber-400/40 bg-amber-400/20 px-3 py-0.5 text-xs font-bold text-amber-100">
+					<span class="group-open:hidden">לחץ לפתיחה ▾</span>
+					<span class="hidden group-open:inline">סגירה ▴</span>
+				</span>
+			</summary>
+			<div class="mt-2.5 overflow-hidden rounded-2xl border border-amber-400/30 bg-[#141c2f]/90 shadow-xl">
+				<h3 class="flex items-center gap-2 border-b border-amber-400/20 bg-amber-400/10 px-4 py-1.5 text-[15px] leading-tight font-black text-amber-200">
+					<span aria-hidden="true">{businessSection.icon}</span> {businessSection.title}
+				</h3>
+				{@render sectionBody(businessSection)}
+			</div>
+		</details>
+	{/if}
 
 	<!-- במה דמי החבר תומכים (תרומת האתרים לעם ישראל) -->
 	<div class="mt-3.5 rounded-2xl border border-white/10 bg-[#141c2f]/80 p-4 sm:p-5">
