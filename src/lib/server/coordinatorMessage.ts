@@ -63,13 +63,16 @@ export async function findUserByEmail(email: string): Promise<StrapiUserRow | nu
 
 /**
  * האם ה-lifecycle של items בבאקאנד ישלח לנמען הזה SMS בעצמו.
- * משקף את notifyAdminBySms: תפקיד super_admin/neighborhood_admin או רכז שכונה,
- * לא חסום, והעדפות ה-SMS לא מכבות את קבוצת "other" (שאליה נופל הסוג שלנו).
+ * משקף את notifyAdminBySms: super_admin או כל תפקיד *_admin (אדמין של כל אתר
+ * ברשת) או רכז שכונה, לא חסום, והעדפות ה-SMS לא מכבות את קבוצת "other"
+ * (שאליה נופל הסוג שלנו, network_contact — שנחשב שם "חשוב" לשני התפקידים).
  */
 export function backendWillSms(u: StrapiUserRow): boolean {
 	if (u.blocked) return false;
+	const role = String(u.app_role ?? '');
 	const privileged =
-		['super_admin', 'neighborhood_admin'].includes(String(u.app_role ?? '')) ||
+		role === 'super_admin' ||
+		/^[a-z0-9]+(?:_[a-z0-9]+)*_admin$/.test(role) ||
 		(Array.isArray(u.coordinator_of) && u.coordinator_of.length > 0);
 	if (!privileged) return false;
 	const p = u.sms_prefs as { enabled?: unknown; groups?: unknown } | null;
