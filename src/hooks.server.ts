@@ -1,5 +1,6 @@
 import { handle as authHandle } from './auth';
 import { jwtExpSeconds } from '$lib/server/strapiAuth';
+import { ssoAutoAdopt } from '$lib/server/ssoAdopt';
 import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle } from '@sveltejs/kit';
 
@@ -95,4 +96,4 @@ const setSharedSsoCookie: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(authWrapped, skipAuthWhenAnonymous, setSharedSsoCookie);
+export const handle: Handle = sequence(ssoAutoAdopt, authWrapped, skipAuthWhenAnonymous, setSharedSsoCookie);

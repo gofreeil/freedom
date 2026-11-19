@@ -152,16 +152,85 @@ export async function getPublicSiteAdmins(): Promise<PublicSiteAdminsPayload> {
 }
 
 /**
- * האם האימייל שייך לאדמין של אחד מאתרי הרשת (לפי המינויים ב-Strapi, דרך המטמון
- * הציבורי). משמש להצגת כפתור "ניהול הרשת" ולכניסה לדף /admin. תקלה = לא אדמין.
+ * תפקיד אדמין של אתר ברשת (idx_admin, ch_admin, avd_admin...) — כל *_admin חוץ
+ * מ-neighborhood_admin (רכזי שכונות: אוכלוסייה גדולה עם מסלול משלהם, הצבעה
+ * בתקציב לפי coordinator_of) ומ-super_admin (נבדק בנפרד). חייב להישאר זהה ל-
+ * isSiteAdminUser בבאקאנד (extensions/users-permissions/strapi-server.ts) —
+ * שם נאכפת הגישה ללוח הצוות.
  */
-export async function isNetworkAdmin(email: string | null | undefined): Promise<boolean> {
-	const e = email?.trim().toLowerCase();
-	if (!e) return false;
+export function isSiteAdminRole(role: string | null | undefined): boolean {
+	const r = String(role ?? '').trim();
+	if (!r || r === 'neighborhood_admin' || r === 'super_admin') return false;
+	return /^[a-z0-9]+(?:_[a-z0-9]+)*_admin$/.test(r);
+}
+
+// מטמון קצר: הבדיקה רצה בכל טעינת דף של משתמש מחובר, ותפקיד משתנה לעיתים רחוקות
+const ROLE_TTL_MS = 5 * 60_000;
+const ROLE_MAX_ENTRIES = 500;
+const roleCache = new Map<string, { at: number; value: boolean }>();
+
+/** האם משתמש ה-Strapi המשותף של האימייל הוא אדמין של אתר ברשת (לפי app_role). תקלה = לא. */
+async function hasSiteAdminRole(email: string): Promise<boolean> {
+	const hit = roleCache.get(email);
+	if (hit && Date.now() - hit.at < ROLE_TTL_MS) return hit.value;
 	try {
-		const { admins } = await getPublicSiteAdmins();
-		return Object.values(admins).some((a) => a.adminEmail?.trim().toLowerCase() === e);
+		const q = new URLSearchParams({
+			'filters[email][$eqi]': email,
+			'fields[0]': 'app_role',
+			'fields[1]': 'blocked',
+			'pagination[limit]': '1'
+		});
+		const res = await fetch(`${STRAPI_URL}/api/users?${q}`, {
+			headers: { Authorization: `Bearer ${process.env.STRAPI_TOKEN ?? ''}` },
+			signal: AbortSignal.timeout(8_000)
+		});
+		if (!res.ok) return false; // תקלה לא נשמרת במטמון
+		const rows = (await res.json()) as Array<{ app_role?: string | null; blocked?: boolean | null }>;
+		const u = Array.isArray(rows) ? rows[0] : null;
+		const value = !!u && !u.blocked && isSiteAdminRole(u.app_role);
+		if (roleCache.size >= ROLE_MAX_ENTRIES) roleCache.clear();
+		roleCache.set(email, { at: Date.now(), value });
+		return value;
 	} catch {
 		return false;
 	}
+}
+
+/** נירמול טלפון ישראלי להשוואה (למשל 0549081004 או 972549081004 או 054-908-1004) */
+export function normalizePhone(p: string | null | undefined): string {
+	if (!p) return '';
+	const digits = p.replace(/\D/g, '');
+	if (digits.startsWith('972') && digits.length >= 11) return '0' + digits.slice(3);
+	return digits;
+}
+
+/**
+ * האם האימייל שייך לאדמין של אחד מאתרי הרשת: מונה במפת האדמינים ב-Strapi (דרך
+ * המטמון הציבורי, לפי אימייל או טלפון), או שתפקידו ב-Strapi המשותף הוא אדמין של אתר (idx_admin וכו') —
+ * מי שאדמין באתר אחד ברשת הוא חבר צוות הרשת גם באתר הראשי, בלי מינוי ידני נוסף.
+ * משמש להצגת כפתור "ניהול הרשת", ללוח המשימות ולהצבעה. תקלה = לא אדמין.
+ */
+export async function isNetworkAdmin(
+	email: string | null | undefined,
+	phone?: string | null | undefined
+): Promise<boolean> {
+	const e = email?.trim().toLowerCase();
+	const userDigits = normalizePhone(
+		phone || (e?.endsWith('@phone.gofreeil.com') ? e.split('@')[0] : '')
+	);
+	if (!e && !userDigits) return false;
+	try {
+		const { admins } = await getPublicSiteAdmins();
+		const matchedInMap = Object.values(admins).some((a) => {
+			if (e && a.adminEmail?.trim().toLowerCase() === e) return true;
+			const aDigits = normalizePhone(a.phone);
+			if (userDigits && aDigits && aDigits === userDigits) return true;
+			return false;
+		});
+		if (matchedInMap) return true;
+	} catch {
+		/* בלי המפה ממשיכים לבדיקת התפקיד */
+	}
+	if (e) return hasSiteAdminRole(e);
+	return false;
 }

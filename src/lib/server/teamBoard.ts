@@ -7,7 +7,7 @@
 // אם מישהו אחר שמר בין הקריאה לכתיבה (409), קוראים שוב ומחילים את הפעולה מחדש.
 // ============================================================
 import { STRAPI_URL } from './strapiAuth';
-import { getPublicSiteAdmins } from './siteAdmins';
+import { getPublicSiteAdmins, normalizePhone } from './siteAdmins';
 import { superAdminEmails } from './superAdmin';
 import { gravatarUrl } from './gravatar';
 import { displayAvatarUrl } from './avatarProxy';
@@ -83,9 +83,10 @@ export async function teamRoster(board: BoardData): Promise<Member[]> {
 	const byId = new Map<string, Member>();
 	for (const siteId of siteIds) {
 		const a = admins[siteId];
-		if (!a?.adminName && !a?.adminEmail) continue;
+		if (!a?.adminName && !a?.adminEmail && !a?.phone) continue;
 		const email = (a.adminEmail ?? '').trim().toLowerCase();
-		const id = email || `site:${siteId}`;
+		const phoneNorm = normalizePhone(a.phone);
+		const id = email || (phoneNorm ? `${phoneNorm}@phone.gofreeil.com` : `site:${siteId}`);
 		const existing = byId.get(id);
 		if (existing) {
 			existing.siteIds.push(siteId);

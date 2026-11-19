@@ -6,7 +6,7 @@
 // ============================================================
 import { json } from '@sveltejs/kit';
 import { isSuperAdmin } from '$lib/server/superAdmin';
-import { isNetworkAdmin } from '$lib/server/siteAdmins';
+import { isNetworkAdmin, normalizePhone } from '$lib/server/siteAdmins';
 import { friendlyName } from '$lib/server/strapiAuth';
 import { readBoard, mutateBoard, teamRoster, BoardStorageError } from '$lib/server/teamBoard';
 import { BoardError, type Actor, type BoardOp, type BoardTask, type Member } from '$lib/teamBoard';
@@ -52,11 +52,20 @@ function filterTasksForCoordinator(
 	actorId: string,
 	team: Member[]
 ): BoardTask[] {
-	const me = team.find((m) => m.id === actorId);
+	const actorPhone = actorId.endsWith('@phone.gofreeil.com')
+		? normalizePhone(actorId.split('@')[0])
+		: '';
+	const me = team.find(
+		(m) =>
+			m.id === actorId ||
+			(actorPhone && normalizePhone(m.phone) === actorPhone) ||
+			(actorPhone && m.id === `${actorPhone}@phone.gofreeil.com`)
+	);
 	const siteIds = new Set(me?.siteIds ?? []);
 	return tasks.filter((t) => {
 		// שויך מפורשות לרכז
 		if (t.assignees.includes(actorId)) return true;
+		if (me && t.assignees.includes(me.id)) return true;
 		// נוצר על ידי הרכז
 		if (t.createdBy === actorId) return true;
 		// שייך לאתר שהרכז מנהל

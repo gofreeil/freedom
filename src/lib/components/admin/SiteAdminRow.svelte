@@ -21,7 +21,8 @@
 		editMode = false,
 		canUp = false,
 		canDown = false,
-		onmove
+		onmove,
+		oncrown
 	}: {
 		site: FreedomSite & { admin: Admin | null };
 		editMode?: boolean;
@@ -30,6 +31,8 @@
 		canDown?: boolean;
 		/** שינוי מיקום השורה ברשימה (‎-1 מעלה, 1 מטה) */
 		onmove?: (dir: -1 | 1) => void;
+		/** פתיחת מודאל הכתרת אדמין מ-Strapi */
+		oncrown?: (site: any) => void;
 	} = $props();
 
 	// ערכי הטופס — מקומיים כדי לא לאבד הקלדה בזמן שמירה/שגיאה.
@@ -43,6 +46,17 @@
 	let phone = $state(site.admin?.phone ?? '');
 	// svelte-ignore state_referenced_locally
 	let communityId = $state(site.admin?.communityId ?? '');
+
+	// סנכרון אם הנתונים מתעדכנים מבחוץ (למשל אחרי הכתרה במודאל)
+	$effect(() => {
+		if (site.admin) {
+			name = site.admin.adminName ?? '';
+			role = site.admin.role ?? '';
+			email = site.admin.adminEmail ?? '';
+			phone = site.admin.phone ?? '';
+			communityId = site.admin.communityId ?? '';
+		}
+	});
 	// תמונה *חדשה* שנבחרה עכשיו בקרופר. ריק = התמונה הקיימת נשארת כמו שהיא —
 	// הדף כבר לא נושא את ה-data URL הכבד, והשרת משלים אותו מהרשומה השמורה.
 	let avatarUrl = $state('');
@@ -236,7 +250,18 @@
 	<!-- שורת רווח בלתי-נראית מעל, בגובה שורת שם האתר שבעמודת התפקיד,
 	     כדי ששתי המסגרות יישבו על אותו קו -->
 	<div class="min-w-0">
-		<div class="invisible mb-1 text-sm font-bold" aria-hidden="true">·</div>
+		{#if editMode && oncrown}
+			<button
+				type="button"
+				onclick={() => oncrown?.(site)}
+				class="mb-1 flex items-center gap-1 text-[11px] font-bold text-amber-400 hover:text-amber-300 transition"
+				title="חיפוש והכתרת משתמש מתוך כלל משתמשי ה-Strapi המשותף"
+			>
+				<span>👑</span> <span>בחר משתמש</span>
+			</button>
+		{:else}
+			<div class="invisible mb-1 text-sm font-bold" aria-hidden="true">·</div>
+		{/if}
 		<input
 			name="adminName"
 			bind:value={name}
