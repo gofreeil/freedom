@@ -250,14 +250,14 @@
 	<!-- שורת רווח בלתי-נראית מעל, בגובה שורת שם האתר שבעמודת התפקיד,
 	     כדי ששתי המסגרות יישבו על אותו קו -->
 	<div class="min-w-0">
-		{#if editMode && oncrown}
+		{#if oncrown}
 			<button
 				type="button"
 				onclick={() => oncrown?.(site)}
 				class="mb-1 flex items-center gap-1 text-[11px] font-bold text-amber-400 hover:text-amber-300 transition"
-				title="חיפוש והכתרת משתמש מתוך כלל משתמשי ה-Strapi המשותף"
+				title="חיפוש ושיוך משתמש מתוך כלל משתמשי Strapi (לפי שם, טלפון או אימייל)"
 			>
-				<span>👑</span> <span>בחר משתמש</span>
+				<span>👑</span> <span>שייך משתמש מ-Strapi</span>
 			</button>
 		{:else}
 			<div class="invisible mb-1 text-sm font-bold" aria-hidden="true">·</div>
