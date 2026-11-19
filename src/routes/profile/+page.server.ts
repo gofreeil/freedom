@@ -83,3 +83,5 @@ export const load: PageServerLoad = async ({ locals }) => {
 		panel
 	};
 };
+
+export { actions } from '../admin/+page.server';
