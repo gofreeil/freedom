@@ -250,7 +250,7 @@
 	<!-- שורת רווח בלתי-נראית מעל, בגובה שורת שם האתר שבעמודת התפקיד,
 	     כדי ששתי המסגרות יישבו על אותו קו -->
 	<div class="min-w-0">
-		{#if oncrown}
+		{#if editMode && oncrown}
 			<button
 				type="button"
 				onclick={() => oncrown?.(site)}
