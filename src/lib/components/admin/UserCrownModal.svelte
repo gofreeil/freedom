@@ -131,7 +131,6 @@
 					phone: selectedUser.phone,
 					role: finalRole,
 					communityId: String(selectedUser.id),
-					avatarUrl: selectedUser.avatarUrl,
 					appRole
 				})
 			});

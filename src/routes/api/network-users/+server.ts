@@ -6,7 +6,7 @@
 import { json } from '@sveltejs/kit';
 import { isSuperAdmin } from '$lib/server/superAdmin';
 import { STRAPI_URL } from '$lib/server/strapiAuth';
-import { setSiteAdmin, normalizePhone } from '$lib/server/siteAdmins';
+import { setSiteAdmin, getSiteAdmins, normalizePhone, DEFAULT_SITE_AVATARS } from '$lib/server/siteAdmins';
 import { SITE_PREDEFINED_ROLES, type StrapiUserItem } from '$lib/networkRoles';
 import type { RequestHandler } from './$types';
 
@@ -129,6 +129,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!adminName) return json({ error: 'שם אדמין חסר' }, { status: 400 });
 
 	try {
+		// שמירה על התמונה הקיימת של האתר — לא דורסים תמונות בשיוך משתמש!
+		let keptAvatar: string | undefined;
+		try {
+			const existingData = await getSiteAdmins(auth.jwt);
+			keptAvatar = existingData.admins[siteId]?.avatarUrl || DEFAULT_SITE_AVATARS[siteId] || undefined;
+		} catch {
+			keptAvatar = DEFAULT_SITE_AVATARS[siteId] || undefined;
+		}
+
 		// 1. שמירה במפת siteAdmins (שמירה בשרת המשותף)
 		await setSiteAdmin(auth.jwt, siteId, {
 			adminEmail,
@@ -136,7 +145,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			role: role || undefined,
 			phone: phone || undefined,
 			communityId: communityId || undefined,
-			avatarUrl: avatarUrl || undefined,
+			avatarUrl: avatarUrl || keptAvatar,
 			updatedAt: new Date().toISOString(),
 			updatedBy: auth.email
 		});

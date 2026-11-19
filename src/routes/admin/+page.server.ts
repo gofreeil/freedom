@@ -7,7 +7,8 @@ import {
 	setSiteAdmin,
 	removeSiteAdmin,
 	setSiteAdminsOrder,
-	isNetworkAdmin
+	isNetworkAdmin,
+	DEFAULT_SITE_AVATARS
 } from '$lib/server/siteAdmins';
 import { gravatarUrl } from '$lib/server/gravatar';
 import { displayAvatarUrl } from '$lib/server/avatarProxy';
@@ -52,6 +53,7 @@ function siteRows(admins: SiteAdminsMap) {
 						// לפי האימייל). ה-data URL עצמו נשאר בשרת ולא מועמס על הדף.
 						avatar:
 							displayAvatarUrl(s.id, a.avatarUrl) ||
+							DEFAULT_SITE_AVATARS[s.id] ||
 							(a.adminEmail ? gravatarUrl(a.adminEmail) : '')
 					}
 				: null
@@ -131,6 +133,9 @@ export const actions: Actions = {
 				keptAvatar = (await getSiteAdmins(jwt)).admins[siteId]?.avatarUrl ?? '';
 			} catch {
 				keptAvatar = '';
+			}
+			if (!keptAvatar && DEFAULT_SITE_AVATARS[siteId]) {
+				keptAvatar = DEFAULT_SITE_AVATARS[siteId];
 			}
 		}
 

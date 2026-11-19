@@ -108,6 +108,11 @@ export async function removeSiteAdmin(jwt: string, siteId: string): Promise<void
 // רק עם JWT של סופר-אדמין, דרך getSiteAdmins.
 // ============================================================
 
+export const DEFAULT_SITE_AVATARS: Record<string, string> = {
+	state_auditor: '/images/admins/state_auditor.jpg',
+	courts_reconciliation: '/images/admins/courts_reconciliation.jpg'
+};
+
 export interface PublicSiteAdmin {
 	adminName: string;
 	role?: string;
@@ -138,8 +143,15 @@ export async function getPublicSiteAdmins(): Promise<PublicSiteAdminsPayload> {
 		});
 		if (!res.ok) throw new Error(`site-admins public GET failed: ${res.status}`);
 		const json = (await res.json()) as { data?: PublicSiteAdminsMap; order?: string[] };
+		const admins = json.data && typeof json.data === 'object' ? json.data : {};
+		// שמירה על תמונות ברירת מחדל לאתרים עם תמונות קבועות
+		for (const [siteId, fallbackUrl] of Object.entries(DEFAULT_SITE_AVATARS)) {
+			if (admins[siteId] && !admins[siteId].avatarUrl) {
+				admins[siteId].avatarUrl = fallbackUrl;
+			}
+		}
 		const data: PublicSiteAdminsPayload = {
-			admins: json.data && typeof json.data === 'object' ? json.data : {},
+			admins,
 			order: Array.isArray(json.order) ? json.order : []
 		};
 		cache = { at: Date.now(), data };
