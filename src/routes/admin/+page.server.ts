@@ -52,9 +52,8 @@ function siteRows(admins: SiteAdminsMap) {
 						// avatar = כתובת התמונה לתצוגה (פרוקסי אם הועלתה תמונה, אחרת Gravatar
 						// לפי האימייל). ה-data URL עצמו נשאר בשרת ולא מועמס על הדף.
 						avatar:
-							displayAvatarUrl(s.id, a.avatarUrl) ||
 							DEFAULT_SITE_AVATARS[s.id] ||
-							(a.adminEmail ? gravatarUrl(a.adminEmail) : '')
+							(a.avatarUrl && !a.avatarUrl.includes('googleusercontent') ? displayAvatarUrl(s.id, a.avatarUrl) : (a.avatarUrl || ''))
 					}
 				: null
 		};

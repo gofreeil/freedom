@@ -1,11 +1,10 @@
 import { redirect } from '@sveltejs/kit';
 import { isSuperAdmin } from '$lib/server/superAdmin';
-import { isNetworkAdmin, getSiteAdmins, type SiteAdminsMap } from '$lib/server/siteAdmins';
+import { isNetworkAdmin, getSiteAdmins, type SiteAdminsMap, DEFAULT_SITE_AVATARS } from '$lib/server/siteAdmins';
 import { canVoteBudget } from '$lib/server/budgetAccess';
 import { CLUB_BUSINESS_TRACK, CLUB_INTRO, CLUB_MOTTO, CLUB_PRICE, CLUB_SECTIONS, CLUB_TOTAL_SAVING } from '$lib/server/clubBenefits';
 import { SITES } from '$lib/sitesData';
 import { displayAvatarUrl } from '$lib/server/avatarProxy';
-import { gravatarUrl } from '$lib/server/gravatar';
 import type { PageServerLoad } from './$types';
 
 const MANAGED_SITES = SITES.filter((s) => s.id !== 'freedom_store');
@@ -13,6 +12,14 @@ const MANAGED_SITES = SITES.filter((s) => s.id !== 'freedom_store');
 function siteRows(admins: SiteAdminsMap) {
 	return MANAGED_SITES.map((s) => {
 		const a = admins[s.id] ?? null;
+		let avatar = '';
+		if (DEFAULT_SITE_AVATARS[s.id]) {
+			avatar = DEFAULT_SITE_AVATARS[s.id];
+		} else if (a?.avatarUrl && !a.avatarUrl.includes('googleusercontent')) {
+			avatar = displayAvatarUrl(s.id, a.avatarUrl);
+		} else if (a?.avatarUrl) {
+			avatar = a.avatarUrl;
+		}
 		return {
 			...s,
 			admin: a
@@ -24,9 +31,7 @@ function siteRows(admins: SiteAdminsMap) {
 						communityId: a.communityId ?? '',
 						updatedAt: a.updatedAt ?? '',
 						updatedBy: a.updatedBy ?? '',
-						avatar:
-							displayAvatarUrl(s.id, a.avatarUrl) ||
-							(a.adminEmail ? gravatarUrl(a.adminEmail) : '')
+						avatar
 					}
 				: null
 		};
