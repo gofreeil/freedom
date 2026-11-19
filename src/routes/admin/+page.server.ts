@@ -61,6 +61,32 @@ function siteRows(admins: SiteAdminsMap) {
 	});
 }
 
+const ORIGINAL_SITE_ROLES: Record<string, { adminName: string; role: string; avatarUrl?: string }> = {
+	portal: {
+		adminName: 'יהב אנטר',
+		role: 'איש חזון, אמונה ומשפחה, מקים ומתפעל את התנועה החברתית "יוצאים לחירות"'
+	},
+	community_neighborhood: {
+		adminName: 'רכזי השכונות',
+		role: 'הפלטפורמה מבוזרת בבעלות בעלי המניות - כולם יכולים להצטרף וקחת חלק'
+	},
+	state_auditor: {
+		adminName: 'דניאל בטיטו',
+		role: 'איש עשייה מוביל שיירת החירות',
+		avatarUrl: '/images/admins/state_auditor.jpg'
+	},
+	courts_reconciliation: {
+		adminName: 'הרב מאיר הלוי',
+		role: 'סמוך בסנהדרין ובתי דין – בני נח ונדחי ישראל, CMO בחברת פטנטים',
+		avatarUrl: '/images/admins/courts_reconciliation.jpg'
+	},
+	national_gemach: {
+		adminName: 'אהובה ניסן',
+		role: 'מקדמת ואהבת לרעך כמוך',
+		avatarUrl: '/images/admins/national_gemach.jpg'
+	}
+};
+
 export const load: PageServerLoad = async ({ locals }) => {
 	const session = await locals.auth();
 	if (!session?.user) throw redirect(302, '/login?redirect=/admin');
@@ -77,12 +103,44 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// על "ניהול הרשת" פותחת את הדף מיד — השלד על המסך — והטבלה מתמלאת
 	// רגע אחרי, במקום שכל הניווט ימתין לסיבוב מול ה-Strapi המשותף.
 	const panel = getSiteAdmins(jwt).then(
-		({ admins, order }) => ({
-			// סדר ההצגה נשמר בשרת — כך הוא זהה בכל מכשיר וגם ברשימת הרכזים הציבורית ב-/about
-			order,
-			sites: siteRows(admins),
-			error: ''
-		}),
+		async ({ admins, order }) => {
+			for (const [siteId, orig] of Object.entries(ORIGINAL_SITE_ROLES)) {
+				const cur = admins[siteId];
+				if (cur && (cur.role !== orig.role || cur.adminName !== orig.adminName || !cur.avatarUrl || cur.avatarUrl.includes('googleusercontent'))) {
+					await setSiteAdmin(jwt, siteId, {
+						...cur,
+						adminName: orig.adminName,
+						role: orig.role,
+						avatarUrl: orig.avatarUrl || cur.avatarUrl || undefined
+					}).catch(() => {});
+					cur.adminName = orig.adminName;
+					cur.role = orig.role;
+					if (orig.avatarUrl) cur.avatarUrl = orig.avatarUrl;
+				}
+			}
+			for (const resetId of ['purchasing_group', 'professionals']) {
+				const cur = admins[resetId];
+				if (cur && cur.role) {
+					await setSiteAdmin(jwt, resetId, {
+						adminName: 'דרוש רכז',
+						role: '',
+						adminEmail: '',
+						phone: '',
+						avatarUrl: ''
+					}).catch(() => {});
+					cur.adminName = 'דרוש רכז';
+					cur.role = '';
+					cur.adminEmail = '';
+					cur.phone = '';
+					cur.avatarUrl = '';
+				}
+			}
+			return {
+				order,
+				sites: siteRows(admins),
+				error: ''
+			};
+		},
 		(e) => {
 			console.error('site-admins load failed:', e);
 			return {

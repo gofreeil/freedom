@@ -110,7 +110,8 @@ export async function removeSiteAdmin(jwt: string, siteId: string): Promise<void
 
 export const DEFAULT_SITE_AVATARS: Record<string, string> = {
 	state_auditor: '/images/admins/state_auditor.jpg',
-	courts_reconciliation: '/images/admins/courts_reconciliation.jpg'
+	courts_reconciliation: '/images/admins/courts_reconciliation.jpg',
+	national_gemach: '/images/admins/national_gemach.jpg'
 };
 
 export interface PublicSiteAdmin {
