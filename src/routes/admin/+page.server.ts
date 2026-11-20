@@ -83,6 +83,18 @@ const ORIGINAL_SITE_ROLES: Record<string, { adminName: string; role: string; ava
 		adminName: 'אהובה ניסן',
 		role: 'מקדמת ואהבת לרעך כמוך',
 		avatarUrl: '/images/admins/national_gemach.jpg'
+	},
+	lost_and_found: {
+		adminName: 'ליאת טרר',
+		role: 'אשת משפחה, מקדמת תודעת ואהבת לרעך כמוך'
+	},
+	purchasing_group: {
+		adminName: 'זמיר גל',
+		role: 'מנהל צוותי שירות ומכירה'
+	},
+	professionals: {
+		adminName: 'יגאל כהן',
+		role: 'יזם, בוגר מכללת תל אביב לבניה'
 	}
 };
 
@@ -115,23 +127,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 					cur.adminName = orig.adminName;
 					cur.role = orig.role;
 					if (orig.avatarUrl) cur.avatarUrl = orig.avatarUrl;
-				}
-			}
-			for (const resetId of ['purchasing_group', 'professionals']) {
-				const cur = admins[resetId];
-				if (cur && cur.role) {
-					await setSiteAdmin(jwt, resetId, {
-						adminName: 'דרוש רכז',
-						role: '',
-						adminEmail: '',
-						phone: '',
-						avatarUrl: ''
-					}).catch(() => {});
-					cur.adminName = 'דרוש רכז';
-					cur.role = '';
-					cur.adminEmail = '';
-					cur.phone = '';
-					cur.avatarUrl = '';
 				}
 			}
 			return {
