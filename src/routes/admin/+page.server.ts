@@ -52,8 +52,9 @@ function siteRows(admins: SiteAdminsMap) {
 						// avatar = כתובת התמונה לתצוגה (פרוקסי אם הועלתה תמונה, אחרת Gravatar
 						// לפי האימייל). ה-data URL עצמו נשאר בשרת ולא מועמס על הדף.
 						avatar:
-							DEFAULT_SITE_AVATARS[s.id] ||
-							(a.avatarUrl && !a.avatarUrl.includes('googleusercontent') ? displayAvatarUrl(s.id, a.avatarUrl) : (a.avatarUrl || ''))
+							(a.avatarUrl && !a.avatarUrl.includes('googleusercontent'))
+								? displayAvatarUrl(s.id, a.avatarUrl)
+								: (DEFAULT_SITE_AVATARS[s.id] || a.avatarUrl || '')
 					}
 				: null
 		};
@@ -81,8 +82,7 @@ const ORIGINAL_SITE_ROLES: Record<string, { adminName: string; role: string; ava
 	},
 	national_gemach: {
 		adminName: 'אהובה ניסן',
-		role: 'מקדמת ואהבת לרעך כמוך',
-		avatarUrl: '/images/admins/national_gemach.jpg'
+		role: 'מקדמת ואהבת לרעך כמוך'
 	},
 	lost_and_found: {
 		adminName: 'ליאת טרר',
@@ -118,15 +118,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 			for (const [siteId, orig] of Object.entries(ORIGINAL_SITE_ROLES)) {
 				const cur = admins[siteId];
 				if (cur && (cur.role !== orig.role || cur.adminName !== orig.adminName || !cur.avatarUrl || cur.avatarUrl.includes('googleusercontent'))) {
+					const hasValidAvatar = cur.avatarUrl && !cur.avatarUrl.includes('googleusercontent');
+					const finalAvatar = hasValidAvatar ? cur.avatarUrl : (orig.avatarUrl || undefined);
 					await setSiteAdmin(jwt, siteId, {
 						...cur,
 						adminName: orig.adminName,
 						role: orig.role,
-						avatarUrl: orig.avatarUrl || cur.avatarUrl || undefined
+						avatarUrl: finalAvatar
 					}).catch(() => {});
 					cur.adminName = orig.adminName;
 					cur.role = orig.role;
-					if (orig.avatarUrl) cur.avatarUrl = orig.avatarUrl;
+					if (finalAvatar) cur.avatarUrl = finalAvatar;
 				}
 			}
 			return {

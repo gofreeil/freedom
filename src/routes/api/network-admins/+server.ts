@@ -9,8 +9,7 @@
 // במטמון הדפדפן במקום להיטען מחדש בכל ניווט.
 // ============================================================
 import { json } from '@sveltejs/kit';
-import { getPublicSiteAdmins } from '$lib/server/siteAdmins';
-import { gravatarUrl } from '$lib/server/gravatar';
+import { getPublicSiteAdmins, DEFAULT_SITE_AVATARS } from '$lib/server/siteAdmins';
 import { displayAvatarUrl } from '$lib/server/avatarProxy';
 import type { RequestHandler } from './$types';
 
@@ -31,8 +30,11 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
 				role: a.role ?? '',
 				email: a.adminEmail ?? '',
 				phone: a.phone ?? '',
-				// התמונה האפקטיבית: מפורשת אם הוגדרה (ככתובת, לא כ-data URL), אחרת נגזרת מהאימייל
-				avatar: displayAvatarUrl(siteId, a.avatarUrl) || (a.adminEmail ? gravatarUrl(a.adminEmail) : '')
+				// התמונה האפקטיבית: מפורשת אם הוגדרה (ככתובת, לא כ-data URL), אחרת תמונת ברירת מחדל
+				avatar:
+					a.avatarUrl && !a.avatarUrl.includes('googleusercontent')
+						? displayAvatarUrl(siteId, a.avatarUrl)
+						: DEFAULT_SITE_AVATARS[siteId] || ''
 			}
 		])
 	);

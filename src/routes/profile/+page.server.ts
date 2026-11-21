@@ -13,10 +13,10 @@ function siteRows(admins: SiteAdminsMap) {
 	return MANAGED_SITES.map((s) => {
 		const a = admins[s.id] ?? null;
 		let avatar = '';
-		if (DEFAULT_SITE_AVATARS[s.id]) {
-			avatar = DEFAULT_SITE_AVATARS[s.id];
-		} else if (a?.avatarUrl && !a.avatarUrl.includes('googleusercontent')) {
+		if (a?.avatarUrl && !a.avatarUrl.includes('googleusercontent')) {
 			avatar = displayAvatarUrl(s.id, a.avatarUrl);
+		} else if (DEFAULT_SITE_AVATARS[s.id]) {
+			avatar = DEFAULT_SITE_AVATARS[s.id];
 		} else if (a?.avatarUrl) {
 			avatar = a.avatarUrl;
 		}
