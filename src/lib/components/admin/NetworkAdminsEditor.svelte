@@ -112,6 +112,19 @@
 	const GRID_COLS = SITE_ROWS_GRID_COLS;
 </script>
 
+<svelte:window
+	ondragover={(e) => {
+		if (e.dataTransfer?.types?.includes('Files')) {
+			e.preventDefault();
+		}
+	}}
+	ondrop={(e) => {
+		if (e.dataTransfer?.types?.includes('Files')) {
+			e.preventDefault();
+		}
+	}}
+/>
+
 <section class="space-y-3">
 	<!-- כותרת ובורר תצוגה קומפקטי -->
 	<div class="flex flex-wrap items-center justify-between gap-2.5">

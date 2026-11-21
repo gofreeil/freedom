@@ -110,29 +110,85 @@
 		}
 		fileInput.click();
 	}
-	function onFileChosen(e: Event) {
-		const input = e.currentTarget as HTMLInputElement;
-		const f = input.files?.[0];
-		if (f) pickedFile = f;
-		input.value = ''; // מאפשר לבחור שוב את אותו קובץ
-	}
-
-	// גרירת קובץ תמונה ישירות אל העיגול (במצב עריכה)
-	let dragOver = $state(false);
-	function onDragOver(e: DragEvent) {
-		e.preventDefault();
-		dragOver = true;
-	}
-	function onDrop(e: DragEvent) {
-		e.preventDefault();
-		dragOver = false;
-		const f = e.dataTransfer?.files?.[0];
-		if (!f || !f.type.startsWith('image/')) return;
+	function handleIncomingFile(f: File | null | undefined) {
+		if (!f) return;
+		const isImg = f.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|svg|avif|bmp|jfif)$/i.test(f.name);
+		if (!isImg) {
+			status = { type: 'err', msg: 'יש לבחור קובץ תמונה בלבד' };
+			return;
+		}
 		if (!name.trim()) {
 			status = { type: 'err', msg: 'צריך למלא שם אדמין לפני העלאת תמונה' };
 			return;
 		}
 		pickedFile = f;
+	}
+
+	function onFileChosen(e: Event) {
+		const input = e.currentTarget as HTMLInputElement;
+		const f = input.files?.[0];
+		handleIncomingFile(f);
+		input.value = ''; // מאפשר לבחור שוב את אותו קובץ
+	}
+
+	// גרירת קובץ תמונה ישירות אל העיגול (במצב עריכה)
+	let dragOver = $state(false);
+	function onDragEnter(e: DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		dragOver = true;
+	}
+	function onDragOver(e: DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (e.dataTransfer) {
+			e.dataTransfer.dropEffect = 'copy';
+		}
+		dragOver = true;
+	}
+	function onDragLeave(e: DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (e.currentTarget && !e.currentTarget.contains(e.relatedTarget as Node)) {
+			dragOver = false;
+		}
+	}
+	async function onDrop(e: DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		dragOver = false;
+		const f = e.dataTransfer?.files?.[0];
+		if (f) {
+			handleIncomingFile(f);
+			return;
+		}
+		const imgUrl = e.dataTransfer?.getData('text/uri-list') || e.dataTransfer?.getData('text/plain');
+		if (imgUrl && /^https?:\/\/.+/i.test(imgUrl)) {
+			try {
+				const res = await fetch(imgUrl);
+				const blob = await res.blob();
+				if (blob.type.startsWith('image/')) {
+					handleIncomingFile(new File([blob], 'avatar.jpg', { type: blob.type }));
+				}
+			} catch {
+				// שגיאת CORS או רשת מקוונת
+			}
+		}
+	}
+
+	function onPaste(e: ClipboardEvent) {
+		const items = e.clipboardData?.items;
+		if (!items) return;
+		for (const item of items) {
+			if (item.type.startsWith('image/')) {
+				const f = item.getAsFile();
+				if (f) {
+					e.preventDefault();
+					handleIncomingFile(f);
+					return;
+				}
+			}
+		}
 	}
 	async function onCropSave(dataUrl: string) {
 		pickedFile = null;
@@ -189,6 +245,7 @@
 			if (result.type === 'success') avatarUrl = '';
 		};
 	}}
+	onpaste={onPaste}
 >
 	<input type="hidden" name="siteId" value={site.id} />
 	<!-- התמונה נשלחת תמיד כערך חבוי (מוזנת דרך הקרופר) -->
@@ -206,25 +263,32 @@
 			<button
 				type="button"
 				onclick={pickPhoto}
+				ondragenter={onDragEnter}
 				ondragover={onDragOver}
-				ondragleave={() => (dragOver = false)}
+				ondragleave={onDragLeave}
 				ondrop={onDrop}
-				title="העלאת תמונה — לחיצה או גרירת קובץ לכאן"
+				onpaste={onPaste}
+				title="העלאת תמונה — לחיצה לבחירה, גרירת קובץ לכאן או הדבקה (Ctrl+V)"
 				aria-label="העלאת תמונת האדמין"
-				class="group relative h-[86px] w-[86px] flex-shrink-0 overflow-hidden rounded-full border border-dashed bg-[#1b2335] {dragOver
-					? 'border-sky-300 bg-sky-400/25'
-					: 'border-sky-400/60'}"
+				class="group relative h-[86px] w-[86px] flex-shrink-0 overflow-hidden rounded-full border border-dashed bg-[#1b2335] transition-all {dragOver
+					? 'border-2 border-sky-400 bg-sky-500/30 ring-4 ring-sky-400/30 scale-105'
+					: 'border-sky-400/60 hover:border-sky-300'}"
 			>
 				{#if avatar && !avatarBroken}
-					<img src={avatar} alt="" loading="lazy" decoding="async" class="h-full w-full object-cover" onerror={() => (avatarBroken = true)} />
+					<img src={avatar} alt="" loading="lazy" decoding="async" class="pointer-events-none h-full w-full object-cover" onerror={() => (avatarBroken = true)} />
 				{:else}
-					<span class="flex h-full w-full items-center justify-center text-lg" aria-hidden="true">👤</span>
+					<span class="pointer-events-none flex h-full w-full items-center justify-center text-lg" aria-hidden="true">👤</span>
 				{/if}
 				<span
-					class="absolute inset-0 flex items-center justify-center rounded-full bg-black/45 text-base opacity-70 transition group-hover:opacity-100"
+					class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center rounded-full bg-black/45 text-base transition {dragOver ? 'bg-sky-950/85 text-sky-300 font-bold' : 'opacity-70 group-hover:opacity-100'}"
 					aria-hidden="true"
 				>
-					📷
+					{#if dragOver}
+						<span class="text-xl">📥</span>
+						<span class="text-[10px] text-sky-200">שחרר כאן</span>
+					{:else}
+						📷
+					{/if}
 				</span>
 			</button>
 			<input type="file" accept="image/*" hidden bind:this={fileInput} onchange={onFileChosen} />
