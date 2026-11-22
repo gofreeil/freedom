@@ -25,8 +25,8 @@ register('he', () => Promise.resolve({
         terms_part1: "תנאי שימוש",
         terms_part2: "הצהרת נגישות וכו'",
         contact_email_aria: "צור קשר – שלח אימייל",
-        leaders_part1: "דרושים מנהיגים",
-        leaders_part2: "ומתנדבים",
+        leaders_part1: "דרושים מתנדבים",
+        leaders_part2: "ומסייעים",
     },
 
     // ----- Page (home) -----
@@ -243,7 +243,7 @@ register('en', () => Promise.resolve({
         terms_part1: "Terms of Use",
         terms_part2: "Accessibility Statement & more",
         contact_email_aria: "Contact us – send an email",
-        leaders_part1: "Leaders & volunteers",
+        leaders_part1: "Volunteers & helpers",
         leaders_part2: "wanted",
     },
 
