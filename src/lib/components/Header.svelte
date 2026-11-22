@@ -4,6 +4,7 @@
 	import { get } from 'svelte/store';
     import { goto, afterNavigate } from "$app/navigation";
     import { onMount } from "svelte";
+    import SignupTip from "$lib/components/SignupTip.svelte";
 
     // משתמש מחובר (מגיע מ-+layout.server דרך +layout.svelte); null = אנונימי
     let { user = null }: { user?: { name: string; email: string; image?: string; isSuperAdmin?: boolean; canManage?: boolean } | null } = $props();
@@ -245,17 +246,21 @@
             {/if}
         </div>
     {:else}
-        <a
-            href="/login"
-            class="login-grad flex items-center {isMobile ? 'justify-center w-8 h-8 rounded-lg text-sm' : 'gap-1.5 rounded-lg px-3 py-1.5 text-sm'} font-bold text-white transition-all hover:brightness-110"
-            title="התחברות"
-            aria-label="התחברות"
-        >
-            <span>🕊️</span>
-            {#if !isMobile}
-                <span class="hidden sm:inline">התחברות</span>
-            {/if}
-        </a>
+        <!-- אורח: יד ובועה "לא רשום עדיין?" תלויות מתחת לכפתור (בעברית בלבד) -->
+        <span class="relative inline-flex flex-shrink-0">
+            <a
+                href="/login"
+                class="login-grad flex items-center {isMobile ? 'justify-center w-8 h-8 rounded-lg text-sm' : 'gap-1.5 rounded-lg px-3 py-1.5 text-sm'} font-bold text-white transition-all hover:brightness-110"
+                title="התחברות"
+                aria-label="התחברות"
+            >
+                <span>🕊️</span>
+                {#if !isMobile}
+                    <span class="hidden sm:inline">התחברות</span>
+                {/if}
+            </a>
+            <SignupTip from="#2563eb" to="#9333ea" hidden={!($locale || 'he').startsWith('he')} />
+        </span>
     {/if}
 {/snippet}
 
