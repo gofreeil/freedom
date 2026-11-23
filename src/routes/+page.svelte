@@ -174,6 +174,11 @@
 			svg: '<rect x="0" y="3.7" width="24" height="16.6" rx="4.2" fill="#FF0000"/><path fill="#fff" d="M9.8 15.4V8.6L15.9 12l-6.1 3.4Z"/>'
 		},
 		{
+			name: 'חירות TV',
+			href: 'https://tv.gofreeil.com/',
+			svg: '<defs><linearGradient id="tv-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#4F46E5"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#tv-g)"/><path fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="m8 3.5 4 3.5 4-3.5"/><rect x="4" y="7" width="16" height="12.5" rx="2.2" fill="none" stroke="#fff" stroke-width="1.5"/><path fill="#fff" d="M10.5 10.25v6l4.8-3z"/>'
+		},
+		{
 			name: 'TikTok',
 			href: 'https://www.tiktok.com/@yahav_anter',
 			svg: '<rect width="24" height="24" rx="6" fill="#010101"/><path fill="#25F4EE" d="M18.8 5.4a5.32 5.32 0 0 1-3.27-1.1 5.32 5.32 0 0 1-2.05-3.32v-1h-3.6v14.65a3.22 3.22 0 0 1-5.79 1.94 3.22 3.22 0 0 1 4.27-4.62v-3.66a6.83 6.83 0 0 0-5.78 11.62A6.83 6.83 0 0 0 13.48 14.54V7.34a8.9 8.9 0 0 0 5.32 1.74v-3.6Z" transform="translate(-0.7 0.5)"/><path fill="#FE2C55" d="M19.32 5.56a5.32 5.32 0 0 1-3.27-1.1 5.32 5.32 0 0 1-2.05-3.32V0h-3.6v14.65a3.22 3.22 0 0 1-5.79 1.94 3.22 3.22 0 0 1 4.27-4.62v-3.66a6.83 6.83 0 0 0-5.78 11.62A6.83 6.83 0 0 0 14 14.7V7.5a8.9 8.9 0 0 0 5.32 1.74v-3.6Z" transform="translate(0.7 -0.5)"/><path fill="#fff" d="M19.32 5.56a5.32 5.32 0 0 1-3.27-1.1 5.32 5.32 0 0 1-2.05-3.32V0h-3.6v14.65a3.22 3.22 0 0 1-5.79 1.94 3.22 3.22 0 0 1 4.27-4.62v-3.66a6.83 6.83 0 0 0-5.78 11.62A6.83 6.83 0 0 0 14 14.7V7.5a8.9 8.9 0 0 0 5.32 1.74v-3.6Z"/>'
