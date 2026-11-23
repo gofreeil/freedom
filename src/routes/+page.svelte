@@ -14,6 +14,7 @@
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
+	let isHe = $derived(!_loc || _loc.startsWith('he'));
 	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
 	interface Site {
@@ -157,44 +158,59 @@
 
 	// רשתות חברתיות - קישורים זמניים (mockup)
 	// אייקוני רשתות חברתיות צבעוניים - SVG מלא לכל פלטפורמה (רקע מותג + לוגו לבן)
-	const socials: { name: string; href: string; svg: string }[] = [
+	interface SocialItem {
+		name: string;
+		labelHe: string;
+		href: string;
+		svg: string;
+	}
+
+	const socials: SocialItem[] = [
 		{
 			name: 'Facebook',
+			labelHe: 'פייסבוק',
 			href: 'https://www.facebook.com/share/17iu4gtxZH/',
 			svg: '<circle cx="12" cy="12" r="12" fill="#1877F2"/><path fill="#fff" d="M13.42 21v-8.21h2.75l.41-3.2h-3.16V7.55c0-.93.26-1.55 1.59-1.55h1.7V3.13c-.29-.04-1.3-.13-2.46-.13-2.44 0-4.11 1.49-4.11 4.22v2.35H7.4v3.2h2.74V21h3.28z"/>'
 		},
 		{
 			name: 'Instagram',
+			labelHe: 'אינסטגרם',
 			href: 'https://www.instagram.com/ngo2liberty/',
 			svg: '<defs><linearGradient id="ig-g" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#FED576"/><stop offset="26%" stop-color="#F47133"/><stop offset="61%" stop-color="#BC3081"/><stop offset="100%" stop-color="#4C68D7"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#ig-g)"/><path fill="none" stroke="#fff" stroke-width="1.7" d="M8 4.5h8a3.5 3.5 0 0 1 3.5 3.5v8a3.5 3.5 0 0 1-3.5 3.5H8A3.5 3.5 0 0 1 4.5 16V8A3.5 3.5 0 0 1 8 4.5z"/><circle cx="12" cy="12" r="3.3" fill="none" stroke="#fff" stroke-width="1.7"/><circle cx="17.1" cy="6.9" r="0.95" fill="#fff"/>'
 		},
 		{
 			name: 'YouTube',
+			labelHe: 'יוטיוב',
 			href: 'https://www.youtube.com/@freedomhasbegun',
 			svg: '<rect x="0" y="3.7" width="24" height="16.6" rx="4.2" fill="#FF0000"/><path fill="#fff" d="M9.8 15.4V8.6L15.9 12l-6.1 3.4Z"/>'
 		},
 		{
 			name: 'חירות TV',
+			labelHe: 'חירות TV',
 			href: 'https://tv.gofreeil.com/',
 			svg: '<defs><linearGradient id="tv-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#4F46E5"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#tv-g)"/><path fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="m8 3.5 4 3.5 4-3.5"/><rect x="4" y="7" width="16" height="12.5" rx="2.2" fill="none" stroke="#fff" stroke-width="1.5"/><path fill="#fff" d="M10.5 10.25v6l4.8-3z"/>'
 		},
 		{
 			name: 'TikTok',
+			labelHe: 'טיקטוק',
 			href: 'https://www.tiktok.com/@yahav_anter',
 			svg: '<rect width="24" height="24" rx="6" fill="#010101"/><path fill="#25F4EE" d="M18.8 5.4a5.32 5.32 0 0 1-3.27-1.1 5.32 5.32 0 0 1-2.05-3.32v-1h-3.6v14.65a3.22 3.22 0 0 1-5.79 1.94 3.22 3.22 0 0 1 4.27-4.62v-3.66a6.83 6.83 0 0 0-5.78 11.62A6.83 6.83 0 0 0 13.48 14.54V7.34a8.9 8.9 0 0 0 5.32 1.74v-3.6Z" transform="translate(-0.7 0.5)"/><path fill="#FE2C55" d="M19.32 5.56a5.32 5.32 0 0 1-3.27-1.1 5.32 5.32 0 0 1-2.05-3.32V0h-3.6v14.65a3.22 3.22 0 0 1-5.79 1.94 3.22 3.22 0 0 1 4.27-4.62v-3.66a6.83 6.83 0 0 0-5.78 11.62A6.83 6.83 0 0 0 14 14.7V7.5a8.9 8.9 0 0 0 5.32 1.74v-3.6Z" transform="translate(0.7 -0.5)"/><path fill="#fff" d="M19.32 5.56a5.32 5.32 0 0 1-3.27-1.1 5.32 5.32 0 0 1-2.05-3.32V0h-3.6v14.65a3.22 3.22 0 0 1-5.79 1.94 3.22 3.22 0 0 1 4.27-4.62v-3.66a6.83 6.83 0 0 0-5.78 11.62A6.83 6.83 0 0 0 14 14.7V7.5a8.9 8.9 0 0 0 5.32 1.74v-3.6Z"/>'
 		},
 		{
 			name: 'LinkedIn',
+			labelHe: 'לינקדאין',
 			href: 'https://www.linkedin.com/in/free-isrel',
 			svg: '<rect width="24" height="24" rx="6" fill="#0A66C2"/><path fill="#fff" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43c-1.14 0-2.06-.92-2.06-2.06 0-1.14.92-2.06 2.06-2.06 1.14 0 2.06.92 2.06 2.06 0 1.14-.92 2.06-2.06 2.06zm1.78 13.02H3.56V9h3.56v11.45z"/>'
 		},
 		{
 			name: 'Telegram',
+			labelHe: 'טלגרם',
 			href: 'https://t.me/freedomisrael',
 			svg: '<defs><linearGradient id="tg-g" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#37AEE2"/><stop offset="100%" stop-color="#1E96C8"/></linearGradient></defs><circle cx="12" cy="12" r="12" fill="url(#tg-g)"/><path fill="#fff" d="M17.84 7.95c.18-.79-.27-1.06-.81-.85L5.92 11.29c-.79.31-.78.76-.13.97l2.86.89 6.63-4.18c.31-.21.6-.1.36.11l-5.37 4.85-.21 2.95c.31 0 .45-.14.61-.31l1.46-1.41 3.04 2.24c.56.31.96.15 1.1-.52l1.99-9.37Z"/>'
 		},
 		{
 			name: 'WhatsApp',
+			labelHe: 'וואטסאפ',
 			href: 'https://chat.whatsapp.com/HetwsjH7EQA33lU8GtxUZV',
 			svg: '<circle cx="12" cy="12" r="12" fill="#25D366"/><path fill="#fff" d="M16.66 14.07c-.27-.14-1.61-.79-1.86-.88-.25-.09-.43-.14-.61.14-.18.27-.7.88-.86 1.06-.16.18-.32.21-.59.07-.27-.14-1.14-.42-2.18-1.34-.81-.72-1.35-1.61-1.51-1.89-.16-.27-.02-.42.12-.55.13-.13.27-.34.4-.5.13-.17.18-.27.27-.45.09-.18.04-.34-.02-.48-.07-.14-.61-1.47-.83-2.02-.22-.53-.45-.46-.61-.46l-.52-.01c-.18 0-.47.07-.72.34-.25.27-.95.93-.95 2.26 0 1.34.97 2.63 1.11 2.81.13.18 1.92 2.94 4.65 4.12.65.28 1.16.45 1.55.58.65.21 1.25.18 1.71.11.52-.08 1.61-.66 1.84-1.29.22-.64.22-1.18.16-1.29-.07-.11-.25-.18-.52-.31Zm-4.59 6.27a8.3 8.3 0 0 1-4.24-1.16l-.31-.18-3.16.83.84-3.08-.2-.31a8.31 8.31 0 0 1-1.27-4.41c0-4.59 3.74-8.32 8.34-8.32a8.3 8.3 0 0 1 8.32 8.34 8.32 8.32 0 0 1-8.32 8.31Zm7.08-15.39A9.84 9.84 0 0 0 12.06 2C6.58 2 2.13 6.45 2.13 11.92c0 1.75.46 3.45 1.33 4.95L2.05 22l5.26-1.38c1.45.79 3.08 1.21 4.74 1.21h.01c5.48 0 9.93-4.45 9.93-9.92a9.86 9.86 0 0 0-2.92-7.02Z"/>'
 		}
@@ -989,18 +1005,35 @@
 
 		<div class="mt-8 flex flex-wrap items-center justify-center gap-2 md:gap-4">
 			{#each socials as s (s.name)}
-				<a
-					href={s.href}
-					target="_blank"
-					rel="noopener noreferrer"
-					aria-label={s.name}
-					class="social-icon flex h-9 w-9 md:h-12 md:w-12 items-center justify-center rounded-full
-					       transition-transform hover:scale-110"
-				>
-					<svg class="h-9 w-9 md:h-12 md:w-12" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-						{@html s.svg}
-					</svg>
-				</a>
+				{@const tip = isHe ? s.labelHe : s.name}
+				<div class="relative group/tip flex items-center justify-center">
+					<a
+						href={s.href}
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label={tip}
+						class="social-icon flex h-9 w-9 md:h-12 md:w-12 items-center justify-center rounded-full
+						       transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white/40"
+					>
+						<svg class="h-9 w-9 md:h-12 md:w-12" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+							{@html s.svg}
+						</svg>
+					</a>
+					<div
+						role="tooltip"
+						class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30
+						       opacity-0 scale-90 group-hover/tip:opacity-100 group-hover/tip:scale-100 group-focus-within/tip:opacity-100 group-focus-within/tip:scale-100
+						       transition-all duration-150 ease-out"
+					>
+						<div class="relative rounded-md bg-gray-900/95 border border-white/15 px-2 py-0.5 text-[11px] md:text-xs font-bold text-white shadow-lg whitespace-nowrap backdrop-blur-sm">
+							{tip}
+							<div
+								class="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-gray-900/95"
+								aria-hidden="true"
+							></div>
+						</div>
+					</div>
+				</div>
 			{/each}
 		</div>
 	</div>
