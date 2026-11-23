@@ -165,7 +165,7 @@
 		},
 		{
 			name: 'Instagram',
-			href: '#',
+			href: 'https://www.instagram.com/ngo2liberty/',
 			svg: '<defs><linearGradient id="ig-g" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#FED576"/><stop offset="26%" stop-color="#F47133"/><stop offset="61%" stop-color="#BC3081"/><stop offset="100%" stop-color="#4C68D7"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#ig-g)"/><path fill="none" stroke="#fff" stroke-width="1.7" d="M8 4.5h8a3.5 3.5 0 0 1 3.5 3.5v8a3.5 3.5 0 0 1-3.5 3.5H8A3.5 3.5 0 0 1 4.5 16V8A3.5 3.5 0 0 1 8 4.5z"/><circle cx="12" cy="12" r="3.3" fill="none" stroke="#fff" stroke-width="1.7"/><circle cx="17.1" cy="6.9" r="0.95" fill="#fff"/>'
 		},
 		{

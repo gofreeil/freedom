@@ -110,6 +110,7 @@ export function organizationSchema() {
         })),
         sameAs: [
             'https://www.facebook.com/share/17iu4gtxZH/',
+            'https://www.instagram.com/ngo2liberty/',
             'https://www.youtube.com/@freedomhasbegun',
             'https://t.me/freedomisrael',
             'https://www.tiktok.com/@yahav_anter',
