@@ -43,25 +43,36 @@
 
 	// ── הוספה מהירה ──
 	let newTitle = $state('');
-	let newAssignee = $state<string | null>(null); // null = ברירת המחדל (ראו למטה)
-	const defaultAssignee = $derived(store.me && !store.me.isSuper ? store.me.id : '');
+	let newAssignee = $state<string | null>(null); // null = ברירת המחדל (לעצמי)
+	let sendSmsOnCreate = $state(false);
+	const defaultAssignee = $derived(store.me?.id ?? '');
 	const assigneeValue = $derived(newAssignee ?? defaultAssignee);
 
-	function quickAdd(e: SubmitEvent) {
+	async function quickAdd(e: SubmitEvent) {
 		e.preventDefault();
 		const title = newTitle.trim();
 		if (!title) return;
+		const taskId = newId();
 		const ok = store.run(
 			{
 				type: 'task.create',
-				id: newId(),
+				id: taskId,
 				title,
 				assignees: assigneeValue ? [assigneeValue] : [],
 				siteId: store.filter.site && store.filter.site !== '__network' ? store.filter.site : ''
 			},
-			'המשימה נוספה — לחצו עליה כדי להוסיף פרטים'
+			sendSmsOnCreate ? 'המשימה נוספה — שולח סמס תזכורת...' : 'המשימה נוספה — לחצו עליה כדי להוסיף פרטים'
 		);
-		if (ok) newTitle = '';
+		if (ok) {
+			newTitle = '';
+			if (sendSmsOnCreate) {
+				const res = await store.sendSmsReminder(taskId);
+				if (res.needPhone) {
+					const p = prompt('נא להזין מספר טלפון נייד לקבלת סמס תזכורת:');
+					if (p) await store.sendSmsReminder(taskId, p.trim());
+				}
+			}
+		}
 	}
 
 	// ── סינון ──
@@ -172,7 +183,7 @@
 </script>
 
 <!-- ── הוספה מהירה ── -->
-<form onsubmit={quickAdd} class="mb-4 flex flex-wrap items-stretch gap-2 rounded-2xl border border-white/10 bg-[#161e30] p-2.5">
+<form onsubmit={quickAdd} class="mb-4 flex flex-wrap items-center gap-2 rounded-2xl border border-white/10 bg-[#161e30] p-2.5">
 	<label for="quick-task" class="sr-only">משימה חדשה</label>
 	<input
 		id="quick-task"
@@ -189,15 +200,26 @@
 		onchange={(e) => (newAssignee = (e.currentTarget as HTMLSelectElement).value)}
 		class="{SELECT} flex-[0_1_12rem] py-2.5"
 	>
+		{#if store.me}
+			<option value={store.me.id}>⭐ לעצמי ({store.me.name})</option>
+		{/if}
 		<option value="">👤 ללא אחראי</option>
 		{#each store.team as m (m.id)}
-			<option value={m.id}>{m.id === store.me?.id ? `${m.name} (אני)` : m.name}</option>
+			{#if m.id !== store.me?.id}
+				<option value={m.id}>{m.name}</option>
+			{/if}
 		{/each}
 	</select>
+
+	<label class="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-amber-200/90 cursor-pointer select-none rounded-xl bg-amber-500/10 border border-amber-500/25 hover:bg-amber-500/20 transition whitespace-nowrap" title="קבלת סמס תזכורת מיד עם יצירת המשימה">
+		<input type="checkbox" bind:checked={sendSmsOnCreate} class="rounded border-amber-400 text-amber-500 focus:ring-amber-400 cursor-pointer" />
+		<span>💬 סמס תזכורת</span>
+	</label>
+
 	<button
 		type="submit"
 		disabled={!newTitle.trim()}
-		class="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-2.5 text-sm font-black text-white transition hover:opacity-90 disabled:opacity-40"
+		class="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-2.5 text-sm font-black text-white transition hover:opacity-90 disabled:opacity-40 cursor-pointer"
 	>
 		הוספה
 	</button>

@@ -50,7 +50,22 @@
 	let newCheck = $state('');
 	let pickAssignees = $state(false);
 	let copied = $state(false);
+	let sendingSms = $state(false);
 	let loadedFor = '';
+
+	async function handleSmsReminder() {
+		if (!task || sendingSms) return;
+		sendingSms = true;
+		try {
+			const res = await store.sendSmsReminder(task.id);
+			if (res.needPhone) {
+				const p = prompt('נא להזין מספר טלפון נייד לקבלת סמס תזכורת:');
+				if (p) await store.sendSmsReminder(task.id, p.trim());
+			}
+		} finally {
+			sendingSms = false;
+		}
+	}
 	$effect(() => {
 		if (task && loadedFor !== task.id) {
 			loadedFor = task.id;
@@ -200,14 +215,23 @@
 					{statusOf(task.status).icon} {statusOf(task.status).label}
 					{#if isOverdue(task, today)}<span class="ms-1 font-bold text-red-300">· באיחור</span>{/if}
 				</span>
-				<div class="ms-auto flex items-center gap-1">
-					<button type="button" onclick={copyLink} class="rounded-lg px-2 py-1 text-[12px] text-gray-300 hover:bg-[#272f3f]" title="העתקת קישור ישיר למשימה">
+				<div class="ms-auto flex items-center gap-1.5">
+					<button
+						type="button"
+						onclick={handleSmsReminder}
+						disabled={sendingSms}
+						class="rounded-lg border border-amber-500/35 bg-amber-500/15 px-2.5 py-1 text-[12px] font-bold text-amber-200 transition hover:bg-amber-500/25 disabled:opacity-50 cursor-pointer flex items-center gap-1"
+						title="קבלת סמס תזכורת לעצמי על משימה זו"
+					>
+						💬 {sendingSms ? 'שולח...' : 'סמס תזכורת'}
+					</button>
+					<button type="button" onclick={copyLink} class="rounded-lg px-2 py-1 text-[12px] text-gray-300 hover:bg-[#272f3f] cursor-pointer" title="העתקת קישור ישיר למשימה">
 						{copied ? '✓ הועתק' : '🔗 קישור'}
 					</button>
 					{#if deletable}
-						<button type="button" onclick={remove} class="rounded-lg px-2 py-1 text-[12px] text-red-300 hover:bg-red-500/10">🗑️ מחיקה</button>
+						<button type="button" onclick={remove} class="rounded-lg px-2 py-1 text-[12px] text-red-300 hover:bg-red-500/10 cursor-pointer">🗑️ מחיקה</button>
 					{/if}
-					<button type="button" onclick={onclose} aria-label="סגירה" class="rounded-lg px-2 py-1 text-lg leading-none text-gray-300 hover:bg-[#272f3f]">✕</button>
+					<button type="button" onclick={onclose} aria-label="סגירה" class="rounded-lg px-2 py-1 text-lg leading-none text-gray-300 hover:bg-[#272f3f] cursor-pointer">✕</button>
 				</div>
 			</div>
 
@@ -301,9 +325,21 @@
 				<!-- אחראים -->
 				<div class="mt-4">
 					<div class="flex items-center justify-between">
-						<span class={LABEL}>אחראים</span>
+						<div class="flex items-center gap-2">
+							<span class={LABEL}>אחראים</span>
+							{#if editable && store.me && !task.assignees.includes(store.me.id)}
+								<button
+									type="button"
+									onclick={() => toggleAssignee(store.me!.id)}
+									class="rounded-lg border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 text-[11px] font-bold text-sky-200 hover:bg-sky-500/20 cursor-pointer transition"
+									title="שיוך המשימה אליי"
+								>
+									＋ שייך אליי
+								</button>
+							{/if}
+						</div>
 						{#if editable}
-							<button type="button" onclick={() => (pickAssignees = !pickAssignees)} class="text-[12px] font-bold text-sky-300 hover:text-sky-200">
+							<button type="button" onclick={() => (pickAssignees = !pickAssignees)} class="text-[12px] font-bold text-sky-300 hover:text-sky-200 cursor-pointer">
 								{pickAssignees ? 'סיום' : '＋ שינוי'}
 							</button>
 						{/if}
@@ -335,7 +371,18 @@
 								{@const m = store.member(id)}
 								<li class="flex items-center gap-2 rounded-xl border border-white/5 bg-[#161e30] px-2 py-1.5">
 									<MemberAvatar member={m} cls="h-8 w-8 text-xs" />
-									<span class="min-w-0 flex-1 truncate text-[14px] font-semibold text-white">{m.name}</span>
+									<span class="min-w-0 flex-1 truncate text-[14px] font-semibold text-white">{m.name}{id === store.me?.id ? ' (אני)' : ''}</span>
+									{#if id === store.me?.id}
+										<button
+											type="button"
+											onclick={handleSmsReminder}
+											disabled={sendingSms}
+											class="rounded-lg border border-amber-500/40 bg-amber-500/15 px-2.5 py-1 text-[12px] font-bold text-amber-200 transition hover:bg-amber-500/25 disabled:opacity-50 cursor-pointer flex items-center gap-1"
+											title="קבלת סמס תזכורת לעצמי"
+										>
+											💬 {sendingSms ? 'שולח...' : 'סמס תזכורת'}
+										</button>
+									{/if}
 									{#if m.phone && id !== store.me?.id}
 										<a
 											href={waLink(m.phone, waText(task, m.name))}

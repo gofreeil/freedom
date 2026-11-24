@@ -81,10 +81,14 @@ export function backendWillSms(u: StrapiUserRow): boolean {
 	return !Array.isArray(p.groups) || p.groups.map(String).includes('other');
 }
 
-export async function sendSms(phone: string, message: string): Promise<void> {
+export async function sendSms(phone: string, message: string, jwt?: string): Promise<void> {
+	const token = STRAPI_TOKEN || jwt || '';
 	const res = await fetch(`${STRAPI_URL}/api/admin/sms/send`, {
 		method: 'POST',
-		headers: headers(),
+		headers: {
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'application/json'
+		},
 		body: JSON.stringify({ message, recipients: [{ phone }] }),
 		signal: AbortSignal.timeout(20_000)
 	});

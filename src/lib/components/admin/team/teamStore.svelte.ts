@@ -147,7 +147,51 @@ export class TeamStore {
 	flash(type: 'ok' | 'err', msg: string) {
 		clearTimeout(this.#toastTimer);
 		this.toast = { type, msg };
-		this.#toastTimer = setTimeout(() => (this.toast = null), type === 'ok' ? 2200 : 5000);
+		this.#toastTimer = setTimeout(() => (this.toast = null), type === 'ok' ? 3000 : 5000);
+	}
+
+	async sendSmsReminder(
+		taskId: string,
+		customPhone?: string
+	): Promise<{ ok: boolean; phone?: string; error?: string; needPhone?: boolean }> {
+		try {
+			const savedPhone =
+				customPhone ||
+				(typeof localStorage !== 'undefined'
+					? localStorage.getItem('teamboard:admin_phone') ?? ''
+					: '');
+			const res = await fetch('/api/team-board/reminder', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ taskId, phone: savedPhone })
+			});
+			const json = (await res.json().catch(() => ({}))) as {
+				ok?: boolean;
+				phone?: string;
+				error?: string;
+				needPhone?: boolean;
+			};
+			if (res.ok && json.ok) {
+				if (json.phone && typeof localStorage !== 'undefined') {
+					localStorage.setItem('teamboard:admin_phone', json.phone);
+				}
+				this.flash('ok', `💬 סמס תזכורת נשלח בהצלחה ל-${json.phone}!`);
+				return { ok: true, phone: json.phone };
+			}
+			if (json.needPhone) {
+				return {
+					ok: false,
+					needPhone: true,
+					error: json.error || 'נא להזין מספר טלפון לקבלת הסמס'
+				};
+			}
+			this.flash('err', json.error || 'שליחת הסמס נכשלה');
+			return { ok: false, error: json.error || 'שליחת הסמס נכשלה' };
+		} catch (e) {
+			const msg = e instanceof Error ? e.message : 'שגיאת תקשורת בשליחת הסמס';
+			this.flash('err', msg);
+			return { ok: false, error: msg };
+		}
 	}
 
 	// ── מעקב "חדש בשבילך" (בדפדפן הזה בלבד) ──
