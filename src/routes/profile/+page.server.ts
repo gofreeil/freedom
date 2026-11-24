@@ -87,7 +87,7 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 			totalSaving: CLUB_TOTAL_SAVING
 		},
 		canVote: isSuper || (await canVoteBudget(email)),
-		tvGuest: !isSuper,
+		tvGuest: !canManage,
 		panel
 	};
 };

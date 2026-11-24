@@ -20,8 +20,8 @@
 		if (t && (
 			(t === 'admin' && data.user.canManage) ||
 			(t === 'budget' && (data.user.canManage || data.canVote || data.user.isSuperAdmin)) ||
-			t === 'achievements' ||
-			((t === 'tv' || t === 'protocols' || t === 'conference') && data.user.isSuperAdmin)
+			((t === 'tv' || t === 'protocols' || t === 'conference') && (data.user.canManage || data.user.isSuperAdmin)) ||
+			t === 'achievements'
 		)) {
 			activeTab = t;
 		}
@@ -99,16 +99,7 @@
 				</button>
 			{/if}
 
-			<button
-				type="button"
-				onclick={() => switchTab('achievements')}
-				class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'achievements' ? 'bg-amber-500/25 text-amber-200 border border-amber-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
-			>
-				<span aria-hidden="true">🏆</span>
-				<span>ההישגים שלי</span>
-			</button>
-
-			{#if data.user.isSuperAdmin}
+			{#if data.user.canManage || data.user.isSuperAdmin}
 				<button
 					type="button"
 					onclick={() => switchTab('tv')}
@@ -134,6 +125,15 @@
 					<span>ועידה</span>
 				</button>
 			{/if}
+
+			<button
+				type="button"
+				onclick={() => switchTab('achievements')}
+				class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'achievements' ? 'bg-amber-500/25 text-amber-200 border border-amber-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
+			>
+				<span aria-hidden="true">🏆</span>
+				<span>ההישגים שלי</span>
+			</button>
 		</div>
 
 		<!-- תוכן הכרטיסייה הפתוחה -->
