@@ -156,7 +156,7 @@
 
 	// ── רשימה: באיחור קודם, אחר כך לפי תאריך יעד ועדיפות ──
 	const PRIO_RANK: Record<string, number> = { urgent: 0, high: 1, normal: 2, low: 3 };
-	const STATUS_RANK: Record<string, number> = { doing: 0, review: 1, todo: 2, done: 3 };
+	const STATUS_RANK: Record<string, number> = { doing: 0, todo: 1, done: 2 };
 	const listRows = $derived(
 		[...filtered]
 			.filter((t) => showAllDone || t.status !== 'done' || (t.completedAt || t.updatedAt) >= doneCutoff)
@@ -435,7 +435,7 @@
 <style>
 	@media (min-width: 1024px) {
 		.board-grid {
-			grid-template-columns: minmax(0, 1.8fr) minmax(0, 0.73fr) minmax(0, 0.73fr) minmax(0, 0.73fr);
+			grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr);
 		}
 	}
 </style>

@@ -14,7 +14,6 @@
 export const STATUSES = [
 	{ id: 'todo', label: 'לביצוע', icon: '📝' },
 	{ id: 'doing', label: 'בעבודה', icon: '⚙️' },
-	{ id: 'review', label: 'ממתין לאישור', icon: '👀' },
 	{ id: 'done', label: 'הושלם', icon: '✅' }
 ] as const;
 export type TaskStatus = (typeof STATUSES)[number]['id'];
@@ -329,7 +328,7 @@ export function normalizeBoard(raw: unknown): BoardData {
 			id: s(t.id),
 			title: s(t.title),
 			description: s(t.description),
-			status: (STATUS_IDS.has(s(t.status)) ? t.status : 'todo') as TaskStatus,
+			status: (s(t.status) === 'review' ? 'doing' : STATUS_IDS.has(s(t.status)) ? t.status : 'todo') as TaskStatus,
 			priority: (PRIORITY_IDS.has(s(t.priority)) ? t.priority : 'normal') as TaskPriority,
 			assignees: arr<string>(t.assignees).filter((a) => typeof a === 'string'),
 			siteId: s(t.siteId),

@@ -286,7 +286,7 @@
 				></textarea>
 
 				<!-- סטטוס -->
-				<div class="mt-3 grid grid-cols-4 gap-1 rounded-xl border border-white/10 bg-[#161e30] p-1" role="group" aria-label="סטטוס">
+				<div class="mt-3 grid grid-cols-3 gap-1 rounded-xl border border-white/10 bg-[#161e30] p-1" role="group" aria-label="סטטוס">
 					{#each STATUSES as s (s.id)}
 						<button
 							type="button"

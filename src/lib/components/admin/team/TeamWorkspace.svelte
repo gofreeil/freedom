@@ -160,8 +160,8 @@
 		</div>
 	{:else if !store.loaded}
 		<!-- שלד טעינה -->
-		<div class="grid gap-3 lg:grid-cols-4" aria-hidden="true">
-			{#each Array.from({ length: 4 }) as _, i (i)}
+		<div class="grid gap-3 lg:grid-cols-3" aria-hidden="true">
+			{#each Array.from({ length: 3 }) as _, i (i)}
 				<div class="space-y-2 rounded-2xl border border-white/10 bg-[#141c2f] p-3">
 					<div class="h-5 w-24 animate-pulse rounded bg-white/10"></div>
 					<div class="h-20 animate-pulse rounded-xl bg-[#1b2335]"></div>
