@@ -153,27 +153,11 @@
             {#if user.canManage}
                 <a
                     role="menuitem"
-                    href="/profile?tab=achievements"
-                    onclick={() => (showProfileMenu = false)}
-                    class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
-                >
-                    <span aria-hidden="true">🏆</span> ההישגים שלי
-                </a>
-                <a
-                    role="menuitem"
                     href="/admin"
                     onclick={() => (showProfileMenu = false)}
                     class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
                 >
                     <span aria-hidden="true">🛡️</span> ניהול ומשימות
-                </a>
-                <a
-                    role="menuitem"
-                    href="/admin/tv"
-                    onclick={() => (showProfileMenu = false)}
-                    class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
-                >
-                    <span aria-hidden="true">📺</span> חירות TV
                 </a>
                 <a
                     role="menuitem"
@@ -200,6 +184,26 @@
                 class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
             >
                 <span aria-hidden="true">💰</span> ניהול תקציב
+            </a>
+
+            {#if user.canManage}
+                <a
+                    role="menuitem"
+                    href="/admin/tv"
+                    onclick={() => (showProfileMenu = false)}
+                    class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
+                >
+                    <span aria-hidden="true">📺</span> חירות TV
+                </a>
+            {/if}
+
+            <a
+                role="menuitem"
+                href="/profile?tab=achievements"
+                onclick={() => (showProfileMenu = false)}
+                class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
+            >
+                <span aria-hidden="true">🏆</span> ההישגים שלי
             </a>
         {/if}
     </div>
