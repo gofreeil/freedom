@@ -65,6 +65,27 @@
 		loading = 'sso';
 		window.location.href = `/auth/community-callback?returnTo=${encodeURIComponent(data.redirectTo || '/')}`;
 	}
+
+	async function loginAsRole(role: 'super_admin' | 'admin' | 'user' | 'guest') {
+		try {
+			document.cookie = 'role_sim_active=1; path=/; max-age=604800; SameSite=Lax';
+			document.cookie = `role_sim_role=${role}; path=/; max-age=604800; SameSite=Lax`;
+
+			if (role === 'guest') {
+				window.location.href = withWelcome(data.redirectTo || '/');
+				return;
+			}
+
+			await signIn('role-login', {
+				role,
+				redirect: true,
+				callbackUrl: withWelcome(data.redirectTo || '/')
+			});
+		} catch (e) {
+			console.error('Role login failed:', e);
+			loading = null;
+		}
+	}
 </script>
 
 <svelte:head><title>התחברות</title></svelte:head>
@@ -225,7 +246,46 @@
 			</button>
 		</form>
 
-		<p class="mt-6 text-center text-sm text-gray-400">
+		<!-- חיבור סופר אדמין לבדיקת תצוגות -->
+		<div class="mt-4 pt-3 border-t border-white/10 text-center">
+			<p class="mb-2 text-xs font-bold text-amber-300">חיבור סופר אדמין (בחירת תפקיד לתצוגה)</p>
+			<div class="grid grid-cols-2 gap-2 text-xs">
+				<button
+					type="button"
+					onclick={() => loginAsRole('super_admin')}
+					class="flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-2 py-2 font-bold text-amber-200 transition hover:bg-amber-500/20"
+				>
+					<span>👑</span>
+					<span>התחבר כספר אדמין</span>
+				</button>
+				<button
+					type="button"
+					onclick={() => loginAsRole('admin')}
+					class="flex items-center justify-center gap-1.5 rounded-xl border border-purple-500/30 bg-purple-500/10 px-2 py-2 font-bold text-purple-200 transition hover:bg-purple-500/20"
+				>
+					<span>🛡️</span>
+					<span>התחבר כאדמין</span>
+				</button>
+				<button
+					type="button"
+					onclick={() => loginAsRole('user')}
+					class="flex items-center justify-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-500/10 px-2 py-2 font-bold text-blue-200 transition hover:bg-blue-500/20"
+				>
+					<span>👤</span>
+					<span>התחבר כמשתמש מחובר</span>
+				</button>
+				<button
+					type="button"
+					onclick={() => loginAsRole('guest')}
+					class="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2 py-2 font-bold text-emerald-200 transition hover:bg-emerald-500/20"
+				>
+					<span>🕊️</span>
+					<span>הכנס כאורח</span>
+				</button>
+			</div>
+		</div>
+
+		<p class="mt-4 text-center text-sm text-gray-400">
 			אין לכם חשבון?
 			<a href="/register?redirect={encodeURIComponent(data.redirectTo || '/')}" class="font-bold text-purple-400 hover:text-purple-300">הרשמה</a>
 		</p>

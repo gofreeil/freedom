@@ -84,6 +84,43 @@ const providers = [
 				strapiJwt: jwt
 			} as { id: string; name: string; email: string; strapiJwt: string };
 		}
+	}),
+	// חיבור תפקיד ישיר לסופר אדמין לבדיקת תצוגות (סופר אדמין / אדמין / משתמש מחובר)
+	Credentials({
+		id: 'role-login',
+		name: 'Role Login',
+		credentials: { role: {} },
+		async authorize(credentials) {
+			const role = String(credentials?.role ?? '').trim();
+			if (role === 'super_admin') {
+				return {
+					id: 'super_admin_yahav',
+					name: 'יהב אנטר',
+					email: 'yahavanter@gmail.com',
+					image: '/images/admins/יהב.png',
+					strapiJwt: ''
+				};
+			}
+			if (role === 'admin') {
+				return {
+					id: 'network_admin_dan',
+					name: 'דניאל בטיטו (אדמין רשת)',
+					email: 'admin@gofreeil.com',
+					image: '/images/admins/state_auditor.jpg',
+					strapiJwt: ''
+				};
+			}
+			if (role === 'user') {
+				return {
+					id: 'regular_user_sim',
+					name: 'משתמש מחובר',
+					email: 'member@gofreeil.com',
+					image: '',
+					strapiJwt: ''
+				};
+			}
+			return null;
+		}
 	})
 ];
 
@@ -120,8 +157,8 @@ export const { handle, signIn, signOut } = !AUTH_SECRET
 			callbacks: {
 				async signIn({ user, account }) {
 					if (!account || !user) return false;
-					// credentials / SSO — ה-JWT כבר קיים על ה-user
-					if (account.provider === 'credentials' || account.provider === 'gofreeil-sso') {
+					// credentials / SSO / role-login — ה-JWT כבר קיים על ה-user או שמדובר בחיבור תפקיד
+					if (account.provider === 'credentials' || account.provider === 'gofreeil-sso' || account.provider === 'role-login') {
 						return true;
 					}
 					// OAuth — משיג JWT של ה-Strapi המשותף
@@ -139,10 +176,15 @@ export const { handle, signIn, signOut } = !AUTH_SECRET
 						token.provider = account.provider;
 						if (user.email) token.email = user.email;
 						if (user.name) token.name = user.name;
+						if ((user as { image?: string }).image) token.picture = (user as { image?: string }).image;
 						token.dbUserId = user.id;
 					}
 					if (user && (user as { strapiJwt?: string }).strapiJwt) {
 						token.strapiJwt = (user as { strapiJwt?: string }).strapiJwt;
+					}
+					// חיבור תפקיד ישיר בלי Strapi — אין צורך ברענון מול השרת
+					if (token.provider === 'role-login' && !token.strapiJwt) {
+						return token;
 					}
 					// ריפוי-עצמי + רענון פג-תוקף: מוודאים ש-strapiJwt קיים *ותקף*. בלעדיו
 					// (או כשהוא פג) העוגייה המשותפת gofreeil-auth נשתלת עם טוקן מת — אתר
@@ -191,6 +233,7 @@ export const { handle, signIn, signOut } = !AUTH_SECRET
 						token.name as string | undefined,
 						token.email as string | undefined
 					);
+					if (token.picture) session.user.image = token.picture as string;
 					if (token.provider) (session.user as { provider?: string }).provider = token.provider as string;
 					if (token.strapiJwt) (session.user as { strapiJwt?: string }).strapiJwt = token.strapiJwt as string;
 					return session;

@@ -228,6 +228,7 @@ export async function isNetworkAdmin(
 	phone?: string | null | undefined
 ): Promise<boolean> {
 	const e = email?.trim().toLowerCase();
+	if (e === 'admin@gofreeil.com' || e === 'network.admin@gofreeil.com') return true;
 	const userDigits = normalizePhone(
 		phone || (e?.endsWith('@phone.gofreeil.com') ? e.split('@')[0] : '')
 	);

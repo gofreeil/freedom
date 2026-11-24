@@ -5,11 +5,42 @@
     import { goto, afterNavigate } from "$app/navigation";
     import { onMount } from "svelte";
     import SignupTip from "$lib/components/SignupTip.svelte";
+    import { signIn, signOut } from '@auth/sveltekit/client';
 
     // משתמש מחובר (מגיע מ-+layout.server דרך +layout.svelte); null = אנונימי
     let { user = null }: { user?: { name: string; email: string; image?: string; isSuperAdmin?: boolean; canManage?: boolean } | null } = $props();
     // תמונת פרופיל שלא נטענה → עיגול עם האות הראשונה
     let avatarBroken = $state(false);
+
+    let switchingRole = $state<string | null>(null);
+
+    async function switchRole(role: 'super_admin' | 'admin' | 'user' | 'guest') {
+        if (switchingRole) return;
+        switchingRole = role;
+        showProfileMenu = false;
+        try {
+            document.cookie = 'role_sim_active=1; path=/; max-age=604800; SameSite=Lax';
+            document.cookie = `role_sim_role=${role}; path=/; max-age=604800; SameSite=Lax`;
+            if (role === 'guest') {
+                await signOut({ redirect: false });
+                const path = window.location.pathname;
+                if (path.startsWith('/admin') || path.startsWith('/profile') || path.startsWith('/protocols')) {
+                    window.location.href = '/';
+                } else {
+                    window.location.reload();
+                }
+                return;
+            }
+            await signIn('role-login', {
+                role,
+                redirect: true,
+                callbackUrl: window.location.pathname
+            });
+        } catch (e) {
+            console.error('Role switch failed:', e);
+            switchingRole = null;
+        }
+    }
 
     let languages = [
         { name: "עברית", code: "he", flag: "il" },
@@ -205,6 +236,46 @@
             >
                 <span aria-hidden="true">🏆</span> ההישגים שלי
             </a>
+
+            {#if user.isSuperAdmin || user.canManage}
+                <div class="mt-2 border-t border-white/10 pt-1.5 px-3 pb-1">
+                    <p class="text-[11px] font-bold text-amber-300 mb-1">החלפת חיבור / תצוגה:</p>
+                    <div class="space-y-0.5 text-xs">
+                        <button
+                            type="button"
+                            onclick={() => switchRole('super_admin')}
+                            class="w-full text-right flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 text-gray-200 transition-colors font-medium"
+                        >
+                            <span>👑</span>
+                            <span>התחבר כספר אדמין</span>
+                        </button>
+                        <button
+                            type="button"
+                            onclick={() => switchRole('admin')}
+                            class="w-full text-right flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 text-gray-200 transition-colors font-medium"
+                        >
+                            <span>🛡️</span>
+                            <span>התחבר כאדמין</span>
+                        </button>
+                        <button
+                            type="button"
+                            onclick={() => switchRole('user')}
+                            class="w-full text-right flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 text-gray-200 transition-colors font-medium"
+                        >
+                            <span>👤</span>
+                            <span>התחבר כמשתמש מחובר</span>
+                        </button>
+                        <button
+                            type="button"
+                            onclick={() => switchRole('guest')}
+                            class="w-full text-right flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 text-gray-200 transition-colors font-medium"
+                        >
+                            <span>🕊️</span>
+                            <span>הכנס כאורח</span>
+                        </button>
+                    </div>
+                </div>
+            {/if}
         {/if}
     </div>
 {/snippet}
