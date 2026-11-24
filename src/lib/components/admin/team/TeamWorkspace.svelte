@@ -14,6 +14,7 @@
 	import TaskDrawer from './TaskDrawer.svelte';
 	import ReportsFeed from './ReportsFeed.svelte';
 	import TeamOverview from './TeamOverview.svelte';
+	import GoogleCalendarPanel from './GoogleCalendarPanel.svelte';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -22,6 +23,7 @@
 	const TABS = [
 		{ id: 'tasks', label: 'משימות', icon: '📋' },
 		{ id: 'reports', label: 'דיווחי פעילות', icon: '📣' },
+		{ id: 'calendar', label: 'יומן גוגל', icon: '📅' },
 		{ id: 'overview', label: 'סקירת צוות', icon: '📊' },
 		{ id: 'coordinators', label: 'צוות הרכזים', icon: '🛡️' }
 	] as const;
@@ -29,7 +31,7 @@
 
 	const isSuper = $derived(Boolean(page.data.user?.isSuperAdmin || store.me?.isSuper));
 	const visibleTabs = $derived(
-		TABS.filter((t) => t.id === 'tasks' || t.id === 'reports' || isSuper)
+		TABS.filter((t) => t.id === 'tasks' || t.id === 'reports' || t.id === 'calendar' || isSuper)
 	);
 
 	const initialTab = page.url.searchParams.get('tab');
@@ -37,7 +39,7 @@
 		TABS.some(
 			(t) =>
 				t.id === initialTab &&
-				(t.id === 'tasks' || t.id === 'reports' || Boolean(page.data.user?.isSuperAdmin))
+				(t.id === 'tasks' || t.id === 'reports' || t.id === 'calendar' || Boolean(page.data.user?.isSuperAdmin))
 		)
 			? (initialTab as Tab)
 			: 'tasks'
@@ -172,6 +174,8 @@
 		<TaskBoard {store} onopen={openTask} />
 	{:else if tab === 'reports'}
 		<ReportsFeed {store} presetTaskId={presetReportTask} onpresetused={() => (presetReportTask = '')} onopentask={openTask} />
+	{:else if tab === 'calendar'}
+		<GoogleCalendarPanel {store} onopentask={openTask} />
 	{:else if tab === 'overview' && isSuper}
 		<TeamOverview {store} onfilter={filterByAssignee} />
 	{/if}

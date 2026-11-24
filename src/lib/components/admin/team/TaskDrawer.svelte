@@ -66,6 +66,27 @@
 			sendingSms = false;
 		}
 	}
+	function googleCalUrl(t: BoardTask): string {
+		const text = encodeURIComponent(`משימה: ${t.title}`);
+		const site = t.siteId ? getSite(t.siteId)?.name : '';
+		const origin = typeof location !== 'undefined' ? location.origin : '';
+		const details = encodeURIComponent(
+			[
+				site ? `אתר: ${site}` : '',
+				t.description ? `תיאור: ${t.description}` : '',
+				`קישור למשימה:\n${origin}/admin?task=${t.id}`
+			]
+				.filter(Boolean)
+				.join('\n\n')
+		);
+		let dates = '';
+		if (t.due) {
+			const d = t.due.replace(/-/g, '');
+			dates = `&dates=${d}/${d}`;
+		}
+		return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${details}${dates}`;
+	}
+
 	$effect(() => {
 		if (task && loadedFor !== task.id) {
 			loadedFor = task.id;
@@ -225,6 +246,15 @@
 					>
 						💬 {sendingSms ? 'שולח...' : 'סמס תזכורת'}
 					</button>
+					<a
+						href={googleCalUrl(task)}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="rounded-lg border border-purple-500/35 bg-purple-500/15 px-2.5 py-1 text-[12px] font-bold text-purple-200 transition hover:bg-purple-500/25 flex items-center gap-1 cursor-pointer"
+						title="הוספת תזכורת ביומן גוגל על משימה זו"
+					>
+						📅 יומן גוגל
+					</a>
 					<button type="button" onclick={copyLink} class="rounded-lg px-2 py-1 text-[12px] text-gray-300 hover:bg-[#272f3f] cursor-pointer" title="העתקת קישור ישיר למשימה">
 						{copied ? '✓ הועתק' : '🔗 קישור'}
 					</button>
