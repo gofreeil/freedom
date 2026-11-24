@@ -23,7 +23,6 @@
 	const TABS = [
 		{ id: 'tasks', label: 'משימות', icon: '📋' },
 		{ id: 'reports', label: 'דיווחי פעילות', icon: '📣' },
-		{ id: 'calendar', label: 'יומן גוגל', icon: '📅' },
 		{ id: 'overview', label: 'סקירת צוות', icon: '📊' },
 		{ id: 'coordinators', label: 'צוות הרכזים', icon: '🛡️' }
 	] as const;
@@ -31,7 +30,7 @@
 
 	const isSuper = $derived(Boolean(page.data.user?.isSuperAdmin || store.me?.isSuper));
 	const visibleTabs = $derived(
-		TABS.filter((t) => t.id === 'tasks' || t.id === 'reports' || t.id === 'calendar' || isSuper)
+		TABS.filter((t) => t.id === 'tasks' || t.id === 'reports' || isSuper)
 	);
 
 	const initialTab = page.url.searchParams.get('tab');
@@ -39,7 +38,7 @@
 		TABS.some(
 			(t) =>
 				t.id === initialTab &&
-				(t.id === 'tasks' || t.id === 'reports' || t.id === 'calendar' || Boolean(page.data.user?.isSuperAdmin))
+				(t.id === 'tasks' || t.id === 'reports' || Boolean(page.data.user?.isSuperAdmin))
 		)
 			? (initialTab as Tab)
 			: 'tasks'
@@ -174,10 +173,14 @@
 		<TaskBoard {store} onopen={openTask} />
 	{:else if tab === 'reports'}
 		<ReportsFeed {store} presetTaskId={presetReportTask} onpresetused={() => (presetReportTask = '')} onopentask={openTask} />
-	{:else if tab === 'calendar'}
-		<GoogleCalendarPanel {store} onopentask={openTask} />
 	{:else if tab === 'overview' && isSuper}
 		<TeamOverview {store} onfilter={filterByAssignee} />
+	{/if}
+
+	{#if store.loaded && (tab === 'tasks' || tab === 'reports')}
+		<div class="mt-8 border-t border-white/10 pt-6">
+			<GoogleCalendarPanel {store} onopentask={openTask} />
+		</div>
 	{/if}
 </div>
 

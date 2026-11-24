@@ -22,9 +22,12 @@
 	let calendarEmail = $state('');
 	let isEditingEmail = $state(false);
 	let tempEmail = $state('');
+	let isOpen = $state(false);
 
 	onMount(() => {
 		try {
+			const openPref = localStorage.getItem('teamboard:calendar_open');
+			if (openPref !== null) isOpen = openPref === 'true';
 			const saved = localStorage.getItem('teamboard:calendar_email');
 			if (saved) {
 				calendarEmail = saved;
@@ -33,6 +36,13 @@
 			}
 		} catch {}
 	});
+
+	function toggleOpen() {
+		isOpen = !isOpen;
+		try {
+			localStorage.setItem('teamboard:calendar_open', String(isOpen));
+		} catch {}
+	}
 
 	$effect(() => {
 		if (!calendarEmail && store.me?.id && store.me.id.includes('@')) {
@@ -110,17 +120,29 @@
 	);
 </script>
 
-<div class="space-y-6">
+<div class="space-y-4">
 	<!-- ── שורת כותרת ופעולות ── -->
-	<div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-[#141c2f] p-4">
-		<div>
-			<h2 class="flex items-center gap-2 text-lg font-black text-white">
-				<span aria-hidden="true">📅</span> יומן גוגל ותזכורות
-			</h2>
-			<p class="mt-0.5 text-xs text-gray-400">
-				סנכרון משימות, תזכורות ופגישות ישירות מול חשבון ה-Google Calendar שלך
-			</p>
-		</div>
+	<div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-[#141c2f] p-3.5">
+		<button
+			type="button"
+			onclick={toggleOpen}
+			class="flex items-center gap-2.5 text-start cursor-pointer group"
+		>
+			<span class="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/15 border border-purple-500/30 text-base" aria-hidden="true">📅</span>
+			<div>
+				<div class="flex items-center gap-2">
+					<h2 class="text-sm font-black text-white group-hover:text-purple-300 transition-colors">
+						יומן גוגל ותזכורות
+					</h2>
+					<span class="rounded-lg bg-white/10 px-2 py-0.5 text-[11px] font-bold text-gray-300 group-hover:bg-purple-500/20 group-hover:text-purple-200 transition">
+						{isOpen ? '▴ צמצום' : '▾ פתיחה'}
+					</span>
+				</div>
+				<p class="mt-0.5 text-[11px] text-gray-400">
+					סנכרון משימות, תזכורות ואירועים ישירות מול חשבון ה-Google שלך
+				</p>
+			</div>
+		</button>
 
 		<div class="flex flex-wrap items-center gap-2">
 			<!-- הגדרת חשבון יומן -->
@@ -157,7 +179,7 @@
 					class="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#1b2335] px-3 py-1.5 text-xs font-semibold text-gray-300 hover:bg-[#252f44] cursor-pointer"
 					title="החלפת חשבון יומן Google"
 				>
-					<span>👤 יומן: <strong class="text-white">{calendarEmail || 'ברירת מחדל בדפדפן'}</strong></span>
+					<span>👤 יומן: <strong class="text-white">{calendarEmail || 'ברירת מחדל'}</strong></span>
 					<span class="text-gray-400">✎</span>
 				</button>
 			{/if}
@@ -167,7 +189,7 @@
 				href="https://calendar.google.com/"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3.5 py-1.5 text-xs font-black text-white transition hover:opacity-95 shadow-sm"
+				class="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3 py-1.5 text-xs font-black text-white transition hover:opacity-95 shadow-sm"
 			>
 				<span>Google Calendar המלא</span>
 				<span aria-hidden="true">↗</span>
@@ -175,6 +197,7 @@
 		</div>
 	</div>
 
+	{#if isOpen}
 	<!-- ── שתי עמודות: הוספת תזכורת + משימות מסונכרנות ── -->
 	<div class="grid gap-4 lg:grid-cols-2">
 		<!-- כרטיס יצירת תזכורת מהירה ליומן -->
@@ -312,14 +335,15 @@
 			</span>
 		</div>
 
-		<div class="relative w-full overflow-hidden bg-slate-900" style="min-height: 650px;">
+		<div class="relative w-full overflow-hidden bg-slate-900" style="min-height: 600px;">
 			<iframe
 				src={embedUrl}
 				title="Google Calendar"
-				class="h-[650px] w-full border-0"
+				class="h-[600px] w-full border-0"
 				style="color-scheme: light;"
 				loading="lazy"
 			></iframe>
 		</div>
 	</div>
+	{/if}
 </div>
