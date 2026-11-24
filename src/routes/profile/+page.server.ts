@@ -38,16 +38,18 @@ function siteRows(admins: SiteAdminsMap) {
 	});
 }
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, cookies }) => {
 	const session = await locals.auth();
 	if (!session?.user) throw redirect(302, '/login?redirect=/profile');
 
 	const email = session.user.email ?? '';
-	const superAdmin = isSuperAdmin(email);
-	const canManage = superAdmin || (await isNetworkAdmin(email));
+	const isRealSuper = isSuperAdmin(email);
+	const viewRole = isRealSuper ? cookies.get('super_view_role') : null;
+	const isSuper = isRealSuper && viewRole !== 'admin' && viewRole !== 'user' && viewRole !== 'guest';
+	const canManage = isSuper || (await isNetworkAdmin(email));
 
 	let panel: Promise<{ order: string[]; sites: ReturnType<typeof siteRows>; error: string }> | null = null;
-	if (superAdmin) {
+	if (isSuper) {
 		const jwt = (session.user as { strapiJwt?: string }).strapiJwt ?? '';
 		if (jwt) {
 			panel = getSiteAdmins(jwt).then(
@@ -73,6 +75,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			name: session.user.name ?? '',
 			email,
 			image: session.user.image ?? '',
+			isSuperAdmin: isSuper,
 			canManage
 		},
 		club: {
@@ -83,8 +86,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			businessTrack: CLUB_BUSINESS_TRACK,
 			totalSaving: CLUB_TOTAL_SAVING
 		},
-		canVote: await canVoteBudget(email),
-		tvGuest: !canManage,
+		canVote: isSuper || (await canVoteBudget(email)),
+		tvGuest: !isSuper,
 		panel
 	};
 };

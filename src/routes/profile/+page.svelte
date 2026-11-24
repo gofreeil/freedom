@@ -12,12 +12,17 @@
 	let { data } = $props();
 
 	type TabKey = 'admin' | 'budget' | 'tv' | 'protocols' | 'conference' | 'achievements';
-	let activeTab = $state<TabKey>(data.user.canManage ? 'admin' : 'budget');
+	let activeTab = $state<TabKey>(data.user.canManage ? 'admin' : (data.user.isSuperAdmin ? 'budget' : 'achievements'));
 
 	onMount(() => {
 		const params = new URLSearchParams(window.location.search);
 		const t = params.get('tab') as TabKey | null;
-		if (t && (t === 'budget' || t === 'achievements' || ((t === 'admin' || t === 'tv' || t === 'protocols' || t === 'conference') && data.user.canManage))) {
+		if (t && (
+			(t === 'admin' && data.user.canManage) ||
+			(t === 'budget' && data.user.isSuperAdmin) ||
+			t === 'achievements' ||
+			((t === 'tv' || t === 'protocols' || t === 'conference') && data.user.isSuperAdmin)
+		)) {
 			activeTab = t;
 		}
 	});
@@ -83,14 +88,16 @@
 				</button>
 			{/if}
 
-			<button
-				type="button"
-				onclick={() => switchTab('budget')}
-				class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'budget' ? 'bg-indigo-500/25 text-indigo-200 border border-indigo-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
-			>
-				<span aria-hidden="true">💰</span>
-				<span>ניהול תקציב</span>
-			</button>
+			{#if data.user.isSuperAdmin}
+				<button
+					type="button"
+					onclick={() => switchTab('budget')}
+					class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'budget' ? 'bg-indigo-500/25 text-indigo-200 border border-indigo-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
+				>
+					<span aria-hidden="true">💰</span>
+					<span>ניהול תקציב</span>
+				</button>
+			{/if}
 
 			<button
 				type="button"
@@ -101,7 +108,7 @@
 				<span>ההישגים שלי</span>
 			</button>
 
-			{#if data.user.canManage}
+			{#if data.user.isSuperAdmin}
 				<button
 					type="button"
 					onclick={() => switchTab('tv')}
