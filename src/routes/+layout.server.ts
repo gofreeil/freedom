@@ -30,7 +30,7 @@ export const load: LayoutServerLoad = async ({ locals, cookies }) => {
 			// כפתור "ניהול הרשת" בהדר — לסופר-אדמין ולאדמיני אתרי הרשת בלבד
 			canManage
 		},
-		roleSim: (superAdmin || simActive || isRoleLogin)
+		roleSim: (superAdmin || (simActive && isRoleLogin))
 			? {
 					active: true,
 					currentRole

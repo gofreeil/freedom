@@ -237,7 +237,7 @@
                 <span aria-hidden="true">🏆</span> ההישגים שלי
             </a>
 
-            {#if user.isSuperAdmin || user.canManage}
+            {#if user.isSuperAdmin}
                 <div class="mt-2 border-t border-white/10 pt-1.5 px-3 pb-1">
                     <p class="text-[11px] font-bold text-amber-300 mb-1">החלפת חיבור / תצוגה:</p>
                     <div class="space-y-0.5 text-xs">
@@ -247,7 +247,7 @@
                             class="w-full text-right flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 text-gray-200 transition-colors font-medium"
                         >
                             <span>👑</span>
-                            <span>התחבר כספר אדמין</span>
+                            <span>התחבר כסופר אדמין</span>
                         </button>
                         <button
                             type="button"

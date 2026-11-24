@@ -15,6 +15,8 @@
 		email.includes('@') ? `/forgot-password?email=${encodeURIComponent(email.trim())}` : '/forgot-password'
 	);
 
+	const isSuperEmail = $derived(email.trim().toLowerCase() === 'yahavanter@gmail.com');
+
 	// מוסיף welcome=back ליעד — מפעיל את מסך "ברוכים השבים" אחרי ההתחברות
 	function withWelcome(dest: string): string {
 		try {
@@ -246,44 +248,46 @@
 			</button>
 		</form>
 
-		<!-- חיבור סופר אדמין לבדיקת תצוגות -->
-		<div class="mt-4 pt-3 border-t border-white/10 text-center">
-			<p class="mb-2 text-xs font-bold text-amber-300">חיבור סופר אדמין (בחירת תפקיד לתצוגה)</p>
-			<div class="grid grid-cols-2 gap-2 text-xs">
-				<button
-					type="button"
-					onclick={() => loginAsRole('super_admin')}
-					class="flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-2 py-2 font-bold text-amber-200 transition hover:bg-amber-500/20"
-				>
-					<span>👑</span>
-					<span>התחבר כספר אדמין</span>
-				</button>
-				<button
-					type="button"
-					onclick={() => loginAsRole('admin')}
-					class="flex items-center justify-center gap-1.5 rounded-xl border border-purple-500/30 bg-purple-500/10 px-2 py-2 font-bold text-purple-200 transition hover:bg-purple-500/20"
-				>
-					<span>🛡️</span>
-					<span>התחבר כאדמין</span>
-				</button>
-				<button
-					type="button"
-					onclick={() => loginAsRole('user')}
-					class="flex items-center justify-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-500/10 px-2 py-2 font-bold text-blue-200 transition hover:bg-blue-500/20"
-				>
-					<span>👤</span>
-					<span>התחבר כמשתמש מחובר</span>
-				</button>
-				<button
-					type="button"
-					onclick={() => loginAsRole('guest')}
-					class="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2 py-2 font-bold text-emerald-200 transition hover:bg-emerald-500/20"
-				>
-					<span>🕊️</span>
-					<span>הכנס כאורח</span>
-				</button>
+		<!-- חיבור סופר אדמין לבדיקת תצוגות - מוצג אך ורק בחשבון סופר אדמין -->
+		{#if data.showSuperRoleSelect || isSuperEmail}
+			<div class="mt-4 pt-3 border-t border-white/10 text-center">
+				<p class="mb-2 text-xs font-bold text-amber-300">חיבור סופר אדמין (בחירת תפקיד לתצוגה)</p>
+				<div class="grid grid-cols-2 gap-2 text-xs">
+					<button
+						type="button"
+						onclick={() => loginAsRole('super_admin')}
+						class="flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-2 py-2 font-bold text-amber-200 transition hover:bg-amber-500/20"
+					>
+						<span>👑</span>
+						<span>התחבר כסופר אדמין</span>
+					</button>
+					<button
+						type="button"
+						onclick={() => loginAsRole('admin')}
+						class="flex items-center justify-center gap-1.5 rounded-xl border border-purple-500/30 bg-purple-500/10 px-2 py-2 font-bold text-purple-200 transition hover:bg-purple-500/20"
+					>
+						<span>🛡️</span>
+						<span>התחבר כאדמין</span>
+					</button>
+					<button
+						type="button"
+						onclick={() => loginAsRole('user')}
+						class="flex items-center justify-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-500/10 px-2 py-2 font-bold text-blue-200 transition hover:bg-blue-500/20"
+					>
+						<span>👤</span>
+						<span>התחבר כמשתמש מחובר</span>
+					</button>
+					<button
+						type="button"
+						onclick={() => loginAsRole('guest')}
+						class="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2 py-2 font-bold text-emerald-200 transition hover:bg-emerald-500/20"
+					>
+						<span>🕊️</span>
+						<span>הכנס כאורח</span>
+					</button>
+				</div>
 			</div>
-		</div>
+		{/if}
 
 		<p class="mt-4 text-center text-sm text-gray-400">
 			אין לכם חשבון?

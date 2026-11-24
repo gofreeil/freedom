@@ -72,7 +72,7 @@
 					type="button"
 					onclick={() => switchRole('super_admin')}
 					disabled={loadingRole !== null}
-					title="התחבר כספר אדמין"
+					title="התחבר כסופר אדמין"
 					class="flex items-center gap-1 rounded-md px-2 py-0.5 font-bold transition-all text-[11px] sm:text-xs {currentRole === 'super_admin' ? 'bg-amber-500 text-slate-950 shadow-sm' : 'bg-white/10 text-gray-200 hover:bg-white/20'}"
 				>
 					{#if loadingRole === 'super_admin'}
@@ -80,7 +80,7 @@
 					{:else}
 						<span>👑</span>
 					{/if}
-					<span>התחבר כספר אדמין</span>
+					<span>התחבר כסופר אדמין</span>
 				</button>
 
 				<button
@@ -159,7 +159,7 @@
 		title="פתח בורר תצוגה לסופר אדמין"
 	>
 		<span>👑</span>
-		<span>תצוגה: {currentRole === 'super_admin' ? 'ספר אדמין' : currentRole === 'admin' ? 'אדמין' : currentRole === 'user' ? 'משתמש' : 'אורח'}</span>
+		<span>תצוגה: {currentRole === 'super_admin' ? 'סופר אדמין' : currentRole === 'admin' ? 'אדמין' : currentRole === 'user' ? 'משתמש' : 'אורח'}</span>
 	</button>
 {/if}
 
