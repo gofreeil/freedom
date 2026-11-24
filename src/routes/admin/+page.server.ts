@@ -98,10 +98,25 @@ const ORIGINAL_SITE_ROLES: Record<string, { adminName: string; role: string; ava
 	}
 };
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, cookies }) => {
 	const session = await locals.auth();
 	if (!session?.user) throw redirect(302, '/login?redirect=/admin');
-	if (!isSuperAdmin(session.user.email)) {
+	const email = session.user.email?.trim().toLowerCase();
+	const isRealSuper = isSuperAdmin(email);
+	const viewRole = isRealSuper ? cookies.get('super_view_role') : null;
+
+	if (isRealSuper && viewRole === 'guest') {
+		throw redirect(302, '/login?redirect=/admin');
+	}
+	if (isRealSuper && viewRole === 'user') {
+		throw error(403, 'אין לך הרשאה לגשת לאזור הניהול');
+	}
+	if (isRealSuper && viewRole === 'admin') {
+		// תצוגת אדמין רשת — רואה משימות ודוחות, בלי עריכת מינויים
+		return { panel: null };
+	}
+
+	if (!isRealSuper) {
 		// אדמין של אתר ברשת — רואה את הדף, בלי עריכת המינויים
 		if (await isNetworkAdmin(session.user.email)) return { panel: null };
 		throw error(403, 'אין לך הרשאה לגשת לאזור הניהול');

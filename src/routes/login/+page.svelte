@@ -70,12 +70,15 @@
 
 	async function loginAsRole(role: 'super_admin' | 'admin' | 'user' | 'guest') {
 		try {
-			document.cookie = 'role_sim_active=1; path=/; max-age=604800; SameSite=Lax';
-			document.cookie = `role_sim_role=${role}; path=/; max-age=604800; SameSite=Lax`;
-
 			if (role === 'guest') {
+				document.cookie = 'super_view_role=guest; path=/; max-age=604800; SameSite=Lax';
 				window.location.href = withWelcome(data.redirectTo || '/');
 				return;
+			}
+			if (role === 'super_admin') {
+				document.cookie = 'super_view_role=; path=/; max-age=0; SameSite=Lax';
+			} else {
+				document.cookie = `super_view_role=${role}; path=/; max-age=604800; SameSite=Lax`;
 			}
 
 			await signIn('role-login', {

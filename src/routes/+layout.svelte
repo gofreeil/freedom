@@ -7,7 +7,6 @@
 	import Header from "$lib/components/Header.svelte";
 	import Footer from "$lib/components/Footer.svelte";
 	import WelcomeScreen from "$lib/components/WelcomeScreen.svelte";
-	import RoleSwitcherBar from "$lib/components/RoleSwitcherBar.svelte";
 	import { navigating } from "$app/state";
 
 	let { children, data } = $props();
@@ -47,11 +46,8 @@
 
 <span class="golden-frame golden-frame-left" aria-hidden="true"></span>
 <span class="golden-frame golden-frame-right" aria-hidden="true"></span>
-{#if data.roleSim?.active}
-	<RoleSwitcherBar currentRole={data.roleSim.currentRole} />
-{/if}
 <div class="site-frame forest-bg min-h-screen flex flex-col">
-	<Header user={data.user} />
+	<Header user={data.user} realSuperAdmin={data.realSuperAdmin} currentViewRole={data.currentViewRole} />
 
 	<div class="layout-container flex-grow">
 		<main id="main-content" tabindex="-1" class="main-content">

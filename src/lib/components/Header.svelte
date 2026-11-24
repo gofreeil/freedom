@@ -5,10 +5,18 @@
     import { goto, afterNavigate } from "$app/navigation";
     import { onMount } from "svelte";
     import SignupTip from "$lib/components/SignupTip.svelte";
-    import { signIn, signOut } from '@auth/sveltekit/client';
 
     // משתמש מחובר (מגיע מ-+layout.server דרך +layout.svelte); null = אנונימי
-    let { user = null }: { user?: { name: string; email: string; image?: string; isSuperAdmin?: boolean; canManage?: boolean } | null } = $props();
+    let {
+        user = null,
+        realSuperAdmin = false,
+        currentViewRole = 'super_admin'
+    }: {
+        user?: { name: string; email: string; image?: string; isSuperAdmin?: boolean; canManage?: boolean } | null;
+        realSuperAdmin?: boolean;
+        currentViewRole?: 'super_admin' | 'admin' | 'user' | 'guest';
+    } = $props();
+
     // תמונת פרופיל שלא נטענה → עיגול עם האות הראשונה
     let avatarBroken = $state(false);
 
@@ -19,25 +27,23 @@
         switchingRole = role;
         showProfileMenu = false;
         try {
-            document.cookie = 'role_sim_active=1; path=/; max-age=604800; SameSite=Lax';
-            document.cookie = `role_sim_role=${role}; path=/; max-age=604800; SameSite=Lax`;
-            if (role === 'guest') {
-                await signOut({ redirect: false });
+            const res = await fetch('/api/auth/switch-role', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role })
+            });
+            if (res.ok) {
                 const path = window.location.pathname;
-                if (path.startsWith('/admin') || path.startsWith('/profile') || path.startsWith('/protocols')) {
+                if ((role === 'user' || role === 'guest') && (path.startsWith('/admin') || path.startsWith('/protocols'))) {
                     window.location.href = '/';
                 } else {
                     window.location.reload();
                 }
                 return;
             }
-            await signIn('role-login', {
-                role,
-                redirect: true,
-                callbackUrl: window.location.pathname
-            });
         } catch (e) {
             console.error('Role switch failed:', e);
+        } finally {
             switchingRole = null;
         }
     }
@@ -237,41 +243,41 @@
                 <span aria-hidden="true">🏆</span> ההישגים שלי
             </a>
 
-            {#if user.isSuperAdmin}
+            {#if realSuperAdmin || user.isSuperAdmin}
                 <div class="mt-2 border-t border-white/10 pt-1.5 px-3 pb-1">
                     <p class="text-[11px] font-bold text-amber-300 mb-1">החלפת חיבור / תצוגה:</p>
                     <div class="space-y-0.5 text-xs">
                         <button
                             type="button"
                             onclick={() => switchRole('super_admin')}
-                            class="w-full text-right flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 text-gray-200 transition-colors font-medium"
+                            class="w-full text-right flex items-center justify-between px-2 py-1 rounded hover:bg-white/10 text-gray-200 transition-colors font-medium {currentViewRole === 'super_admin' ? 'bg-amber-500/20 text-amber-300 font-bold' : ''}"
                         >
-                            <span>👑</span>
-                            <span>התחבר כסופר אדמין</span>
+                            <span class="flex items-center gap-2"><span>👑</span><span>התחבר כסופר אדמין</span></span>
+                            {#if currentViewRole === 'super_admin'}<span class="text-amber-400">✓</span>{/if}
                         </button>
                         <button
                             type="button"
                             onclick={() => switchRole('admin')}
-                            class="w-full text-right flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 text-gray-200 transition-colors font-medium"
+                            class="w-full text-right flex items-center justify-between px-2 py-1 rounded hover:bg-white/10 text-gray-200 transition-colors font-medium {currentViewRole === 'admin' ? 'bg-purple-500/20 text-purple-300 font-bold' : ''}"
                         >
-                            <span>🛡️</span>
-                            <span>התחבר כאדמין</span>
+                            <span class="flex items-center gap-2"><span>🛡️</span><span>התחבר כאדמין</span></span>
+                            {#if currentViewRole === 'admin'}<span class="text-purple-400">✓</span>{/if}
                         </button>
                         <button
                             type="button"
                             onclick={() => switchRole('user')}
-                            class="w-full text-right flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 text-gray-200 transition-colors font-medium"
+                            class="w-full text-right flex items-center justify-between px-2 py-1 rounded hover:bg-white/10 text-gray-200 transition-colors font-medium {currentViewRole === 'user' ? 'bg-blue-500/20 text-blue-300 font-bold' : ''}"
                         >
-                            <span>👤</span>
-                            <span>התחבר כמשתמש מחובר</span>
+                            <span class="flex items-center gap-2"><span>👤</span><span>התחבר כמשתמש מחובר</span></span>
+                            {#if currentViewRole === 'user'}<span class="text-blue-400">✓</span>{/if}
                         </button>
                         <button
                             type="button"
                             onclick={() => switchRole('guest')}
-                            class="w-full text-right flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 text-gray-200 transition-colors font-medium"
+                            class="w-full text-right flex items-center justify-between px-2 py-1 rounded hover:bg-white/10 text-gray-200 transition-colors font-medium {currentViewRole === 'guest' ? 'bg-emerald-500/20 text-emerald-300 font-bold' : ''}"
                         >
-                            <span>🕊️</span>
-                            <span>הכנס כאורח</span>
+                            <span class="flex items-center gap-2"><span>🕊️</span><span>הכנס כאורח</span></span>
+                            {#if currentViewRole === 'guest'}<span class="text-emerald-400">✓</span>{/if}
                         </button>
                     </div>
                 </div>
@@ -322,7 +328,20 @@
         </div>
     {:else}
         <!-- אורח: יד ובועה "לא רשום עדיין?" תלויות מתחת לכפתור (בעברית בלבד) -->
-        <span class="relative inline-flex flex-shrink-0">
+        <span class="relative inline-flex items-center gap-1.5 flex-shrink-0">
+            {#if realSuperAdmin}
+                <button
+                    type="button"
+                    onclick={() => switchRole('super_admin')}
+                    class="flex items-center gap-1 rounded-lg bg-amber-500/20 border border-amber-500/40 px-2 py-1 text-xs font-bold text-amber-300 hover:bg-amber-500/30 transition"
+                    title="חזרה לתצוגת סופר אדמין"
+                >
+                    <span>👑</span>
+                    {#if !isMobile}
+                        <span>חזרה לסופר אדמין</span>
+                    {/if}
+                </button>
+            {/if}
             <a
                 href="/login"
                 class="login-grad flex items-center {isMobile ? 'justify-center w-8 h-8 rounded-lg text-sm' : 'gap-1.5 rounded-lg px-3 py-1.5 text-sm'} font-bold text-white transition-all hover:brightness-110"
