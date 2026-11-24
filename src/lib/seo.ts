@@ -114,7 +114,7 @@ export function organizationSchema() {
             'https://www.youtube.com/@freedomhasbegun',
             'https://t.me/freedomisrael',
             'https://www.tiktok.com/@yahav_anter',
-            'https://www.linkedin.com/in/free-isrel',
+            'https://www.linkedin.com/in/free-israel',
             'https://tv.gofreeil.com',
             ...OTHER_NETWORK_SITES.map((s) => s.url),
         ],
