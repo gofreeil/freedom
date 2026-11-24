@@ -11,13 +11,15 @@ import { sendSms } from '$lib/server/coordinatorMessage';
 import { getSite } from '$lib/sitesData';
 import type { RequestHandler } from './$types';
 
-export const POST: RequestHandler = async ({ locals, request, url }) => {
+export const POST: RequestHandler = async ({ locals, request, url, cookies }) => {
 	const session = await locals.auth();
 	const email = session?.user?.email?.trim().toLowerCase() ?? '';
 	if (!email) return json({ error: 'צריך להתחבר' }, { status: 401 });
 
-	const isSuper = isSuperAdmin(email);
-	if (!isSuper && !(await isNetworkAdmin(email))) {
+	const isRealSuper = isSuperAdmin(email);
+	const viewRole = isRealSuper ? cookies.get('super_view_role') : null;
+	const isSuper = isRealSuper && viewRole !== 'admin';
+	if (!isSuper && !(await isNetworkAdmin(email)) && !isRealSuper) {
 		return json({ error: 'שליחת תזכורות מותרת לצוות הרשת בלבד' }, { status: 403 });
 	}
 

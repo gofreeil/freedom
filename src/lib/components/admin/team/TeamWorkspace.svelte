@@ -28,7 +28,7 @@
 	] as const;
 	type Tab = (typeof TABS)[number]['id'];
 
-	const isSuper = $derived(Boolean(page.data.user?.isSuperAdmin || store.me?.isSuper));
+	const isSuper = $derived(Boolean(page.data.user?.isSuperAdmin && store.me?.isSuper !== false));
 	const visibleTabs = $derived(
 		TABS.filter((t) => t.id === 'tasks' || t.id === 'reports' || isSuper)
 	);

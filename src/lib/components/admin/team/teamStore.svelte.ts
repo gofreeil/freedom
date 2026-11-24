@@ -84,6 +84,10 @@ export class TeamStore {
 			this.team = json.team ?? [];
 			this.board = normalizeBoard(json.board);
 			this.loadError = '';
+			if (!this.me?.isSuper) {
+				this.filter.assignee = '';
+				this.filter.site = '';
+			}
 			if (!this.loaded) this.#initSeen();
 			this.loaded = true;
 		} catch (e) {

@@ -42,6 +42,7 @@
 	}
 
 	// ── הוספה מהירה ──
+	const isSuper = $derived(Boolean(store.me?.isSuper));
 	let newTitle = $state('');
 	let newAssignee = $state<string | null>(null); // null = ברירת המחדל (לעצמי)
 	let sendSmsOnCreate = $state(false);
@@ -169,12 +170,19 @@
 			)
 	);
 
-	const SCOPES = [
-		{ id: 'all', label: 'הכל' },
-		{ id: 'mine', label: 'שלי' },
-		{ id: 'created', label: 'פתחתי' },
-		{ id: 'overdue', label: 'באיחור' }
-	] as const;
+	const SCOPES = $derived(
+		isSuper
+			? ([
+					{ id: 'all' as const, label: 'הכל' },
+					{ id: 'mine' as const, label: 'שלי' },
+					{ id: 'created' as const, label: 'פתחתי' },
+					{ id: 'overdue' as const, label: 'באיחור' }
+				] as const)
+			: ([
+					{ id: 'all' as const, label: 'המשימות שלי' },
+					{ id: 'overdue' as const, label: 'באיחור' }
+				] as const)
+	);
 
 	const CHIP =
 		'rounded-full border px-3 py-1 text-[13px] font-semibold transition whitespace-nowrap';
@@ -193,23 +201,25 @@
 		placeholder="＋ משימה חדשה — מה צריך לעשות?"
 		class="min-w-0 flex-[1_1_16rem] rounded-xl border border-white/10 bg-[#0b1220] px-3 py-2.5 text-[15px] text-white placeholder:text-gray-500 focus:border-sky-500 focus:outline-none"
 	/>
-	<label for="quick-assignee" class="sr-only">אחראי/ת</label>
-	<select
-		id="quick-assignee"
-		value={assigneeValue}
-		onchange={(e) => (newAssignee = (e.currentTarget as HTMLSelectElement).value)}
-		class="{SELECT} flex-[0_1_12rem] py-2.5"
-	>
-		{#if store.me}
-			<option value={store.me.id}>⭐ לעצמי ({store.me.name})</option>
-		{/if}
-		<option value="">👤 ללא אחראי</option>
-		{#each store.team as m (m.id)}
-			{#if m.id !== store.me?.id}
-				<option value={m.id}>{m.name}</option>
+	{#if isSuper}
+		<label for="quick-assignee" class="sr-only">אחראי/ת</label>
+		<select
+			id="quick-assignee"
+			value={assigneeValue}
+			onchange={(e) => (newAssignee = (e.currentTarget as HTMLSelectElement).value)}
+			class="{SELECT} flex-[0_1_12rem] py-2.5"
+		>
+			{#if store.me}
+				<option value={store.me.id}>⭐ לעצמי ({store.me.name})</option>
 			{/if}
-		{/each}
-	</select>
+			<option value="">👤 ללא אחראי</option>
+			{#each store.team as m (m.id)}
+				{#if m.id !== store.me?.id}
+					<option value={m.id}>{m.name}</option>
+				{/if}
+			{/each}
+		</select>
+	{/if}
 
 	<label class="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-amber-200/90 cursor-pointer select-none rounded-xl bg-amber-500/10 border border-amber-500/25 hover:bg-amber-500/20 transition whitespace-nowrap" title="קבלת סמס תזכורת מיד עם יצירת המשימה">
 		<input type="checkbox" bind:checked={sendSmsOnCreate} class="rounded border-amber-400 text-amber-500 focus:ring-amber-400 cursor-pointer" />
@@ -244,23 +254,25 @@
 		{/each}
 	</div>
 
-	<label for="f-assignee" class="sr-only">אחראי/ת</label>
-	<select id="f-assignee" bind:value={store.filter.assignee} class={SELECT}>
-		<option value="">כל האחראים</option>
-		<option value="__none">ללא אחראי</option>
-		{#each store.team as m (m.id)}
-			<option value={m.id}>{m.name}</option>
-		{/each}
-	</select>
+	{#if isSuper}
+		<label for="f-assignee" class="sr-only">אחראי/ת</label>
+		<select id="f-assignee" bind:value={store.filter.assignee} class={SELECT}>
+			<option value="">כל האחראים</option>
+			<option value="__none">ללא אחראי</option>
+			{#each store.team as m (m.id)}
+				<option value={m.id}>{m.name}</option>
+			{/each}
+		</select>
 
-	<label for="f-site" class="sr-only">אתר</label>
-	<select id="f-site" bind:value={store.filter.site} class={SELECT}>
-		<option value="">כל האתרים</option>
-		<option value="__network">כלל הרשת</option>
-		{#each SITES as s (s.id)}
-			<option value={s.id}>{s.name}</option>
-		{/each}
-	</select>
+		<label for="f-site" class="sr-only">אתר</label>
+		<select id="f-site" bind:value={store.filter.site} class={SELECT}>
+			<option value="">כל האתרים</option>
+			<option value="__network">כלל הרשת</option>
+			{#each SITES as s (s.id)}
+				<option value={s.id}>{s.name}</option>
+			{/each}
+		</select>
+	{/if}
 
 	<label for="f-q" class="sr-only">חיפוש</label>
 	<input
