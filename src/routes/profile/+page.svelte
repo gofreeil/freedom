@@ -12,14 +12,14 @@
 	let { data } = $props();
 
 	type TabKey = 'admin' | 'budget' | 'tv' | 'protocols' | 'conference' | 'achievements';
-	let activeTab = $state<TabKey>(data.user.canManage ? 'admin' : (data.user.isSuperAdmin ? 'budget' : 'achievements'));
+	let activeTab = $state<TabKey>(data.user.canManage ? 'admin' : (data.canVote ? 'budget' : 'achievements'));
 
 	onMount(() => {
 		const params = new URLSearchParams(window.location.search);
 		const t = params.get('tab') as TabKey | null;
 		if (t && (
 			(t === 'admin' && data.user.canManage) ||
-			(t === 'budget' && data.user.isSuperAdmin) ||
+			(t === 'budget' && (data.user.canManage || data.canVote || data.user.isSuperAdmin)) ||
 			t === 'achievements' ||
 			((t === 'tv' || t === 'protocols' || t === 'conference') && data.user.isSuperAdmin)
 		)) {
@@ -88,7 +88,7 @@
 				</button>
 			{/if}
 
-			{#if data.user.isSuperAdmin}
+			{#if data.user.canManage || data.user.isSuperAdmin || data.canVote}
 				<button
 					type="button"
 					onclick={() => switchTab('budget')}

@@ -23,26 +23,64 @@
 	const IDS = BUDGET.map((b) => b.id);
 
 	const DAY = 86_400_000;
+
+	// קבוצת המצביעים: 10 רכזים ברשת (סופר אדמין + רכזי האתרים + אתה)
+	const OTHER_COORDINATORS = [
+		{ id: 'c-super', name: 'הנהלת הרשת', role: 'סופר-אדמין', icon: '👑', voted: true, alloc: [30, 25, 20, 15, 5, 5] },
+		{ id: 'c-tv', name: 'מורן', role: 'רכז חירות TV', icon: '📺', voted: true, alloc: [25, 30, 20, 15, 5, 5] },
+		{ id: 'c-lost', name: 'ליאת טרר', role: 'רכזת פינת האבדות', icon: '🔍', voted: true, alloc: [20, 25, 30, 15, 5, 5] },
+		{ id: 'c-hood', name: 'זמיר גל', role: 'רכז קהילה בשכונה', icon: '🏘️', voted: true, alloc: [35, 20, 15, 15, 10, 5] },
+		{ id: 'c-club', name: 'דניאל בטיטו', role: 'רכז מועדון החירות', icon: '💎', voted: true, alloc: [25, 25, 25, 15, 5, 5] },
+		{ id: 'c-index', name: 'יגאל כהן', role: 'רכז אינדקס בעלי מקצוע', icon: '📋', voted: true, alloc: [30, 30, 15, 10, 10, 5] },
+		{ id: 'c-success', name: 'צוות הצלחות', role: 'רכז הישגים והצלחות', icon: '🏆', voted: true, alloc: [20, 20, 35, 15, 5, 5] },
+		{ id: 'c-store', name: 'רכז חנות החירות', role: 'רכז חנות החירות', icon: '🛒', voted: false, alloc: null },
+		{ id: 'c-conf', name: 'רכז ועידת חירות', role: 'רכז ועידת חירות', icon: '🎙️', voted: false, alloc: null }
+	];
+
+	const OTHER_VOTES: Allocation[] = OTHER_COORDINATORS.filter((c) => c.voted && c.alloc).map(
+		(c) => Object.fromEntries(IDS.map((id, i) => [id, c.alloc![i]]))
+	);
+
+	const totalEligible = 10;
+	let showVotersList = $state(false);
+
+	const VOTE_KEY = 'budget_alloc_vote_mock';
+	let mine = $state<Ballot | null>(null);
+
+	const activeBallots = $derived(mine ? [...OTHER_VOTES, mine.alloc] : OTHER_VOTES);
+	const votedCount = $derived(activeBallots.length);
+	const quorumReached = $derived(votedCount >= Math.ceil(totalEligible / 2));
+	const participationPct = $derived(Math.round((votedCount / totalEligible) * 100));
+	const myWeightPct = $derived(
+		votedCount > 0
+			? (mine
+					? Math.round((100 / votedCount) * 10) / 10
+					: Math.round((100 / (votedCount + 1)) * 10) / 10)
+			: 0
+	);
+
+	const votersRoster = $derived([
+		...OTHER_COORDINATORS.map((c) => ({
+			...c,
+			weightPct: c.voted ? Math.round((100 / votedCount) * 10) / 10 : 0
+		})),
+		{
+			id: 'me',
+			name: 'אתה (הרכז המחובר)',
+			role: 'ההצבעה שלך',
+			icon: '⭐',
+			voted: !!mine,
+			weightPct: mine ? myWeightPct : 0
+		}
+	]);
+
 	const round = $derived<BudgetRound>({
 		id: 'demo',
 		total,
 		categories: BUDGET,
-		eligible: 12,
+		eligible: totalEligible,
 		closesAt: new Date(Date.now() + (page.url.searchParams.has('closed') ? -DAY : 14 * DAY)).toISOString()
 	});
-
-	const OTHER_VOTES: Allocation[] = [
-		[30, 25, 20, 15, 5, 5],
-		[25, 30, 20, 15, 5, 5],
-		[20, 25, 30, 15, 5, 5],
-		[35, 20, 15, 15, 10, 5],
-		[25, 25, 25, 15, 5, 5],
-		[30, 30, 15, 10, 10, 5],
-		[20, 20, 35, 15, 5, 5]
-	].map((row) => Object.fromEntries(IDS.map((id, i) => [id, row[i]])));
-
-	const VOTE_KEY = 'budget_alloc_vote_mock';
-	let mine = $state<Ballot | null>(null);
 
 	onMount(() => {
 		try {
@@ -129,13 +167,81 @@
 </script>
 
 <div class="mx-auto max-w-4xl px-2 sm:px-4 py-2 sm:py-4" dir="rtl">
-	<div class="mb-4 flex flex-wrap items-center gap-3">
-		<h2 class="flex items-center gap-2.5 text-xl font-black text-white sm:text-2xl">
-			<span aria-hidden="true">💰</span> ניהול תקציב
-		</h2>
-		<span class="rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-0.5 text-xs font-bold text-amber-200">
-			הדגמה — הנתונים אינם אמיתיים
-		</span>
+	<div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+		<div class="flex items-center gap-2.5">
+			<h2 class="flex items-center gap-2 text-xl font-black text-white sm:text-2xl">
+				<span aria-hidden="true">💰</span> ניהול תקציב והצבעת רכזים
+			</h2>
+			{#if quorumReached}
+				<span class="rounded-full border border-emerald-400/40 bg-emerald-500/15 px-2.5 py-0.5 text-xs font-bold text-emerald-300">
+					✓ התקציב מאושר ויוצא לפועל
+				</span>
+			{:else}
+				<span class="rounded-full border border-amber-400/40 bg-amber-400/15 px-2.5 py-0.5 text-xs font-bold text-amber-300">
+					בהליך אישור (ממתין לקוורום)
+				</span>
+			{/if}
+		</div>
+	</div>
+
+	<!-- באנר אישור תקציב ושקלול פרופורציונלי של רכזי הרשת -->
+	<div class="mb-3 rounded-2xl border p-3 sm:p-4 {quorumReached ? 'border-emerald-500/30 bg-emerald-950/30' : 'border-amber-500/30 bg-amber-950/30'}">
+		<div class="flex flex-wrap items-center justify-between gap-2.5">
+			<div class="flex items-center gap-2.5">
+				<span class="flex h-8 w-8 items-center justify-center rounded-xl text-base {quorumReached ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-300'}" aria-hidden="true">
+					{quorumReached ? '🚀' : '⏳'}
+				</span>
+				<div>
+					<h3 class="text-sm font-black text-white sm:text-base">
+						{quorumReached ? 'התקציב מאושר ויוצא לפועל!' : 'התקציב בהליך אישור'}
+					</h3>
+					<p class="text-xs text-gray-300">
+						{quorumReached
+							? `אושר על ידי רוב הרכזים (${votedCount} מתוך ${totalEligible} רכזים הצביעו · ${participationPct}% השתתפות) — כל שקל מחולק ומאושר לביצוע לפי השקלול הפרופורציונלי של קולות הרכזים.`
+							: `נדרשת הצבעת רוב הרכזים כדי לאשר את התקציב ולהוציאו לפועל (כרגע ${votedCount}/${totalEligible}).`}
+					</p>
+				</div>
+			</div>
+			<div class="flex items-center gap-2">
+				<span class="rounded-xl border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-bold text-sky-200" title="משקל השפעתך בתקציב המאושר">
+					⚖️ השפעתך הפרופורציונלית: {myWeightPct}%
+				</span>
+				<button
+					type="button"
+					onclick={() => (showVotersList = !showVotersList)}
+					class="rounded-xl border border-white/15 bg-white/10 px-3 py-1 text-xs font-bold text-white hover:bg-white/15 transition cursor-pointer"
+				>
+					{showVotersList ? 'הסתר רכזים ▴' : `פירוט מצביעים (${votedCount}/${totalEligible}) ▾`}
+				</button>
+			</div>
+		</div>
+
+		{#if showVotersList}
+			<div class="mt-3 border-t border-white/10 pt-3">
+				<div class="mb-1.5 flex items-center justify-between text-xs text-gray-400 font-semibold">
+					<span>קבוצת המצביעים — כל אדמין משפיע ביחס הפרופורציונלי שלו:</span>
+					<span>קוורום נדרש: {Math.ceil(totalEligible / 2)} רכזים (50%)</span>
+				</div>
+				<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 text-xs">
+					{#each votersRoster as v (v.id)}
+						<div class="flex flex-col justify-between rounded-xl border p-2 {v.voted ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-100' : 'border-white/10 bg-white/5 text-gray-400'}">
+							<div class="flex items-center gap-1.5 font-bold">
+								<span>{v.icon}</span>
+								<span class="truncate">{v.name}</span>
+							</div>
+							<div class="mt-1 flex items-center justify-between text-[11px]">
+								<span class="truncate text-gray-400">{v.role}</span>
+								{#if v.voted}
+									<span class="font-bold text-emerald-300">✓ {v.weightPct}%</span>
+								{:else}
+									<span class="text-gray-500">ממתין</span>
+								{/if}
+							</div>
+						</div>
+					{/each}
+				</div>
+			</div>
+		{/if}
 	</div>
 
 	<!-- כסף נכנס: שלושה מקורות שמתנקזים אנכית לקופת התקציב (ויזואליזציה עומדת) -->

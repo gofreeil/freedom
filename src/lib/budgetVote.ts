@@ -125,3 +125,72 @@ export function parseAllocation(raw: unknown, ids: string[]): Allocation | null 
 	}
 	return allocationSum(out, ids) === 100 ? out : null;
 }
+
+export interface AdminVoter {
+	id: string;
+	name: string;
+	role: string;
+	avatar?: string;
+	voted: boolean;
+	votedAt?: string;
+	alloc?: Allocation;
+}
+
+/**
+ * מחשב את התוצאה המאושרת שיוצאת לפועל מכלל קולות הרכזים,
+ * כאשר כל אדמין משפיע ביחס הפרופורציונלי שלו מקבוצת המצביעים.
+ */
+export function calculateProportionalBudget(
+	voters: AdminVoter[],
+	categories: BudgetCategory[],
+	total: number
+): {
+	approvedAlloc: Allocation;
+	votedCount: number;
+	totalEligible: number;
+	quorumReached: boolean;
+	proportionalWeightPct: number;
+	votersBreakdown: { id: string; name: string; role: string; voted: boolean; weightPct: number }[];
+	approvedAmounts: Record<string, number>;
+} {
+	const totalEligible = voters.length;
+	const activeBallots = voters.filter((v) => v.voted && v.alloc).map((v) => v.alloc!);
+	const votedCount = activeBallots.length;
+	const ids = categories.map((c) => c.id);
+
+	// קוורום: רוב רגיל (לפחות 50% מהקבוצה)
+	const quorumReached = totalEligible > 0 && votedCount >= Math.ceil(totalEligible / 2);
+
+	// חלוקה מאושרת: אם יש מצביעים, שקלול פרופורציונלי שווה בין כל מי שהצביע; אחרת התקציב הנוכחי
+	const currentAlloc = toAllocation(
+		ids,
+		roundToTotal(categories.map((c) => c.amount))
+	);
+	const approvedAlloc =
+		votedCount > 0 ? (averageAllocation(activeBallots, ids) ?? currentAlloc) : currentAlloc;
+
+	const weightPct = votedCount > 0 ? Math.round((100 / votedCount) * 10) / 10 : 0;
+
+	const votersBreakdown = voters.map((v) => ({
+		id: v.id,
+		name: v.name,
+		role: v.role,
+		voted: v.voted,
+		weightPct: v.voted ? weightPct : 0
+	}));
+
+	const approvedAmounts: Record<string, number> = {};
+	for (const c of categories) {
+		approvedAmounts[c.id] = Math.round((total * (approvedAlloc[c.id] ?? 0)) / 100);
+	}
+
+	return {
+		approvedAlloc,
+		votedCount,
+		totalEligible,
+		quorumReached,
+		proportionalWeightPct: weightPct,
+		votersBreakdown,
+		approvedAmounts
+	};
+}

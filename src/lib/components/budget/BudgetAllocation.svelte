@@ -98,7 +98,12 @@
 			return { small: s.label, big: `${s.value}%`, sub: nis(amount(s.value)), tone: '' };
 		}
 		if (view === 'avg')
-			return { small: closed ? 'התוצאה הסופית' : 'ממוצע ההצבעות', big: `${voters} מצביעים`, sub: '', tone: '' };
+			return {
+				small: voters >= Math.ceil(eligible / 2) ? 'מאושר ויוצא לפועל' : 'ממוצע ההצבעות',
+				big: `${voters} מצביעים`,
+				sub: voters >= Math.ceil(eligible / 2) ? '✓ קוורום הושג' : '',
+				tone: voters >= Math.ceil(eligible / 2) ? 'text-emerald-300' : ''
+			};
 		if (view === 'mine' && left > 0)
 			return { small: 'חולקו עד כה', big: `${100 - left}%`, sub: '', tone: 'text-amber-300' };
 		if (view === 'mine' && left < 0) return { small: 'חריגה', big: `${100 - left}%`, sub: '', tone: 'text-rose-300' };
@@ -392,7 +397,12 @@
 						</div>
 
 						<div class="order-2 text-end sm:order-none">
-							<div class="text-sm font-bold tabular-nums text-white">{nis(amount(v))}</div>
+							<div class="flex items-center justify-end gap-1.5 text-sm font-bold tabular-nums text-white">
+								<span>{nis(amount(v))}</span>
+								{#if voters >= Math.ceil(eligible / 2) && view === 'avg'}
+									<span class="rounded bg-emerald-500/20 px-1 py-0.5 text-[10px] font-bold text-emerald-300">מאושר לביצוע</span>
+								{/if}
+							</div>
 							<!-- ההפרש מהתקציב הנוכחי; השורה שמורה גם כשאין הפרש, כדי שהסכום לא יקפוץ -->
 							<div class="h-4 text-[11px] leading-4 tabular-nums {delta > 0 ? 'text-emerald-300' : 'text-rose-300'}">
 								{#if delta !== 0}
