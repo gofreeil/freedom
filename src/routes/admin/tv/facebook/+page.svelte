@@ -113,6 +113,99 @@
 					<li>בשדה "User or Page" בחר את הדף שלך (לא "User Token").</li>
 					<li>סמן את כל הטקסט בשדה "Access Token" והעתק (<span dir="ltr">Ctrl+A, Ctrl+C</span>).</li>
 				</ol>
+
+				<!-- מוקאפ הממחיש את מסך Graph API Explorer של Meta -->
+				<div class="mt-3 overflow-hidden rounded-xl border border-slate-300 bg-[#f0f2f5] text-slate-900 shadow-lg" dir="ltr">
+					<!-- סרגל עליון של Meta for Developers -->
+					<div class="flex items-center justify-between border-b border-slate-200 bg-white px-3 py-1.5 text-xs">
+						<div class="flex items-center gap-2">
+							<span class="font-bold text-[#0866ff]">Meta</span>
+							<span class="text-slate-500">for Developers</span>
+							<span class="text-slate-300">|</span>
+							<span class="font-semibold text-slate-700">Graph API Explorer</span>
+						</div>
+						<span class="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500" dir="rtl">המחשה — מסך פייסבוק</span>
+					</div>
+
+					<div class="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-2.5 p-2.5">
+						<!-- אזור השאילתה משמאל -->
+						<div class="space-y-2">
+							<div class="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white p-1.5 text-xs">
+								<span class="rounded bg-slate-100 px-2 py-1 font-semibold text-slate-700">GET</span>
+								<span class="rounded bg-slate-100 px-2 py-1 text-slate-600">v21.0</span>
+								<span class="flex-1 truncate px-1 font-mono text-slate-700">me?fields=id,name</span>
+								<span class="rounded bg-[#0866ff] px-2.5 py-1 font-semibold text-white">Submit</span>
+							</div>
+							<div class="rounded-lg border border-slate-200 bg-white p-2.5 text-[11px] text-slate-600" dir="rtl">
+								<p class="font-bold text-slate-800 mb-1">💡 בחלון הקופץ אחרי לחיצה על Generate Access Token:</p>
+								<p>בחר <strong class="text-slate-900">Edit settings</strong> (או "ערוך הגדרות") ← סמן את הדף שלך ← המשך ואשר את כל ההרשאות.</p>
+							</div>
+						</div>
+
+						<!-- סרגל הטוקן מימין (כמו ב-Graph API Explorer) -->
+						<div class="space-y-2 rounded-lg border border-slate-300 bg-white p-2.5 text-xs">
+							<!-- Access Token (שלב 6) -->
+							<div>
+								<div class="mb-0.5 flex items-center justify-between">
+									<span class="font-semibold text-slate-700">Access Token</span>
+									<span class="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-800" dir="rtl">⑥ העתק מכאן</span>
+								</div>
+								<div class="rounded border-2 border-amber-400 bg-amber-50/50 px-2 py-1 font-mono text-[11px] text-slate-700 truncate">
+									EAAGm0PX4ZCpsBA... (Ctrl+A, Ctrl+C)
+								</div>
+							</div>
+
+							<!-- Meta App (שלב 2) -->
+							<div>
+								<div class="mb-0.5 flex items-center justify-between">
+									<span class="font-semibold text-slate-700">Meta App</span>
+									<span class="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-bold text-blue-800" dir="rtl">② בחר אפליקציה</span>
+								</div>
+								<div class="flex items-center justify-between rounded border-2 border-blue-400 bg-blue-50/40 px-2 py-1 text-slate-800">
+									<span class="font-semibold">GoFreeIL TV</span>
+									<span class="text-slate-400">▾</span>
+								</div>
+							</div>
+
+							<!-- User or Page (שלב 5) -->
+							<div>
+								<div class="mb-0.5 flex items-center justify-between">
+									<span class="font-semibold text-slate-700">User or Page</span>
+									<span class="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800" dir="rtl">⑤ בחר הדף שלך</span>
+								</div>
+								<div class="flex items-center justify-between rounded border-2 border-emerald-500 bg-emerald-50/40 px-2 py-1 text-slate-800">
+									<span class="font-semibold" dir="rtl">הדף שלך (Page)</span>
+									<span class="text-slate-400">▾</span>
+								</div>
+							</div>
+
+							<!-- Permissions (שלב 3) -->
+							<div>
+								<div class="mb-0.5 flex items-center justify-between">
+									<span class="font-semibold text-slate-700">Permissions</span>
+									<span class="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-bold text-purple-800" dir="rtl">③ הוסף 5 הרשאות</span>
+								</div>
+								<div class="flex flex-wrap gap-1 rounded border border-purple-300 bg-purple-50/30 p-1.5 text-[10px]">
+									<span class="rounded bg-slate-200 px-1.5 py-0.5 text-slate-800">pages_show_list ×</span>
+									<span class="rounded bg-slate-200 px-1.5 py-0.5 text-slate-800">business_management ×</span>
+									<span class="rounded bg-slate-200 px-1.5 py-0.5 text-slate-800">pages_read_engagement ×</span>
+									<span class="rounded bg-slate-200 px-1.5 py-0.5 text-slate-800">pages_manage_posts ×</span>
+									<span class="rounded bg-slate-200 px-1.5 py-0.5 text-slate-800">pages_manage_metadata ×</span>
+								</div>
+							</div>
+
+							<!-- Generate Access Token (שלב 4) -->
+							<div class="pt-0.5">
+								<div class="flex items-center justify-between gap-2">
+									<span class="flex-1 rounded bg-[#0866ff] px-2.5 py-1.5 text-center font-semibold text-white">
+										Generate Access Token
+									</span>
+									<span class="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-bold text-blue-800" dir="rtl">④ לחץ</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<div>
