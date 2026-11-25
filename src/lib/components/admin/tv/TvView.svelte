@@ -43,6 +43,12 @@
 		>
 			📘 חיבור דף פייסבוק לשידור
 		</a>
+		<a
+			href="/admin/tv/youtube"
+			class="rounded-lg border border-red-400/30 bg-red-500/15 px-3 py-1.5 text-[13px] font-bold text-red-200 hover:bg-red-500/25"
+		>
+			▶️ חיבור ערוץ יוטיוב לשידור
+		</a>
 		{#if !guest}
 			<button
 				type="button"
