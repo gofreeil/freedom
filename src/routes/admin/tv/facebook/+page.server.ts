@@ -8,5 +8,5 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (!session?.user) throw redirect(302, '/login?redirect=/admin/tv/facebook');
 	const email = session.user.email ?? '';
 	const team = isSuperAdmin(email) || (await isNetworkAdmin(email));
-	return { guest: !team };
+	return { guest: !team, userName: session.user.name ?? '' };
 };

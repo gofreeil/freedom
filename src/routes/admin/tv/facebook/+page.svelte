@@ -1,10 +1,164 @@
 <script lang="ts">
 	// /admin/tv/facebook — מדריך חיבור דף פייסבוק לשידור חי משותף של חירות TV
+	import { onMount } from 'svelte';
+	import { DEFAULT_COLUMNS, LIMITS, newId, type SheetColumn } from '$lib/teamBoard';
+
 	let { data } = $props();
 	let copiedPerms = $state(false);
 
+	// שדות הדבקה למשתמש ליד השלבים — נשתלים אוטומטית בטבלת חירות TV
+	let pageName = $state('');
+	let profileLink = $state('');
+	let approvedTester = $state(false);
+	let accessToken = $state('');
+
+	let columns = $state<SheetColumn[]>(DEFAULT_COLUMNS);
+	let savedRowId = $state('');
+	let saving = $state(false);
+	let saveMsg = $state('');
+	let saveError = $state('');
+
+	const STORAGE_KEY = 'tv_fb_guide_v1';
+
 	const PERMISSIONS =
 		'pages_show_list, business_management, pages_read_engagement, pages_manage_posts, pages_manage_metadata';
+
+	onMount(async () => {
+		try {
+			const raw = localStorage.getItem(STORAGE_KEY);
+			if (raw) {
+				const parsed = JSON.parse(raw) as Record<string, unknown>;
+				if (typeof parsed.pageName === 'string') pageName = parsed.pageName;
+				if (typeof parsed.profileLink === 'string') profileLink = parsed.profileLink;
+				if (typeof parsed.approvedTester === 'boolean') approvedTester = parsed.approvedTester;
+				if (typeof parsed.accessToken === 'string') accessToken = parsed.accessToken;
+				if (typeof parsed.savedRowId === 'string') savedRowId = parsed.savedRowId;
+			}
+		} catch {
+			// ignore storage error
+		}
+
+		try {
+			const res = await fetch('/api/tv-guest', { cache: 'no-store' });
+			if (res.ok) {
+				const json = (await res.json()) as { columns?: SheetColumn[] };
+				if (Array.isArray(json.columns) && json.columns.length) {
+					columns = json.columns;
+				}
+			}
+		} catch {
+			// fallback to DEFAULT_COLUMNS
+		}
+	});
+
+	function persistLocal() {
+		try {
+			localStorage.setItem(
+				STORAGE_KEY,
+				JSON.stringify({ pageName, profileLink, approvedTester, accessToken, savedRowId })
+			);
+		} catch {
+			// ignore
+		}
+	}
+
+	function buildCells(): Record<string, string> {
+		const nameCol = columns.find((c) => c.id === 'col-name' || c.label.includes('שם')) ?? columns[0];
+		const fbCol = columns.find((c) => c.id === 'col-facebook' || c.label.includes('פייסבוק'));
+		const notesCol = columns.find((c) => c.id === 'col-notes' || c.label.includes('הערות'));
+
+		const cells: Record<string, string> = {};
+		const nameVal = (data.userName || '').trim();
+		if (nameCol && nameVal) cells[nameCol.id] = nameVal.slice(0, LIMITS.cell);
+
+		const fbVal = (profileLink.trim() || pageName.trim()).slice(0, LIMITS.cell);
+		if (fbCol && fbVal) cells[fbCol.id] = fbVal;
+
+		const parts: string[] = [];
+		if (pageName.trim()) parts.push(`דף: ${pageName.trim()}`);
+		if (profileLink.trim()) parts.push(`פרופיל: ${profileLink.trim()}`);
+		if (approvedTester) parts.push('Tester: אושר ✓');
+		if (accessToken.trim()) parts.push(`טוקן: ${accessToken.trim()}`);
+		if (notesCol && parts.length) cells[notesCol.id] = parts.join(' | ').slice(0, LIMITS.cell);
+
+		return cells;
+	}
+
+	async function syncToSheet(manual = false) {
+		persistLocal();
+		const cells = buildCells();
+		const hasInput =
+			pageName.trim() || profileLink.trim() || approvedTester || accessToken.trim();
+		if (!hasInput) {
+			if (manual) saveError = 'יש למלא לפחות פרט אחד לפני השמירה';
+			return;
+		}
+		if (saving) return;
+
+		saving = true;
+		saveError = '';
+		saveMsg = '';
+
+		try {
+			if (!data.guest) {
+				// צוות הרשת: יוצר שורה בפעם הראשונה, ומעדכן תאים בעריכות הבאות
+				if (!savedRowId) {
+					const id = newId();
+					const res = await fetch('/api/team-board', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ op: { type: 'sheet.row.add', id, cells } })
+					});
+					const json = await res.json().catch(() => ({}));
+					if (!res.ok) throw new Error(json.error || 'השמירה נכשלה');
+					savedRowId = id;
+				} else {
+					for (const [colId, value] of Object.entries(cells)) {
+						const res = await fetch('/api/team-board', {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({
+								op: { type: 'sheet.cell.set', rowId: savedRowId, colId, value }
+							})
+						});
+						const json = await res.json().catch(() => ({}));
+						if (!res.ok) throw new Error(json.error || 'העדכון נכשל');
+					}
+				}
+			} else {
+				// מתנדב רגיל: /api/tv-guest שומר שורה חדשה (מוגן מפני כפילות אוטומטית)
+				if (savedRowId && !manual) {
+					saving = false;
+					return;
+				}
+				const id = newId();
+				const res = await fetch('/api/tv-guest', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ id, cells })
+				});
+				const json = await res.json().catch(() => ({}));
+				if (!res.ok) throw new Error(json.error || 'השמירה נכשלה');
+				savedRowId = id;
+			}
+			persistLocal();
+			saveMsg = 'נשתל בהצלחה בטבלת חירות TV ✓';
+		} catch (e) {
+			saveError = e instanceof Error ? e.message : 'שגיאה בשמירה לטבלה';
+		} finally {
+			saving = false;
+		}
+	}
+
+	function onStepBlur() {
+		persistLocal();
+		if (!data.guest) void syncToSheet(false);
+	}
+
+	function onTokenBlurOrPaste() {
+		persistLocal();
+		if (accessToken.trim()) void syncToSheet(false);
+	}
 
 	async function copyPermissions() {
 		try {
@@ -61,6 +215,30 @@
 					<li>את שם הדף שלך.</li>
 					<li>את שם החשבון האישי שלך בפייסבוק (או הקישור לפרופיל), כדי שנוסיף אותך לאפליקציה שלנו.</li>
 				</ul>
+				<div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 rounded-xl border border-white/10 bg-black/25 p-2.5">
+					<label class="block">
+						<span class="mb-1 block text-xs font-bold text-amber-200">הדבק כאן: שם הדף שלך בפייסבוק</span>
+						<input
+							type="text"
+							bind:value={pageName}
+							oninput={persistLocal}
+							onblur={onStepBlur}
+							placeholder="למשל: חירות ישראל"
+							class="w-full rounded-lg border border-white/15 bg-[#0f1626] px-2.5 py-1.5 text-sm text-white placeholder:text-gray-500 focus:border-blue-400 focus:outline-none"
+						/>
+					</label>
+					<label class="block">
+						<span class="mb-1 block text-xs font-bold text-amber-200">הדבק כאן: שם החשבון האישי / קישור לפרופיל</span>
+						<input
+							type="text"
+							bind:value={profileLink}
+							oninput={persistLocal}
+							onblur={onStepBlur}
+							placeholder="שם מלא או https://facebook.com/..."
+							class="w-full rounded-lg border border-white/15 bg-[#0f1626] px-2.5 py-1.5 text-sm text-white placeholder:text-gray-500 focus:border-blue-400 focus:outline-none"
+						/>
+					</label>
+				</div>
 			</div>
 
 			<div>
@@ -80,6 +258,16 @@
 					</li>
 					<li>תגיד לנו "אישרתי".</li>
 				</ul>
+
+				<label class="mt-2 inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-sm font-bold text-emerald-200">
+					<input
+						type="checkbox"
+						bind:checked={approvedTester}
+						onchange={onStepBlur}
+						class="h-4 w-4 accent-emerald-500"
+					/>
+					<span>אישרתי את בקשת ההצטרפות ל-GoFreeIL TV</span>
+				</label>
 
 				<!-- מוקאפ מסך בקשת Tester של Meta -->
 				<div class="mt-2.5 max-w-md overflow-hidden rounded-xl border border-slate-300 bg-[#f0f2f5] text-slate-900 shadow" dir="ltr">
@@ -261,6 +449,47 @@
 					<li>הקוד תקף כשעתיים בלבד, ואנחנו משתמשים בו פעם אחת לחיבור הדף ואז מוחקים אותו.</li>
 					<li>תגיד לנו כשנשלח, ונאשר לך כשהחיבור נקלט.</li>
 				</ul>
+
+				<div class="mt-2.5 space-y-2 rounded-xl border border-emerald-400/25 bg-emerald-950/20 p-3">
+					<label class="block">
+						<span class="mb-1 block text-xs sm:text-sm font-bold text-emerald-200">
+							הדבק כאן את ה-Access Token שהעתקת (יישתל אוטומטית בטבלת חירות TV)
+						</span>
+						<input
+							type="text"
+							dir="ltr"
+							bind:value={accessToken}
+							oninput={persistLocal}
+							onblur={onTokenBlurOrPaste}
+							placeholder="EAAGm0PX4ZCpsBA..."
+							class="w-full rounded-lg border border-white/15 bg-[#0f1626] px-2.5 py-1.5 font-mono text-xs sm:text-sm text-white placeholder:text-gray-500 focus:border-emerald-400 focus:outline-none"
+						/>
+					</label>
+
+					<div class="flex flex-wrap items-center gap-2.5">
+						<button
+							type="button"
+							onclick={() => syncToSheet(true)}
+							disabled={saving}
+							class="rounded-lg bg-emerald-600 px-3.5 py-1.5 text-xs sm:text-sm font-bold text-white hover:bg-emerald-500 disabled:opacity-50 cursor-pointer"
+						>
+							{saving ? 'שומר בטבלה…' : savedRowId ? 'עדכן / שלח שוב לטבלת חירות TV' : 'שתול עכשיו בטבלת חירות TV'}
+						</button>
+
+						{#if saveMsg}
+							<span class="text-xs sm:text-sm font-bold text-emerald-300">{saveMsg}</span>
+							<a href="/admin/tv" class="text-xs sm:text-sm font-bold text-amber-200 underline hover:text-amber-100">
+								צפה בטבלה ←
+							</a>
+						{:else if saveError}
+							<span class="text-xs sm:text-sm font-bold text-red-300">{saveError}</span>
+						{:else}
+							<span class="text-xs text-gray-300">
+								הנתונים נשמרים כטיוטה מקומית ונשתלים אוטומטית בטבלה בדף <a href="/admin/tv" class="text-amber-200 underline">חירות TV</a>.
+							</span>
+						{/if}
+					</div>
+				</div>
 			</div>
 		</section>
 
