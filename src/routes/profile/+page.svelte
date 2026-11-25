@@ -7,21 +7,23 @@
 	import TvView from '$lib/components/admin/tv/TvView.svelte';
 	import ProtocolsView from '$lib/components/admin/protocols/ProtocolsView.svelte';
 	import AchievementsView from '$lib/components/achievements/AchievementsView.svelte';
+	import SuccessesView from '$lib/components/successes/SuccessesView.svelte';
 	import ConferenceView from '$lib/components/admin/conference/ConferenceView.svelte';
 
 	let { data } = $props();
 
-	type TabKey = 'admin' | 'budget' | 'tv' | 'protocols' | 'conference' | 'achievements';
-	let activeTab = $state<TabKey>(data.user.canManage ? 'admin' : (data.canVote ? 'budget' : 'achievements'));
+	type TabKey = 'admin' | 'budget' | 'tv' | 'protocols' | 'conference' | 'achievements' | 'successes';
+	let activeTab = $state<TabKey>(data.user.canManage ? 'admin' : (data.canVote ? 'budget' : 'conference'));
 
 	onMount(() => {
 		const params = new URLSearchParams(window.location.search);
 		const t = params.get('tab') as TabKey | null;
 		if (t && (
 			(t === 'admin' && data.user.canManage) ||
-			(t === 'budget' && (data.user.canManage || data.canVote || data.user.isSuperAdmin)) ||
-			((t === 'tv' || t === 'protocols' || t === 'conference') && (data.user.canManage || data.user.isSuperAdmin)) ||
-			t === 'achievements'
+			t === 'budget' ||
+			t === 'conference' ||
+			t === 'successes' ||
+			((t === 'tv' || t === 'protocols' || t === 'achievements') && (data.user.canManage || data.user.isSuperAdmin))
 		)) {
 			activeTab = t;
 		}
@@ -88,16 +90,14 @@
 				</button>
 			{/if}
 
-			{#if data.user.canManage || data.user.isSuperAdmin || data.canVote}
-				<button
-					type="button"
-					onclick={() => switchTab('budget')}
-					class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'budget' ? 'bg-indigo-500/25 text-indigo-200 border border-indigo-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
-				>
-					<span aria-hidden="true">💰</span>
-					<span>ניהול תקציב</span>
-				</button>
-			{/if}
+			<button
+				type="button"
+				onclick={() => switchTab('budget')}
+				class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'budget' ? 'bg-indigo-500/25 text-indigo-200 border border-indigo-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
+			>
+				<span aria-hidden="true">💰</span>
+				<span>{data.user.canManage || data.canVote ? 'ניהול תקציב' : 'הצצה לתקציב'}</span>
+			</button>
 
 			{#if data.user.canManage || data.user.isSuperAdmin}
 				<button
@@ -116,24 +116,36 @@
 					<span aria-hidden="true">📜</span>
 					<span>פרוטוקולים</span>
 				</button>
-				<button
-					type="button"
-					onclick={() => switchTab('conference')}
-					class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'conference' ? 'bg-teal-500/25 text-teal-200 border border-teal-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
-				>
-					<span aria-hidden="true">🎙️</span>
-					<span>ועידה</span>
-				</button>
 			{/if}
 
 			<button
 				type="button"
-				onclick={() => switchTab('achievements')}
-				class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'achievements' ? 'bg-amber-500/25 text-amber-200 border border-amber-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
+				onclick={() => switchTab('conference')}
+				class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'conference' ? 'bg-teal-500/25 text-teal-200 border border-teal-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
 			>
-				<span aria-hidden="true">🏆</span>
-				<span>ההישגים שלי</span>
+				<span aria-hidden="true">🎙️</span>
+				<span>ועידה</span>
 			</button>
+
+			{#if data.user.canManage || data.user.isSuperAdmin}
+				<button
+					type="button"
+					onclick={() => switchTab('achievements')}
+					class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'achievements' ? 'bg-amber-500/25 text-amber-200 border border-amber-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
+				>
+					<span aria-hidden="true">🏆</span>
+					<span>ההישגים שלי</span>
+				</button>
+			{:else}
+				<button
+					type="button"
+					onclick={() => switchTab('successes')}
+					class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'successes' ? 'bg-amber-500/25 text-amber-200 border border-amber-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
+				>
+					<span aria-hidden="true">🏆</span>
+					<span>הישגי יוצאים לחירות</span>
+				</button>
+			{/if}
 		</div>
 
 		<!-- תוכן הכרטיסייה הפתוחה -->
@@ -150,13 +162,15 @@
 				</div>
 			{:else if activeTab === 'budget'}
 				<BudgetView canVote={data.canVote} />
-			{:else if activeTab === 'achievements'}
+			{:else if activeTab === 'achievements' && (data.user.canManage || data.user.isSuperAdmin)}
 				<AchievementsView user={data.user} canManage={data.user.canManage} />
+			{:else if activeTab === 'successes'}
+				<SuccessesView user={data.user} canManage={data.user.canManage} />
 			{:else if activeTab === 'tv' && data.user.canManage}
 				<TvView guest={data.tvGuest} />
 			{:else if activeTab === 'protocols' && data.user.canManage}
 				<ProtocolsView />
-			{:else if activeTab === 'conference' && data.user.canManage}
+			{:else if activeTab === 'conference'}
 				<ConferenceView user={data.user} />
 			{/if}
 		</div>

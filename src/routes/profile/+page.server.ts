@@ -86,7 +86,9 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 			businessTrack: CLUB_BUSINESS_TRACK,
 			totalSaving: CLUB_TOTAL_SAVING
 		},
-		canVote: isSuper || (await canVoteBudget(email)),
+		canVote:
+			isSuper ||
+			((!isRealSuper || (viewRole !== 'user' && viewRole !== 'guest')) && (await canVoteBudget(email))),
 		tvGuest: !canManage,
 		panel
 	};

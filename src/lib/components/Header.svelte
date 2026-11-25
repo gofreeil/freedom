@@ -204,15 +204,16 @@
                 >
                     <span aria-hidden="true">📜</span> פרוטוקולים
                 </a>
-                <a
-                    role="menuitem"
-                    href="/profile?tab=conference"
-                    onclick={() => (showProfileMenu = false)}
-                    class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
-                >
-                    <span aria-hidden="true">🎙️</span> ועידה
-                </a>
             {/if}
+
+            <a
+                role="menuitem"
+                href="/profile?tab=conference"
+                onclick={() => (showProfileMenu = false)}
+                class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
+            >
+                <span aria-hidden="true">🎙️</span> ועידה
+            </a>
 
             <a
                 role="menuitem"
@@ -220,7 +221,7 @@
                 onclick={() => (showProfileMenu = false)}
                 class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
             >
-                <span aria-hidden="true">💰</span> ניהול תקציב
+                <span aria-hidden="true">💰</span> {user.canManage ? 'ניהול תקציב' : 'הצצה לתקציב'}
             </a>
 
             {#if user.canManage}
@@ -232,16 +233,24 @@
                 >
                     <span aria-hidden="true">📺</span> חירות TV
                 </a>
+                <a
+                    role="menuitem"
+                    href="/profile?tab=achievements"
+                    onclick={() => (showProfileMenu = false)}
+                    class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
+                >
+                    <span aria-hidden="true">🏆</span> ההישגים שלי
+                </a>
+            {:else}
+                <a
+                    role="menuitem"
+                    href="/successes"
+                    onclick={() => (showProfileMenu = false)}
+                    class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
+                >
+                    <span aria-hidden="true">🏆</span> הישגי יוצאים לחירות
+                </a>
             {/if}
-
-            <a
-                role="menuitem"
-                href="/profile?tab=achievements"
-                onclick={() => (showProfileMenu = false)}
-                class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10 transition-colors"
-            >
-                <span aria-hidden="true">🏆</span> ההישגים שלי
-            </a>
 
             {#if realSuperAdmin || user.isSuperAdmin}
                 <div class="mt-2 border-t border-white/10 pt-1.5 px-3 pb-1">

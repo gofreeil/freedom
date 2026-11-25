@@ -425,19 +425,21 @@
 			</code>
 		</div>
 
-		<div class="flex items-center gap-2">
-			<button
-				type="button"
-				onclick={() => (isEditingRoom = !isEditingRoom)}
-				class="rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 font-bold text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
-			>
-				⚙️ {isEditingRoom ? 'סגור עריכה' : 'החלפת קישור החדר'}
-			</button>
-		</div>
+		{#if user?.canManage}
+			<div class="flex items-center gap-2">
+				<button
+					type="button"
+					onclick={() => (isEditingRoom = !isEditingRoom)}
+					class="rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 font-bold text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
+				>
+					⚙️ {isEditingRoom ? 'סגור עריכה' : 'החלפת קישור החדר'}
+				</button>
+			</div>
+		{/if}
 	</div>
 
 	<!-- עורך קישור חדר ועידה -->
-	{#if isEditingRoom}
+	{#if isEditingRoom && user?.canManage}
 		<div class="rounded-xl border border-teal-500/30 bg-[#0f1626] p-3 text-xs shadow-md">
 			<div class="flex flex-wrap items-center gap-2">
 				<label for="conf-room-input" class="font-bold text-gray-200">הזינו קישור לחדר הוועידה (Google Meet / Jitsi / Zoom):</label>
@@ -476,13 +478,15 @@
 					<h4 class="text-sm font-black text-amber-200 flex items-center gap-1.5">
 						<span>📋</span> סדר יום ונושאים לדיון
 					</h4>
-					<button
-						type="button"
-						onclick={openEditUpcoming}
-						class="rounded-lg border border-white/10 px-2 py-0.5 text-[11px] font-bold text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer"
-					>
-						✏️ עריכה
-					</button>
+					{#if user?.canManage}
+						<button
+							type="button"
+							onclick={openEditUpcoming}
+							class="rounded-lg border border-white/10 px-2 py-0.5 text-[11px] font-bold text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer"
+						>
+							✏️ עריכה
+						</button>
+					{/if}
 				</div>
 
 				<ul class="space-y-1.5 text-xs text-gray-200">
@@ -499,7 +503,9 @@
 
 			<div class="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px] text-gray-400">
 				<span>תיאום: {upcoming.host}</span>
-				<a href="/protocols" class="text-amber-300 hover:underline">מעבר לפרוטוקולים 📜</a>
+				{#if user?.canManage}
+					<a href="/protocols" class="text-amber-300 hover:underline">מעבר לפרוטוקולים 📜</a>
+				{/if}
 			</div>
 		</div>
 
@@ -528,13 +534,15 @@
 
 			<div class="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px]">
 				<span class="text-gray-400">מתועד בארכיון</span>
-				<a href="/admin/tv" class="text-purple-300 hover:underline">חירות TV 📺</a>
+				{#if user?.canManage}
+					<a href="/admin/tv" class="text-purple-300 hover:underline">חירות TV 📺</a>
+				{/if}
 			</div>
 		</div>
 	</div>
 
 	<!-- מודל עריכת ועידה קרובה -->
-	{#if isEditingUpcoming}
+	{#if isEditingUpcoming && user?.canManage}
 		<div class="fixed inset-0 z-[150] flex items-center justify-center bg-black/75 p-3" role="dialog" aria-modal="true">
 			<div class="w-full max-w-md rounded-2xl border border-teal-500/30 bg-[#0f1626] p-4 sm:p-5 shadow-2xl text-right">
 				<h3 class="text-base font-black text-white mb-3">עריכת פרטי הוועידה הקרובה</h3>
