@@ -534,9 +534,7 @@
 
 			<div class="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px]">
 				<span class="text-gray-400">מתועד בארכיון</span>
-				{#if user?.canManage}
-					<a href="/admin/tv" class="text-purple-300 hover:underline">חירות TV 📺</a>
-				{/if}
+				<a href="/admin/tv" class="text-purple-300 hover:underline">חירות TV 📺</a>
 			</div>
 		</div>
 	</div>

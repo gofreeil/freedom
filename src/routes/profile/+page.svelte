@@ -21,9 +21,10 @@
 		if (t && (
 			(t === 'admin' && data.user.canManage) ||
 			t === 'budget' ||
+			t === 'tv' ||
 			t === 'conference' ||
 			t === 'successes' ||
-			((t === 'tv' || t === 'protocols' || t === 'achievements') && (data.user.canManage || data.user.isSuperAdmin))
+			((t === 'protocols' || t === 'achievements') && (data.user.canManage || data.user.isSuperAdmin))
 		)) {
 			activeTab = t;
 		}
@@ -99,15 +100,16 @@
 				<span>{data.user.canManage || data.canVote ? 'ניהול תקציב' : 'הצצה לתקציב'}</span>
 			</button>
 
+			<button
+				type="button"
+				onclick={() => switchTab('tv')}
+				class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'tv' ? 'bg-blue-500/25 text-blue-200 border border-blue-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
+			>
+				<span aria-hidden="true">📺</span>
+				<span>חירות TV</span>
+			</button>
+
 			{#if data.user.canManage || data.user.isSuperAdmin}
-				<button
-					type="button"
-					onclick={() => switchTab('tv')}
-					class="flex items-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold transition-all cursor-pointer {activeTab === 'tv' ? 'bg-blue-500/25 text-blue-200 border border-blue-400/40 shadow-sm' : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'}"
-				>
-					<span aria-hidden="true">📺</span>
-					<span>חירות TV</span>
-				</button>
 				<button
 					type="button"
 					onclick={() => switchTab('protocols')}
@@ -166,7 +168,7 @@
 				<AchievementsView user={data.user} canManage={data.user.canManage} />
 			{:else if activeTab === 'successes'}
 				<SuccessesView user={data.user} canManage={data.user.canManage} />
-			{:else if activeTab === 'tv' && data.user.canManage}
+			{:else if activeTab === 'tv'}
 				<TvView guest={data.tvGuest} />
 			{:else if activeTab === 'protocols' && data.user.canManage}
 				<ProtocolsView />
