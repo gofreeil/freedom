@@ -80,6 +80,31 @@
 					</li>
 					<li>תגיד לנו "אישרתי".</li>
 				</ul>
+
+				<!-- מוקאפ מסך בקשת Tester של Meta -->
+				<div class="mt-2.5 max-w-md overflow-hidden rounded-xl border border-slate-300 bg-[#f0f2f5] text-slate-900 shadow" dir="ltr">
+					<div class="flex items-center justify-between border-b border-slate-200 bg-white px-3 py-1.5 text-xs">
+						<div class="flex items-center gap-1.5">
+							<span class="font-bold text-[#0866ff]">Meta</span>
+							<span class="text-slate-500">for Developers</span>
+							<span class="text-slate-300">|</span>
+							<span class="font-semibold text-slate-700">Requests</span>
+						</div>
+						<span class="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500" dir="rtl">המחשה — אישור בקשה</span>
+					</div>
+					<div class="p-2.5">
+						<div class="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white p-2.5 text-xs">
+							<div class="flex items-center gap-2">
+								<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0866ff] font-black text-white text-xs">TV</div>
+								<div>
+									<div class="font-bold text-slate-900">GoFreeIL TV</div>
+									<div class="text-[11px] text-slate-500">Invited you to be a <strong class="text-slate-700">Tester</strong></div>
+								</div>
+							</div>
+							<span class="rounded-md bg-[#0866ff] px-3 py-1.5 font-semibold text-white">Confirm</span>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<div>
@@ -136,9 +161,30 @@
 								<span class="flex-1 truncate px-1 font-mono text-slate-700">me?fields=id,name</span>
 								<span class="rounded bg-[#0866ff] px-2.5 py-1 font-semibold text-white">Submit</span>
 							</div>
-							<div class="rounded-lg border border-slate-200 bg-white p-2.5 text-[11px] text-slate-600" dir="rtl">
-								<p class="font-bold text-slate-800 mb-1">💡 בחלון הקופץ אחרי לחיצה על Generate Access Token:</p>
-								<p>בחר <strong class="text-slate-900">Edit settings</strong> (או "ערוך הגדרות") ← סמן את הדף שלך ← המשך ואשר את כל ההרשאות.</p>
+							<div class="rounded-lg border border-slate-300 bg-white p-2.5 text-xs shadow-sm">
+								<div class="mb-2 flex items-center justify-between border-b border-slate-200 pb-1.5">
+									<div class="flex items-center gap-1.5">
+										<span class="flex h-5 w-5 items-center justify-center rounded-full bg-[#0866ff] text-[10px] font-black text-white">f</span>
+										<span class="font-bold text-slate-800">GoFreeIL TV</span>
+									</div>
+									<span class="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-bold text-blue-800" dir="rtl">חלון קופץ אחרי לחיצה על ④</span>
+								</div>
+								<p class="mb-1.5 text-[11px] text-slate-600" dir="rtl">
+									החלון מבקש הרשאות לדפים שלך:
+								</p>
+								<div class="mb-2 rounded border border-blue-300 bg-blue-50/40 p-2 text-[11px]">
+									<div class="mb-1 flex items-center justify-between">
+										<span class="font-semibold text-[#0866ff] underline">Edit settings</span>
+										<span class="rounded bg-blue-100 px-1 py-0.5 text-[10px] font-bold text-blue-800" dir="rtl">לחץ כאן</span>
+									</div>
+									<label class="flex items-center gap-1.5 text-slate-800" dir="rtl">
+										<input type="checkbox" checked disabled class="accent-[#0866ff]" />
+										<span class="font-semibold">הדף שלך (בחר את הדף)</span>
+									</label>
+								</div>
+								<div class="flex justify-end">
+									<span class="rounded bg-[#0866ff] px-3 py-1 text-[11px] font-semibold text-white">Continue</span>
+								</div>
 							</div>
 						</div>
 
@@ -233,6 +279,24 @@
 			<p class="text-sm sm:text-base text-gray-200 leading-snug">
 				בפייסבוק, בדף שלך: הגדרות ← "אפליקציות ואתרים" (Business Integrations) ← הסר את "GoFreeIL TV". השידורים בדף יפסיקו.
 			</p>
+			<div class="mt-2.5 max-w-md overflow-hidden rounded-xl border border-slate-300 bg-[#f0f2f5] text-slate-900 shadow" dir="ltr">
+				<div class="flex items-center justify-between border-b border-slate-200 bg-white px-3 py-1.5 text-xs">
+					<span class="font-bold text-slate-800">Settings › Business Integrations</span>
+					<span class="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500" dir="rtl">המחשה — ביטול חיבור</span>
+				</div>
+				<div class="p-2.5">
+					<div class="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white p-2.5 text-xs">
+						<div class="flex items-center gap-2">
+							<div class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#0866ff] font-black text-white text-[11px]">TV</div>
+							<div>
+								<div class="font-bold text-slate-900">GoFreeIL TV</div>
+								<div class="text-[11px] text-emerald-700">Active</div>
+							</div>
+						</div>
+						<span class="rounded-md bg-slate-200 px-2.5 py-1 font-semibold text-slate-800">Remove</span>
+					</div>
+				</div>
+			</div>
 		</section>
 
 		<!-- הוראות לצוות בלבד -->
