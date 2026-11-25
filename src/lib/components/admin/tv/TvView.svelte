@@ -49,6 +49,12 @@
 		>
 			▶️ חיבור ערוץ יוטיוב לשידור
 		</a>
+		<a
+			href="/admin/tv/telegram"
+			class="rounded-lg border border-sky-400/30 bg-sky-500/15 px-3 py-1.5 text-[13px] font-bold text-sky-200 hover:bg-sky-500/25"
+		>
+			✈️ חיבור טלגרם לשידור
+		</a>
 		{#if !guest}
 			<button
 				type="button"
