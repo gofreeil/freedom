@@ -325,13 +325,12 @@
 		</div>
 
 		{#if canManage}
-			<button
-				type="button"
-				onclick={() => (showComposer = !showComposer)}
+			<a
+				href="/admin/tv"
 				class="flex items-center gap-1.5 rounded-xl border border-amber-400/40 bg-gradient-to-r from-amber-500/25 to-pink-500/20 px-3 py-1.5 text-xs font-bold text-amber-200 transition hover:bg-amber-500/30 cursor-pointer shadow-sm"
 			>
-				<span>{showComposer ? '✕ סגור' : '➕ הישג חדש'}</span>
-			</button>
+				<span>➕ הישג חדש</span>
+			</a>
 		{/if}
 	</div>
 
