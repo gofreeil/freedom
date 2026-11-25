@@ -53,74 +53,78 @@
 	<!-- מה אתה עושה (4 משימות) -->
 	<section class="mb-3">
 		<h2 class="mb-2 text-sm sm:text-base font-black text-white">מה אתה עושה (4 משימות)</h2>
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-			<div class="rounded-xl border border-white/10 bg-[#141c2f]/90 p-3">
-				<h3 class="mb-1.5 text-sm font-bold text-amber-200">משימה 1: שלח לנו שני פרטים</h3>
-				<ul class="space-y-1 text-xs sm:text-sm text-gray-200 list-disc list-inside">
-					<li>את שם הדף שלך.</li>
-					<li>את שם החשבון האישי שלך בפייסבוק (או הקישור לפרופיל), כדי שנוסיף אותך לאפליקציה שלנו.</li>
-				</ul>
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 items-start">
+			<div class="space-y-2.5">
+				<div class="rounded-xl border border-white/10 bg-[#141c2f]/90 p-3">
+					<h3 class="mb-1.5 text-sm font-bold text-amber-200">משימה 1: שלח לנו שני פרטים</h3>
+					<ul class="space-y-1 text-xs sm:text-sm text-gray-200 list-disc list-inside">
+						<li>את שם הדף שלך.</li>
+						<li>את שם החשבון האישי שלך בפייסבוק (או הקישור לפרופיל), כדי שנוסיף אותך לאפליקציה שלנו.</li>
+					</ul>
+				</div>
+
+				<div class="rounded-xl border border-white/10 bg-[#141c2f]/90 p-3">
+					<h3 class="mb-1.5 text-sm font-bold text-amber-200">משימה 2: אשר הצטרפות לאפליקציה</h3>
+					<ul class="space-y-1 text-xs sm:text-sm text-gray-200 list-disc list-inside">
+						<li>נוסיף אותך כ"בודק" (Tester) באפליקציה "GoFreeIL TV".</li>
+						<li>
+							פתח
+							<a
+								href="https://developers.facebook.com/requests"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="text-blue-300 underline hover:text-blue-200"
+								dir="ltr"
+							>developers.facebook.com/requests</a>
+							ואשר את הבקשה.
+						</li>
+						<li>תגיד לנו "אישרתי".</li>
+					</ul>
+				</div>
 			</div>
 
-			<div class="rounded-xl border border-white/10 bg-[#141c2f]/90 p-3">
-				<h3 class="mb-1.5 text-sm font-bold text-amber-200">משימה 2: אשר הצטרפות לאפליקציה</h3>
-				<ul class="space-y-1 text-xs sm:text-sm text-gray-200 list-disc list-inside">
-					<li>נוסיף אותך כ"בודק" (Tester) באפליקציה "GoFreeIL TV".</li>
-					<li>
-						פתח
-						<a
-							href="https://developers.facebook.com/requests"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="text-blue-300 underline hover:text-blue-200"
-							dir="ltr"
-						>developers.facebook.com/requests</a>
-						ואשר את הבקשה.
-					</li>
-					<li>תגיד לנו "אישרתי".</li>
-				</ul>
-			</div>
+			<div class="space-y-2.5">
+				<div class="rounded-xl border border-white/10 bg-[#141c2f]/90 p-3">
+					<h3 class="mb-1.5 text-sm font-bold text-amber-200">משימה 3: הפק קוד חד-פעמי לדף</h3>
+					<ol class="space-y-1 text-xs sm:text-sm text-gray-200 list-decimal list-inside">
+						<li>
+							פתח
+							<a
+								href="https://developers.facebook.com/tools/explorer/"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="text-blue-300 underline hover:text-blue-200"
+								dir="ltr"
+							>developers.facebook.com/tools/explorer/</a>
+						</li>
+						<li>למעלה ב-"Meta App" בחר <strong class="text-white">GoFreeIL TV</strong>.</li>
+						<li>
+							תחת "Permissions" הוסף:
+							<div class="mt-1 flex flex-wrap items-center gap-1.5">
+								<code class="rounded bg-black/40 px-1.5 py-0.5 text-[11px] text-emerald-200" dir="ltr">{PERMISSIONS}</code>
+								<button
+									type="button"
+									onclick={copyPermissions}
+									class="rounded border border-white/15 px-2 py-0.5 text-[11px] font-bold text-gray-200 hover:bg-white/10 cursor-pointer"
+								>
+									{copiedPerms ? '✓ הועתק' : 'העתק'}
+								</button>
+							</div>
+						</li>
+						<li>לחץ <strong class="text-white">Generate Access Token</strong>. בחלון של פייסבוק בחר "Edit settings", בחר את הדף שלך, ואשר את כל ההרשאות.</li>
+						<li>בשדה "User or Page" בחר את הדף שלך (לא "User Token").</li>
+						<li>סמן את כל הטקסט בשדה "Access Token" והעתק (<span dir="ltr">Ctrl+A, Ctrl+C</span>).</li>
+					</ol>
+				</div>
 
-			<div class="rounded-xl border border-white/10 bg-[#141c2f]/90 p-3">
-				<h3 class="mb-1.5 text-sm font-bold text-amber-200">משימה 3: הפק קוד חד-פעמי לדף</h3>
-				<ol class="space-y-1 text-xs sm:text-sm text-gray-200 list-decimal list-inside">
-					<li>
-						פתח
-						<a
-							href="https://developers.facebook.com/tools/explorer/"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="text-blue-300 underline hover:text-blue-200"
-							dir="ltr"
-						>developers.facebook.com/tools/explorer/</a>
-					</li>
-					<li>למעלה ב-"Meta App" בחר <strong class="text-white">GoFreeIL TV</strong>.</li>
-					<li>
-						תחת "Permissions" הוסף:
-						<div class="mt-1 flex flex-wrap items-center gap-1.5">
-							<code class="rounded bg-black/40 px-1.5 py-0.5 text-[11px] text-emerald-200" dir="ltr">{PERMISSIONS}</code>
-							<button
-								type="button"
-								onclick={copyPermissions}
-								class="rounded border border-white/15 px-2 py-0.5 text-[11px] font-bold text-gray-200 hover:bg-white/10 cursor-pointer"
-							>
-								{copiedPerms ? '✓ הועתק' : 'העתק'}
-							</button>
-						</div>
-					</li>
-					<li>לחץ <strong class="text-white">Generate Access Token</strong>. בחלון של פייסבוק בחר "Edit settings", בחר את הדף שלך, ואשר את כל ההרשאות.</li>
-					<li>בשדה "User or Page" בחר את הדף שלך (לא "User Token").</li>
-					<li>סמן את כל הטקסט בשדה "Access Token" והעתק (<span dir="ltr">Ctrl+A, Ctrl+C</span>).</li>
-				</ol>
-			</div>
-
-			<div class="rounded-xl border border-white/10 bg-[#141c2f]/90 p-3">
-				<h3 class="mb-1.5 text-sm font-bold text-amber-200">משימה 4: שלח לנו את הקוד, באופן פרטי</h3>
-				<ul class="space-y-1 text-xs sm:text-sm text-gray-200 list-disc list-inside">
-					<li>הדבק את הקוד בהודעה פרטית אל מנהל הפרויקט (לא בקבוצה ולא בפוסט).</li>
-					<li>הקוד תקף כשעתיים בלבד, ואנחנו משתמשים בו פעם אחת לחיבור הדף ואז מוחקים אותו.</li>
-					<li>תגיד לנו כשנשלח, ונאשר לך כשהחיבור נקלט.</li>
-				</ul>
+				<div class="rounded-xl border border-white/10 bg-[#141c2f]/90 p-3">
+					<h3 class="mb-1.5 text-sm font-bold text-amber-200">משימה 4: שלח לנו את הקוד, באופן פרטי</h3>
+					<ul class="space-y-1 text-xs sm:text-sm text-gray-200 list-disc list-inside">
+						<li>הדבק את הקוד בהודעה פרטית אל מנהל הפרויקט (לא בקבוצה ולא בפוסט).</li>
+						<li>הקוד תקף כשעתיים בלבד, ואנחנו משתמשים בו פעם אחת לחיבור הדף ואז מוחקים אותו.</li>
+						<li>תגיד לנו כשנשלח, ונאשר לך כשהחיבור נקלט.</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</section>
