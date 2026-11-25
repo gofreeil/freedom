@@ -239,6 +239,50 @@
 						/>
 					</label>
 				</div>
+
+				<!-- דוגמה ויזואלית מאיפה לוקחים את שם הדף ואת הקישור לפרופיל -->
+				<div class="mt-2.5 grid grid-cols-1 md:grid-cols-2 gap-2.5">
+					<!-- מוקאפ 1: איפה מוצאים את שם הדף בפייסבוק -->
+					<div class="overflow-hidden rounded-xl border border-slate-300 bg-[#f0f2f5] text-slate-900 shadow">
+						<div class="flex items-center justify-between border-b border-slate-200 bg-white px-3 py-1.5 text-xs">
+							<span class="font-bold text-[#0866ff]">facebook · דף</span>
+							<span class="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500">המחשה — מאיפה לוקחים את שם הדף</span>
+						</div>
+						<div class="p-2.5">
+							<div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+								<div class="h-8 bg-gradient-to-r from-[#0866ff]/20 to-sky-200/50"></div>
+								<div class="flex items-center gap-2.5 px-3 py-2">
+									<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-white bg-[#0866ff] font-black text-white text-xs shadow">דף</div>
+									<div class="min-w-0 flex-1">
+										<div class="inline-block rounded border-2 border-amber-400 bg-amber-50 px-1.5 py-0.5 text-xs font-black text-slate-900">
+											חירות ישראל
+										</div>
+										<div class="mt-0.5 text-[11px] text-slate-500">120 עוקבים · דף ציבורי</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- מוקאפ 2: איפה מוצאים את הקישור לפרופיל האישי -->
+					<div class="overflow-hidden rounded-xl border border-slate-300 bg-[#f0f2f5] text-slate-900 shadow">
+						<div class="flex items-center justify-between border-b border-slate-200 bg-white px-3 py-1.5 text-xs">
+							<span class="font-bold text-[#0866ff]">facebook · פרופיל אישי</span>
+							<span class="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500">המחשה — קישור לפרופיל משורת הכתובת</span>
+						</div>
+						<div class="space-y-2 p-2.5">
+							<div class="flex items-center gap-1.5 rounded-lg border-2 border-amber-400 bg-amber-50 px-2.5 py-1 text-[11px] font-mono text-slate-800" dir="ltr">
+								<span class="text-slate-400">🔒</span>
+								<span class="truncate">https://www.facebook.com/<strong>israel.israeli</strong></span>
+							</div>
+							<div class="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs">
+								<div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-300 font-bold text-slate-700 text-[11px]">👤</div>
+								<span class="font-bold text-slate-900">ישראל ישראלי</span>
+								<span class="ms-auto text-[10px] text-slate-500">הפרופיל שלך</span>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<div>
