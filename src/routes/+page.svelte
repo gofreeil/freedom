@@ -162,7 +162,8 @@
 		name: string;
 		labelHe: string;
 		href: string;
-		svg: string;
+		svg?: string;
+		img?: string;
 	}
 
 	const socials: SocialItem[] = [
@@ -188,7 +189,7 @@
 			name: 'חירות TV',
 			labelHe: 'חירות TV',
 			href: 'https://tv.gofreeil.com/',
-			svg: '<defs><linearGradient id="tv-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#4F46E5"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#tv-g)"/><path fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="m8 3.5 4 3.5 4-3.5"/><rect x="4" y="7" width="16" height="12.5" rx="2.2" fill="none" stroke="#fff" stroke-width="1.5"/><path fill="#fff" d="M10.5 10.25v6l4.8-3z"/>'
+			img: '/images/cherut-tv.png'
 		},
 		{
 			name: 'TikTok',
@@ -1015,9 +1016,20 @@
 						class="social-icon flex h-9 w-9 md:h-12 md:w-12 items-center justify-center rounded-full
 						       transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white/40"
 					>
-						<svg class="h-9 w-9 md:h-12 md:w-12" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-							{@html s.svg}
-						</svg>
+						{#if s.img}
+							<img
+								src={s.img}
+								alt=""
+								aria-hidden="true"
+								class="h-9 w-9 md:h-12 md:w-12 rounded-lg md:rounded-xl object-cover"
+								loading="lazy"
+								decoding="async"
+							/>
+						{:else if s.svg}
+							<svg class="h-9 w-9 md:h-12 md:w-12" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+								{@html s.svg}
+							</svg>
+						{/if}
 					</a>
 					<div
 						role="tooltip"
