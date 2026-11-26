@@ -1,6 +1,7 @@
 <script lang="ts">
 	// ConferenceView.svelte — רכיב ועידת הנהלה ורכזים באזור האישי של אדמינים
 	import { onMount } from 'svelte';
+	import ConferenceVotes from './ConferenceVotes.svelte';
 
 	interface Props {
 		user?: {
@@ -468,6 +469,9 @@
 			</div>
 		</div>
 	{/if}
+
+	<!-- הצבעות הנהלה וארכיון חתום -->
+	<ConferenceVotes {user} />
 
 	<!-- חלוקה ל-2 עמודות קומפקטיות: סדר יום + היסטוריה -->
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
