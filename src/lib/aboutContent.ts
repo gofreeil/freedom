@@ -24,7 +24,6 @@ export interface AboutText {
 	joinText: string;
 	register: string;
 	login: string;
-	contact: string;
 }
 
 export const ABOUT_TEXT: Record<AboutLang, AboutText> = {
@@ -44,8 +43,7 @@ export const ABOUT_TEXT: Record<AboutLang, AboutText> = {
 		joinText:
 			'מי שנרשם אצלנו מזוהה אוטומטית בכל אתרי יוצאים לחירות. בלי הרשמה חוזרת, בלי עוד סיסמה — ועם גישה מלאה לכל הפלטפורמות.',
 		register: '✨ הרשמה',
-		login: 'כבר רשומים? התחברות',
-		contact: '✉️ צרו קשר'
+		login: 'כבר רשומים? התחברות'
 	},
 
 	en: {
@@ -64,8 +62,7 @@ export const ABOUT_TEXT: Record<AboutLang, AboutText> = {
 		joinText:
 			'Anyone who signs up with us is automatically recognized on every Going to Freedom site. No repeat registration, no extra password — and full access to all platforms.',
 		register: '✨ Sign up',
-		login: 'Already registered? Log in',
-		contact: '✉️ Contact us'
+		login: 'Already registered? Log in'
 	}
 };
 

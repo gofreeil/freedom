@@ -10,7 +10,6 @@
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import NetworkAdmins from '$lib/components/NetworkAdmins.svelte';
 	import {
-		CONTACT_EMAIL,
 		aboutPageSchema,
 		organizationSchema,
 		breadcrumbSchema,
@@ -153,12 +152,6 @@
 				class="rounded-xl border border-white/15 bg-[#1b2335] px-6 py-2.5 text-sm font-bold text-gray-200 transition hover:bg-[#272f3f]"
 			>
 				{tx.login}
-			</a>
-			<a
-				href="mailto:{CONTACT_EMAIL}"
-				class="rounded-xl border border-white/15 bg-[#1b2335] px-6 py-2.5 text-sm font-bold text-gray-200 transition hover:bg-[#272f3f]"
-			>
-				{tx.contact}
 			</a>
 		</div>
 
