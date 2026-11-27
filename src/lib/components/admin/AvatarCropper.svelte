@@ -4,10 +4,18 @@
 	// והתוצאה נאפית לריבוע 256×256 (JPEG) שנשמר כ-data URL.
 	// ============================================================
 	let {
-		file,
+		file = null,
+		src = '',
+		shape = 'circle',
 		onsave,
 		oncancel
-	}: { file: File; onsave: (dataUrl: string) => void; oncancel: () => void } = $props();
+	}: {
+		file?: File | null;
+		src?: string;
+		shape?: 'circle' | 'square';
+		onsave: (dataUrl: string) => void;
+		oncancel: () => void;
+	} = $props();
 
 	const VIEW = 240; // גודל חלון החיתוך העגול (px)
 	const OUT = 256; // גודל התמונה הנשמרת (px)
@@ -20,9 +28,11 @@
 	let lastX = 0;
 	let lastY = 0;
 
-	const url = URL.createObjectURL(file);
+	// svelte-ignore state_referenced_locally
+	const url = file ? URL.createObjectURL(file) : src;
 	{
 		const i = new Image();
+		if (/^https?:\/\//i.test(url)) i.crossOrigin = 'anonymous';
 		i.onload = () => (img = i);
 		i.src = url;
 	}
@@ -62,7 +72,7 @@
 	}
 
 	function cancel() {
-		URL.revokeObjectURL(url);
+		if (file) URL.revokeObjectURL(url);
 		oncancel();
 	}
 
@@ -80,7 +90,7 @@
 		const sSize = VIEW / scale;
 		ctx.drawImage(img, sx, sy, sSize, sSize, 0, 0, OUT, OUT);
 		const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-		URL.revokeObjectURL(url);
+		if (file) URL.revokeObjectURL(url);
 		onsave(dataUrl);
 	}
 </script>
@@ -88,17 +98,17 @@
 <svelte:window onkeydown={(e) => e.key === 'Escape' && cancel()} />
 
 <div
-	class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+	class="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4"
 	role="dialog"
 	aria-modal="true"
-	aria-label="מיקום תמונת האדמין"
+	aria-label="מיקום וזום תמונה"
 	dir="rtl"
 >
 	<div class="w-full max-w-sm rounded-2xl border border-white/10 bg-gray-900 p-4 shadow-2xl">
-		<h2 class="mb-3 text-sm font-bold text-white">גררו את התמונה כדי למרכז אותה</h2>
+		<h2 class="mb-3 text-sm font-bold text-white">גררו את התמונה והשתמשו בזום כדי למרכז אותה</h2>
 
 		<div
-			class="relative mx-auto cursor-move overflow-hidden rounded-full border-2 border-white/20 bg-black/40"
+			class="relative mx-auto cursor-move overflow-hidden {shape === 'square' ? 'rounded-2xl' : 'rounded-full'} border-2 border-white/20 bg-black/40"
 			style="width:{VIEW}px;height:{VIEW}px;touch-action:none"
 			onpointerdown={onPointerDown}
 			onpointermove={onPointerMove}

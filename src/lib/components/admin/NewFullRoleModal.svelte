@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 	import type { FreedomSite, SiteCategory } from '$lib/sitesData';
 	import type { StrapiUserItem } from '$lib/networkRoles';
+	import AvatarCropper from './AvatarCropper.svelte';
 
 	export interface CreatedFullRole {
 		site: FreedomSite;
@@ -36,6 +37,8 @@
 	let siteDescription = $state('');
 	let siteCategory = $state<SiteCategory>('קהילה');
 	let siteImage = $state('');
+	let pickedSiteFile = $state<File | null>(null);
+	let cropExistingSiteImg = $state(false);
 
 	// ── פרטי האדמין ──
 	let adminMode = $state<'strapi' | 'manual'>('strapi');
@@ -71,29 +74,13 @@
 		}
 	}
 
-	// הקטנת תמונת אתר שהועלתה מהמחשב ל-WebP קטן (192x192) כדי שתישמר מהר ב-Strapi
+	// פתיחת חלון זום וחיתוך עבור תמונת אתר שנבחרה מהמחשב
 	function onPickSiteImage(e: Event) {
-		const file = (e.currentTarget as HTMLInputElement).files?.[0];
+		const input = e.currentTarget as HTMLInputElement;
+		const file = input.files?.[0];
 		if (!file) return;
-		const reader = new FileReader();
-		reader.onload = () => {
-			const img = new Image();
-			img.onload = () => {
-				const size = 192;
-				const canvas = document.createElement('canvas');
-				canvas.width = size;
-				canvas.height = size;
-				const ctx = canvas.getContext('2d');
-				if (!ctx) return;
-				const minSide = Math.min(img.width, img.height);
-				const sx = (img.width - minSide) / 2;
-				const sy = (img.height - minSide) / 2;
-				ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
-				siteImage = canvas.toDataURL('image/webp', 0.85);
-			};
-			img.src = String(reader.result);
-		};
-		reader.readAsDataURL(file);
+		pickedSiteFile = file;
+		input.value = '';
 	}
 
 	// חיפוש משתמשים ב-Strapi
@@ -344,6 +331,13 @@
 					</label>
 					{#if siteImage}
 						<img src={siteImage} alt="" class="mt-3 h-10 w-10 rounded-lg object-cover border border-white/15" />
+						<button
+							type="button"
+							onclick={() => (cropExistingSiteImg = true)}
+							class="mt-3 rounded-xl border border-sky-500/30 bg-sky-500/15 px-2.5 py-2 text-xs font-bold text-sky-200 hover:bg-sky-500/25"
+						>
+							✂️ זום וחיתוך
+						</button>
 					{/if}
 				</div>
 			</div>
@@ -478,3 +472,25 @@
 		</div>
 	</div>
 </div>
+
+{#if pickedSiteFile}
+	<AvatarCropper
+		file={pickedSiteFile}
+		shape="square"
+		onsave={(dataUrl) => {
+			siteImage = dataUrl;
+			pickedSiteFile = null;
+		}}
+		oncancel={() => (pickedSiteFile = null)}
+	/>
+{:else if cropExistingSiteImg && siteImage}
+	<AvatarCropper
+		src={siteImage}
+		shape="square"
+		onsave={(dataUrl) => {
+			siteImage = dataUrl;
+			cropExistingSiteImg = false;
+		}}
+		oncancel={() => (cropExistingSiteImg = false)}
+	/>
+{/if}

@@ -170,6 +170,7 @@ export const actions: Actions = {
 		const adminName = String(form.get('adminName') ?? '').trim();
 		const role = String(form.get('role') ?? '').trim();
 		const avatarUrl = String(form.get('avatarUrl') ?? '').trim();
+		const siteImage = String(form.get('siteImage') ?? '').trim();
 		const phone = String(form.get('phone') ?? '').trim();
 		const communityId = String(form.get('communityId') ?? '').trim();
 
@@ -177,7 +178,7 @@ export const actions: Actions = {
 		if (!isKnownSite && !isValidCustomSiteId(siteId)) {
 			return fail(400, { siteId, error: 'אתר לא מוכר' });
 		}
-		if (!adminName) return fail(400, { siteId, error: 'צריך למלא שם אדמין' });
+		if (!adminName && !siteImage) return fail(400, { siteId, error: 'צריך למלא שם אדמין' });
 		// אימייל כבר לא מוצג בטופס — ערך קיים עובר כשדה חבוי; אם יש, מוודאים תקינות
 		if (adminEmail && !emailRe.test(adminEmail)) return fail(400, { siteId, error: 'כתובת אימייל לא תקינה' });
 		// תמונה: קישור http/https או העלאה מהמחשב (data URL שנוצר בקרופר)
@@ -209,6 +210,10 @@ export const actions: Actions = {
 			keptAvatar = DEFAULT_SITE_AVATARS[siteId];
 		}
 
+		const updatedMeta = siteImage
+			? { ...(existingSiteMeta ?? { name: getSite(siteId)?.name ?? siteId }), image: siteImage }
+			: existingSiteMeta;
+
 		try {
 			await setSiteAdmin(jwt, siteId, {
 				adminEmail,
@@ -217,7 +222,7 @@ export const actions: Actions = {
 				phone: phone || undefined,
 				communityId: communityId || undefined,
 				avatarUrl: avatarUrl || keptAvatar || undefined,
-				siteMeta: existingSiteMeta,
+				siteMeta: updatedMeta,
 				updatedAt: new Date().toISOString(),
 				updatedBy: me.email ?? ''
 			});

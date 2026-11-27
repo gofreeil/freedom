@@ -60,6 +60,10 @@
 	// תמונה *חדשה* שנבחרה עכשיו בקרופר. ריק = התמונה הקיימת נשארת כמו שהיא —
 	// הדף כבר לא נושא את ה-data URL הכבד, והשרת משלים אותו מהרשומה השמורה.
 	let avatarUrl = $state('');
+	let siteImageOverride = $state('');
+	let pickedSiteFile = $state<File | null>(null);
+	let cropExistingSiteImg = $state(false);
+	let siteFileInput = $state<HTMLInputElement | null>(null);
 	let busy = $state(false);
 	let status = $state<{ type: 'ok' | 'err'; msg: string } | null>(null);
 	let imgOk = $state(true);
@@ -79,6 +83,16 @@
 	const hasAdmin = $derived(!!site.admin);
 	// התמונה לתצוגה: מה שהועלה/הוגדר מקומית, אחרת האפקטיבית מהשרת (Gravatar וכו')
 	const avatar = $derived(avatarUrl.trim() ? avatarUrl : (site.admin?.avatar ?? ''));
+	const displayedSiteImage = $derived(siteImageOverride || site.image || '');
+
+	async function onSiteCropSave(dataUrl: string) {
+		siteImageOverride = dataUrl;
+		imgOk = true;
+		pickedSiteFile = null;
+		cropExistingSiteImg = false;
+		await tick();
+		formEl.requestSubmit();
+	}
 
 	// קישור וואטסאפ: 05x-xxxxxxx → 9725xxxxxxxx
 	const waHref = $derived.by(() => {
@@ -250,6 +264,7 @@
 	<input type="hidden" name="siteId" value={site.id} />
 	<!-- התמונה נשלחת תמיד כערך חבוי (מוזנת דרך הקרופר) -->
 	<input type="hidden" name="avatarUrl" value={avatarUrl} />
+	<input type="hidden" name="siteImage" value={siteImageOverride} />
 	{#if !editMode}
 		<!-- מחוץ למצב עריכה — פרטי הקשר עוברים כערכים חבויים כדי לא להימחק בשמירה -->
 		<input type="hidden" name="adminEmail" value={email} />
@@ -356,22 +371,68 @@
 		/>
 	</div>
 
-	<!-- אתר (קישור לאתר עצמו) -->
-	<a
-		href={site.url}
-		target="_blank"
-		rel="noopener"
-		title={site.name}
-		class="mr-[26px] flex min-w-0 items-center gap-2"
-	>
-		<div class="h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl bg-[#1b2335]">
-			{#if site.image && imgOk}
-				<img src={site.image} alt="" loading="lazy" decoding="async" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
-			{:else}
-				<div class="flex h-full w-full items-center justify-center text-2xl">🕊️</div>
-			{/if}
-		</div>
-	</a>
+	<!-- אתר (קישור לאתר עצמו, או עריכת תמונה עם זום במצב עריכה) -->
+	<div class="mr-[26px] flex min-w-0 items-center gap-2">
+		{#if editMode}
+			<div class="group relative h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl border border-dashed border-sky-400/60 bg-[#1b2335]">
+				{#if displayedSiteImage && imgOk}
+					<img src={displayedSiteImage} alt="" loading="lazy" decoding="async" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
+				{:else}
+					<div class="flex h-full w-full items-center justify-center text-2xl">🕊️</div>
+				{/if}
+				<div class="absolute inset-0 flex items-center justify-center gap-1 bg-black/55 opacity-80 transition group-hover:opacity-100">
+					{#if displayedSiteImage && imgOk}
+						<button
+							type="button"
+							onclick={() => (cropExistingSiteImg = true)}
+							title="זום ומיקום לתמונת האתר"
+							aria-label="זום ומיקום לתמונת האתר"
+							class="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-600/90 text-xs text-white hover:bg-sky-500"
+						>
+							✂️
+						</button>
+					{/if}
+					<button
+						type="button"
+						onclick={() => siteFileInput?.click()}
+						title="העלאת תמונת אתר חדשה"
+						aria-label="העלאת תמונת אתר חדשה"
+						class="flex h-7 w-7 items-center justify-center rounded-lg bg-white/20 text-xs text-white hover:bg-white/30"
+					>
+						📷
+					</button>
+				</div>
+				<input
+					type="file"
+					accept="image/*"
+					hidden
+					bind:this={siteFileInput}
+					onchange={(e) => {
+						const input = e.currentTarget as HTMLInputElement;
+						const f = input.files?.[0];
+						if (f) pickedSiteFile = f;
+						input.value = '';
+					}}
+				/>
+			</div>
+		{:else}
+			<a
+				href={site.url || '#'}
+				target={site.url ? '_blank' : undefined}
+				rel={site.url ? 'noopener' : undefined}
+				title={site.name}
+				class="flex min-w-0 items-center gap-2"
+			>
+				<div class="h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl bg-[#1b2335]">
+					{#if displayedSiteImage && imgOk}
+						<img src={displayedSiteImage} alt="" loading="lazy" decoding="async" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
+					{:else}
+						<div class="flex h-full w-full items-center justify-center text-2xl">🕊️</div>
+					{/if}
+				</div>
+			</a>
+		{/if}
+	</div>
 
 	<!-- יצירת קשר -->
 	<div class="flex items-center justify-center gap-1">
@@ -478,4 +539,20 @@
 
 {#if pickedFile}
 	<AvatarCropper file={pickedFile} onsave={onCropSave} oncancel={() => (pickedFile = null)} />
+{/if}
+
+{#if pickedSiteFile}
+	<AvatarCropper
+		file={pickedSiteFile}
+		shape="square"
+		onsave={onSiteCropSave}
+		oncancel={() => (pickedSiteFile = null)}
+	/>
+{:else if cropExistingSiteImg && displayedSiteImage}
+	<AvatarCropper
+		src={displayedSiteImage}
+		shape="square"
+		onsave={onSiteCropSave}
+		oncancel={() => (cropExistingSiteImg = false)}
+	/>
 {/if}
