@@ -215,7 +215,7 @@
 					onclick={() => (showNewRoleModal = true)}
 					class="inline-flex items-center gap-1.5 rounded-xl border border-purple-500/30 bg-purple-500/15 px-3.5 py-1.5 text-xs font-bold text-purple-200 transition hover:bg-purple-500/25"
 				>
-					<span>✨</span> צור תפקיד חדש ברשת
+					<span>✨</span> מנה אדמין לתפקיד
 				</button>
 			</div>
 
