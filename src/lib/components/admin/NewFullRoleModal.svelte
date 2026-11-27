@@ -314,7 +314,21 @@
 					/>
 				</div>
 
-				<div class="flex flex-wrap items-center gap-3">
+				<div
+					role="region"
+					aria-label="תמונת אתר"
+					ondragover={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+					}}
+					ondrop={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						const f = e.dataTransfer?.files?.[0];
+						if (f && f.type.startsWith('image/')) pickedSiteFile = f;
+					}}
+					class="flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-white/15 p-2 transition hover:border-sky-400/50"
+				>
 					<div class="flex-1 min-w-[180px]">
 						<label for="new-site-img" class="mb-1 block font-bold text-gray-300">תמונת אתר (נתיב / קישור / העלאה)</label>
 						<input

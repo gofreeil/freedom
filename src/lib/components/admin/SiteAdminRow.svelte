@@ -68,6 +68,7 @@
 	let pickedSiteFile = $state<File | null>(null);
 	let cropExistingSiteImg = $state(false);
 	let siteFileInput = $state<HTMLInputElement | null>(null);
+	let siteDragOver = $state(false);
 	let busy = $state(false);
 	let status = $state<{ type: 'ok' | 'err'; msg: string } | null>(null);
 	let imgOk = $state(true);
@@ -96,6 +97,43 @@
 		cropExistingSiteImg = false;
 		await tick();
 		formEl.requestSubmit();
+	}
+
+	function handleIncomingSiteFile(f: File | null | undefined) {
+		if (!f) return;
+		const isImg = f.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|svg|avif|bmp|jfif)$/i.test(f.name);
+		if (!isImg) {
+			status = { type: 'err', msg: 'יש לבחור קובץ תמונה בלבד' };
+			return;
+		}
+		pickedSiteFile = f;
+	}
+
+	function onSiteDragEnter(e: DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		siteDragOver = true;
+	}
+	function onSiteDragOver(e: DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+		siteDragOver = true;
+	}
+	function onSiteDragLeave(e: DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		const el = e.currentTarget as HTMLElement | null;
+		if (el && !el.contains(e.relatedTarget as Node)) {
+			siteDragOver = false;
+		}
+	}
+	function onSiteDrop(e: DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		siteDragOver = false;
+		const f = e.dataTransfer?.files?.[0];
+		handleIncomingSiteFile(f);
 	}
 
 	// קישור וואטסאפ: 05x-xxxxxxx → 9725xxxxxxxx
@@ -391,33 +429,50 @@
 	<!-- אתר (קישור לאתר עצמו, או עריכת תמונה עם זום במצב עריכה) -->
 	<div class="mr-[26px] flex min-w-0 items-center gap-2">
 		{#if editMode}
-			<div class="group relative h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl border border-dashed border-sky-400/60 bg-[#1b2335]">
+			<div
+				role="region"
+				aria-label="העלאה או גרירת תמונת אתר"
+				ondragenter={onSiteDragEnter}
+				ondragover={onSiteDragOver}
+				ondragleave={onSiteDragLeave}
+				ondrop={onSiteDrop}
+				class="group relative h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl border border-dashed bg-[#1b2335] transition-all {siteDragOver
+					? 'border-2 border-sky-400 bg-sky-500/30 ring-4 ring-sky-400/30 scale-105'
+					: 'border-sky-400/60'}"
+			>
 				{#if displayedSiteImage && imgOk}
-					<img src={displayedSiteImage} alt="" loading="lazy" decoding="async" class="h-full w-full object-cover" onerror={() => (imgOk = false)} />
+					<img src={displayedSiteImage} alt="" loading="lazy" decoding="async" class="pointer-events-none h-full w-full object-cover" onerror={() => (imgOk = false)} />
 				{:else}
-					<div class="flex h-full w-full items-center justify-center text-2xl">🕊️</div>
+					<div class="pointer-events-none flex h-full w-full items-center justify-center text-2xl">🕊️</div>
 				{/if}
-				<div class="absolute inset-0 flex items-center justify-center gap-1 bg-black/55 opacity-80 transition group-hover:opacity-100">
-					{#if displayedSiteImage && imgOk}
+				<div class="absolute inset-0 flex items-center justify-center gap-1 transition {siteDragOver ? 'bg-sky-950/85 opacity-100' : 'bg-black/55 opacity-80 group-hover:opacity-100'}">
+					{#if siteDragOver}
+						<span class="pointer-events-none flex flex-col items-center text-[10px] font-bold text-sky-200">
+							<span class="text-lg">📥</span>
+							<span>שחרר כאן</span>
+						</span>
+					{:else}
+						{#if displayedSiteImage && imgOk}
+							<button
+								type="button"
+								onclick={() => (cropExistingSiteImg = true)}
+								title="זום ומיקום לתמונת האתר"
+								aria-label="זום ומיקום לתמונת האתר"
+								class="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-600/90 text-xs text-white hover:bg-sky-500"
+							>
+								✂️
+							</button>
+						{/if}
 						<button
 							type="button"
-							onclick={() => (cropExistingSiteImg = true)}
-							title="זום ומיקום לתמונת האתר"
-							aria-label="זום ומיקום לתמונת האתר"
-							class="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-600/90 text-xs text-white hover:bg-sky-500"
+							onclick={() => siteFileInput?.click()}
+							title="העלאה או גרירת תמונת אתר חדשה"
+							aria-label="העלאה או גרירת תמונת אתר חדשה"
+							class="flex h-7 w-7 items-center justify-center rounded-lg bg-white/20 text-xs text-white hover:bg-white/30"
 						>
-							✂️
+							📷
 						</button>
 					{/if}
-					<button
-						type="button"
-						onclick={() => siteFileInput?.click()}
-						title="העלאת תמונת אתר חדשה"
-						aria-label="העלאת תמונת אתר חדשה"
-						class="flex h-7 w-7 items-center justify-center rounded-lg bg-white/20 text-xs text-white hover:bg-white/30"
-					>
-						📷
-					</button>
 				</div>
 				<input
 					type="file"
@@ -426,8 +481,7 @@
 					bind:this={siteFileInput}
 					onchange={(e) => {
 						const input = e.currentTarget as HTMLInputElement;
-						const f = input.files?.[0];
-						if (f) pickedSiteFile = f;
+						handleIncomingSiteFile(input.files?.[0]);
 						input.value = '';
 					}}
 				/>
