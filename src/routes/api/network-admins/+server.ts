@@ -9,7 +9,12 @@
 // במטמון הדפדפן במקום להיטען מחדש בכל ניווט.
 // ============================================================
 import { json } from '@sveltejs/kit';
-import { getPublicSiteAdmins, DEFAULT_SITE_AVATARS } from '$lib/server/siteAdmins';
+import {
+	getPublicSiteAdmins,
+	DEFAULT_SITE_AVATARS,
+	SITE_META_PREFIX,
+	extractCustomSiteMeta
+} from '$lib/server/siteAdmins';
 import { displayAvatarUrl } from '$lib/server/avatarProxy';
 import { SITES, type FreedomSite } from '$lib/sitesData';
 import type { RequestHandler } from './$types';
@@ -25,7 +30,7 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
 
 	const admins = Object.fromEntries(
 		Object.entries(payload.admins)
-			.filter(([, a]) => a.adminName?.trim() || a.adminEmail?.trim() || a.phone?.trim())
+			.filter(([siteId, a]) => !siteId.startsWith(SITE_META_PREFIX) && (a.adminName?.trim() || a.adminEmail?.trim() || a.phone?.trim()))
 			.map(([siteId, a]) => [
 			siteId,
 			{
@@ -45,14 +50,16 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
 	const knownIds = new Set(SITES.map((s) => s.id));
 	const customSites: FreedomSite[] = [];
 	for (const [siteId, a] of Object.entries(payload.admins)) {
-		if (knownIds.has(siteId) || !a) continue;
-		const meta = a.siteMeta;
+		if (siteId.startsWith(SITE_META_PREFIX) || knownIds.has(siteId) || !a) continue;
+		const meta = extractCustomSiteMeta(payload.admins, siteId, a.siteMeta);
+		const rawImg = meta?.image?.trim() || '';
+		const image = rawImg ? displayAvatarUrl(SITE_META_PREFIX + siteId, rawImg) : undefined;
 		customSites.push({
 			id: siteId,
 			name: meta?.name?.trim() || a.role?.trim() || siteId,
 			description: meta?.description?.trim() || '',
 			url: meta?.url?.trim() || '',
-			image: meta?.image?.trim() || undefined,
+			image,
 			category: meta?.category || 'קהילה'
 		});
 	}

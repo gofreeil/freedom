@@ -46,8 +46,32 @@ export interface SiteAdmin {
 	updatedBy: string;
 }
 
+export const SITE_META_PREFIX = '__meta__';
+
 export function isValidCustomSiteId(id: string): boolean {
 	return /^[a-z0-9][a-z0-9_-]{1,63}$/.test(id.trim());
+}
+
+/** חילוץ מטא-דאטה של אתר מותאם אישית (ישירות או ממראת __meta__ הציבורית) */
+export function extractCustomSiteMeta(
+	admins: Record<string, { adminName?: string; role?: string; avatarUrl?: string; siteMeta?: CustomSiteMeta }>,
+	siteId: string,
+	directMeta?: CustomSiteMeta
+): CustomSiteMeta | undefined {
+	if (directMeta?.name?.trim()) return directMeta;
+	const mirror = admins[SITE_META_PREFIX + siteId];
+	if (!mirror?.adminName?.trim()) return undefined;
+	let parsed: { description?: string; url?: string; category?: SiteCategory } = {};
+	try {
+		if (mirror.role) parsed = JSON.parse(mirror.role);
+	} catch {}
+	return {
+		name: mirror.adminName.trim(),
+		description: parsed.description?.trim() || undefined,
+		url: parsed.url?.trim() || undefined,
+		image: mirror.avatarUrl?.trim() || undefined,
+		category: parsed.category || 'קהילה'
+	};
 }
 
 /** בניית שורות הפאנל: אתרי SITES המנוהלים + תפקידים שלמים שנוצרו דינמית בשרת */
@@ -86,14 +110,16 @@ export function buildManagedSiteRows(admins: SiteAdminsMap) {
 
 	const customRows: Array<FreedomSite & { admin: ReturnType<typeof formatAdmin> }> = [];
 	for (const [siteId, a] of Object.entries(admins)) {
-		if (knownIds.has(siteId) || !a) continue;
-		const meta = a.siteMeta;
+		if (siteId.startsWith(SITE_META_PREFIX) || knownIds.has(siteId) || !a) continue;
+		const meta = extractCustomSiteMeta(admins, siteId, a.siteMeta);
+		const rawImg = meta?.image?.trim() || '';
+		const image = rawImg ? displayAvatarUrl(SITE_META_PREFIX + siteId, rawImg) : undefined;
 		customRows.push({
 			id: siteId,
 			name: meta?.name?.trim() || a.role?.trim() || siteId,
 			description: meta?.description?.trim() || '',
 			url: meta?.url?.trim() || '',
-			image: meta?.image?.trim() || undefined,
+			image,
 			category: meta?.category || 'קהילה',
 			admin: formatAdmin(siteId, a)
 		});
@@ -164,14 +190,36 @@ async function putSiteAdmin(jwt: string, siteId: string, admin: SiteAdmin | null
 	invalidateCaches();
 }
 
+/** סנכרון מראת מטא-דאטה ציבורית תחת __meta__<siteId> כדי ש-GET /api/site-admins/public יחזיר גם שם/תיאור/תמונה */
+export async function syncSiteMetaMirror(jwt: string, siteId: string, meta: CustomSiteMeta): Promise<void> {
+	await putSiteAdmin(jwt, SITE_META_PREFIX + siteId, {
+		adminEmail: '',
+		adminName: meta.name,
+		role: JSON.stringify({
+			description: meta.description || undefined,
+			url: meta.url || undefined,
+			category: meta.category || 'קהילה'
+		}),
+		avatarUrl: meta.image || undefined,
+		updatedAt: new Date().toISOString(),
+		updatedBy: 'meta-sync'
+	});
+}
+
 /** מינוי/עדכון אדמין לאתר */
 export async function setSiteAdmin(jwt: string, siteId: string, admin: SiteAdmin): Promise<void> {
 	await putSiteAdmin(jwt, siteId, admin);
+	if (!siteId.startsWith(SITE_META_PREFIX) && admin.siteMeta?.name?.trim()) {
+		await syncSiteMetaMirror(jwt, siteId, admin.siteMeta);
+	}
 }
 
 /** ביטול מינוי אדמין לאתר */
 export async function removeSiteAdmin(jwt: string, siteId: string): Promise<void> {
 	await putSiteAdmin(jwt, siteId, null);
+	if (!siteId.startsWith(SITE_META_PREFIX)) {
+		await putSiteAdmin(jwt, SITE_META_PREFIX + siteId, null).catch(() => {});
+	}
 }
 
 // ============================================================
@@ -309,7 +357,8 @@ export async function isNetworkAdmin(
 	if (!e && !userDigits) return false;
 	try {
 		const { admins } = await getPublicSiteAdmins();
-		const matchedInMap = Object.values(admins).some((a) => {
+		const matchedInMap = Object.entries(admins).some(([siteId, a]) => {
+			if (siteId.startsWith(SITE_META_PREFIX)) return false;
 			if (e && a.adminEmail?.trim().toLowerCase() === e) return true;
 			const aDigits = normalizePhone(a.phone);
 			if (userDigits && aDigits && aDigits === userDigits) return true;

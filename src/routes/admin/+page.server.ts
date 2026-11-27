@@ -10,7 +10,9 @@ import {
 	isNetworkAdmin,
 	DEFAULT_SITE_AVATARS,
 	buildManagedSiteRows,
-	isValidCustomSiteId
+	isValidCustomSiteId,
+	SITE_META_PREFIX,
+	syncSiteMetaMirror
 } from '$lib/server/siteAdmins';
 import { gravatarUrl } from '$lib/server/gravatar';
 import type { PageServerLoad, Actions } from './$types';
@@ -139,6 +141,12 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 					cur.adminName = orig.adminName;
 					cur.role = orig.role;
 					if (finalAvatar) cur.avatarUrl = finalAvatar;
+				}
+			}
+			// סנכרון מראת מטא-דאטה ציבורית עבור תפקידים מותאמים אישית שכבר נוצרו לפני הוספת המראה
+			for (const [sid, a] of Object.entries(admins)) {
+				if (!sid.startsWith(SITE_META_PREFIX) && a?.siteMeta?.name && !admins[SITE_META_PREFIX + sid]) {
+					syncSiteMetaMirror(jwt, sid, a.siteMeta).catch(() => {});
 				}
 			}
 			return {
