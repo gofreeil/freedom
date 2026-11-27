@@ -179,6 +179,8 @@ export const actions: Actions = {
 		const role = String(form.get('role') ?? '').trim();
 		const avatarUrl = String(form.get('avatarUrl') ?? '').trim();
 		const siteImage = String(form.get('siteImage') ?? '').trim();
+		const siteNameInput = String(form.get('siteName') ?? '').trim();
+		const siteUrlInput = String(form.get('siteUrl') ?? '').trim();
 		const phone = String(form.get('phone') ?? '').trim();
 		const communityId = String(form.get('communityId') ?? '').trim();
 
@@ -218,9 +220,22 @@ export const actions: Actions = {
 			keptAvatar = DEFAULT_SITE_AVATARS[siteId];
 		}
 
-		const updatedMeta = siteImage
-			? { ...(existingSiteMeta ?? { name: getSite(siteId)?.name ?? siteId }), image: siteImage }
-			: existingSiteMeta;
+		const knownSite = getSite(siteId);
+		const shouldSaveMeta =
+			!!existingSiteMeta ||
+			!!siteImage ||
+			!knownSite ||
+			(!!siteNameInput && siteNameInput !== knownSite.name) ||
+			(!!siteUrlInput && siteUrlInput !== knownSite.url);
+
+		const updatedMeta = shouldSaveMeta
+			? {
+					...(existingSiteMeta ?? { name: knownSite?.name ?? siteId }),
+					...(siteNameInput ? { name: siteNameInput } : {}),
+					...(siteUrlInput ? { url: siteUrlInput } : {}),
+					...(siteImage ? { image: siteImage } : {})
+				}
+			: undefined;
 
 		try {
 			await setSiteAdmin(jwt, siteId, {

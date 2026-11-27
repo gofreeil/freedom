@@ -46,6 +46,10 @@
 	let phone = $state(site.admin?.phone ?? '');
 	// svelte-ignore state_referenced_locally
 	let communityId = $state(site.admin?.communityId ?? '');
+	// svelte-ignore state_referenced_locally
+	let siteNameVal = $state(site.name ?? '');
+	// svelte-ignore state_referenced_locally
+	let siteUrlVal = $state(site.url ?? '');
 
 	// סנכרון אם הנתונים מתעדכנים מבחוץ (למשל אחרי הכתרה במודאל)
 	$effect(() => {
@@ -270,6 +274,8 @@
 		<input type="hidden" name="adminEmail" value={email} />
 		<input type="hidden" name="phone" value={phone} />
 		<input type="hidden" name="communityId" value={communityId} />
+		<input type="hidden" name="siteName" value={siteNameVal} />
+		<input type="hidden" name="siteUrl" value={siteUrlVal} />
 	{/if}
 
 	<!-- תמונת האדמין (בצד ימין; בלי padding אנכי — כך העיגול לא מגביה את השורה) -->
@@ -353,14 +359,25 @@
 
 	<!-- תפקיד / הערה — ומעל המסגרת שם האתר בכחול, צמוד לקצה השמאלי -->
 	<div class="min-w-0">
-		<a
-			href={site.url}
-			target="_blank"
-			rel="noopener"
-			class="-ml-[26px] mb-1 block truncate text-left text-sm font-bold text-sky-400 transition hover:text-sky-300 hover:underline"
-		>
-			{site.name}
-		</a>
+		{#if editMode}
+			<input
+				name="siteName"
+				bind:value={siteNameVal}
+				onchange={autoSave}
+				placeholder="שם האתר / תפקיד"
+				aria-label="שם האתר או התפקיד"
+				class="-ml-[26px] mb-1 block w-full rounded-md border border-sky-400/30 bg-[#1b2335] px-2 py-0.5 text-left text-sm font-bold text-sky-400 focus:border-sky-400 focus:outline-none"
+			/>
+		{:else}
+			<a
+				href={siteUrlVal || '#'}
+				target={siteUrlVal ? '_blank' : undefined}
+				rel={siteUrlVal ? 'noopener' : undefined}
+				class="-ml-[26px] mb-1 block truncate text-left text-sm font-bold text-sky-400 transition hover:text-sky-300 hover:underline"
+			>
+				{siteNameVal}
+			</a>
+		{/if}
 		<input
 			name="role"
 			bind:value={role}
@@ -525,6 +542,15 @@
 				aria-label="מזהה המשתמש בקהילה בשכונה"
 				dir="ltr"
 				class="{inputCls} max-w-[190px] text-right"
+			/>
+			<input
+				name="siteUrl"
+				bind:value={siteUrlVal}
+				onchange={autoSave}
+				placeholder="כתובת האתר (URL)"
+				aria-label="כתובת האתר"
+				dir="ltr"
+				class="{inputCls} max-w-[220px] text-right"
 			/>
 		</div>
 	{/if}
