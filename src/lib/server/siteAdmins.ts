@@ -9,6 +9,21 @@
 // ============================================================
 
 import { STRAPI_URL } from './strapiAuth';
+import { SITES, type FreedomSite, type SiteCategory } from '$lib/sitesData';
+import { displayAvatarUrl } from './avatarProxy';
+
+export interface CustomSiteMeta {
+	/** שם התפקיד/אתר בעברית */
+	name: string;
+	/** שורת תיאור קצרה */
+	description?: string;
+	/** כתובת האתר */
+	url?: string;
+	/** תמונת האתר (נתיב מ-/images/... או data URL / קישור) */
+	image?: string;
+	/** קטגוריה */
+	category?: SiteCategory;
+}
 
 export interface SiteAdmin {
 	/** אימייל האדמין שמונה לאתר (זהות אחידה מול ה-Strapi המשותף) */
@@ -23,10 +38,66 @@ export interface SiteAdmin {
 	communityId?: string;
 	/** קישור לתמונת אווטאר מפורשת או data URL מהקרופר; אם ריק — נגזר מהאימייל (Gravatar) */
 	avatarUrl?: string;
+	/** מטא-דאטה של תפקיד/אתר שלם שנוצר דינמית מהפאנל (אינו מופיע ב-sitesData הסטטי) */
+	siteMeta?: CustomSiteMeta;
 	/** מתי מונה (ISO) */
 	updatedAt: string;
 	/** מי מינה (אימייל הסופר-אדמין) */
 	updatedBy: string;
+}
+
+export function isValidCustomSiteId(id: string): boolean {
+	return /^[a-z0-9][a-z0-9_-]{1,63}$/.test(id.trim());
+}
+
+/** בניית שורות הפאנל: אתרי SITES המנוהלים + תפקידים שלמים שנוצרו דינמית בשרת */
+export function buildManagedSiteRows(admins: SiteAdminsMap) {
+	const managed = SITES.filter((s) => s.id !== 'freedom_store');
+	const knownIds = new Set(SITES.map((s) => s.id));
+
+	const formatAdmin = (siteId: string, a: SiteAdmin | null) => {
+		if (!a) return null;
+		let avatar = '';
+		if (a.avatarUrl && !a.avatarUrl.includes('googleusercontent')) {
+			avatar = displayAvatarUrl(siteId, a.avatarUrl);
+		} else if (DEFAULT_SITE_AVATARS[siteId]) {
+			avatar = DEFAULT_SITE_AVATARS[siteId];
+		} else if (a.avatarUrl) {
+			avatar = a.avatarUrl;
+		}
+		return {
+			adminEmail: a.adminEmail ?? '',
+			adminName: a.adminName ?? '',
+			role: a.role ?? '',
+			phone: a.phone ?? '',
+			communityId: a.communityId ?? '',
+			updatedAt: a.updatedAt ?? '',
+			updatedBy: a.updatedBy ?? '',
+			avatar
+		};
+	};
+
+	const baseRows = managed.map((s) => ({
+		...s,
+		admin: formatAdmin(s.id, admins[s.id] ?? null)
+	}));
+
+	const customRows: Array<FreedomSite & { admin: ReturnType<typeof formatAdmin> }> = [];
+	for (const [siteId, a] of Object.entries(admins)) {
+		if (knownIds.has(siteId) || !a) continue;
+		const meta = a.siteMeta;
+		customRows.push({
+			id: siteId,
+			name: meta?.name?.trim() || a.role?.trim() || siteId,
+			description: meta?.description?.trim() || '',
+			url: meta?.url?.trim() || '',
+			image: meta?.image?.trim() || undefined,
+			category: meta?.category || 'קהילה',
+			admin: formatAdmin(siteId, a)
+		});
+	}
+
+	return [...baseRows, ...customRows];
 }
 
 export type SiteAdminsMap = Record<string, SiteAdmin>;
@@ -120,6 +191,7 @@ export interface PublicSiteAdmin {
 	adminEmail?: string;
 	phone?: string;
 	avatarUrl?: string;
+	siteMeta?: CustomSiteMeta;
 }
 
 export type PublicSiteAdminsMap = Record<string, PublicSiteAdmin>;

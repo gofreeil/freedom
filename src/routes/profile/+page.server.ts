@@ -1,41 +1,12 @@
 import { redirect } from '@sveltejs/kit';
 import { isSuperAdmin } from '$lib/server/superAdmin';
-import { isNetworkAdmin, getSiteAdmins, type SiteAdminsMap, DEFAULT_SITE_AVATARS } from '$lib/server/siteAdmins';
+import { isNetworkAdmin, getSiteAdmins, type SiteAdminsMap, buildManagedSiteRows } from '$lib/server/siteAdmins';
 import { canVoteBudget } from '$lib/server/budgetAccess';
 import { CLUB_BUSINESS_TRACK, CLUB_INTRO, CLUB_MOTTO, CLUB_PRICE, CLUB_SECTIONS, CLUB_TOTAL_SAVING } from '$lib/server/clubBenefits';
-import { SITES } from '$lib/sitesData';
-import { displayAvatarUrl } from '$lib/server/avatarProxy';
 import type { PageServerLoad } from './$types';
 
-const MANAGED_SITES = SITES.filter((s) => s.id !== 'freedom_store');
-
 function siteRows(admins: SiteAdminsMap) {
-	return MANAGED_SITES.map((s) => {
-		const a = admins[s.id] ?? null;
-		let avatar = '';
-		if (a?.avatarUrl && !a.avatarUrl.includes('googleusercontent')) {
-			avatar = displayAvatarUrl(s.id, a.avatarUrl);
-		} else if (DEFAULT_SITE_AVATARS[s.id]) {
-			avatar = DEFAULT_SITE_AVATARS[s.id];
-		} else if (a?.avatarUrl) {
-			avatar = a.avatarUrl;
-		}
-		return {
-			...s,
-			admin: a
-				? {
-						adminEmail: a.adminEmail ?? '',
-						adminName: a.adminName ?? '',
-						role: a.role ?? '',
-						phone: a.phone ?? '',
-						communityId: a.communityId ?? '',
-						updatedAt: a.updatedAt ?? '',
-						updatedBy: a.updatedBy ?? '',
-						avatar
-					}
-				: null
-		};
-	});
+	return buildManagedSiteRows(admins);
 }
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {

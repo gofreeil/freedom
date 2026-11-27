@@ -48,10 +48,12 @@
 	// סדר האתרים — מגיע מהשרת יחד עם המינויים, כלומר בדיוק הסידור שהסופר-אדמין
 	// עשה בפאנל. ריק = הסדר של sitesData.
 	let order = $state<string[]>([]);
+	let customSites = $state<FreedomSite[]>([]);
 	const sites = $derived.by(() => {
-		if (!order.length) return managed;
+		const all = [...managed, ...customSites];
+		if (!order.length) return all;
 		const pos = new Map(order.map((id, i) => [id, i]));
-		return [...managed].sort((a, b) => (pos.get(a.id) ?? Infinity) - (pos.get(b.id) ?? Infinity));
+		return [...all].sort((a, b) => (pos.get(a.id) ?? Infinity) - (pos.get(b.id) ?? Infinity));
 	});
 
 	onMount(async () => {
@@ -61,8 +63,10 @@
 			const json = (await res.json()) as {
 				admins: Record<string, PublicAdmin>;
 				order?: string[];
+				customSites?: FreedomSite[];
 			};
 			if (Array.isArray(json.order)) order = json.order;
+			if (Array.isArray(json.customSites)) customSites = json.customSites;
 			admins = json.admins ?? {};
 		} catch {
 			loadFailed = true;

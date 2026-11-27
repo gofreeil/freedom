@@ -11,6 +11,7 @@
 import { json } from '@sveltejs/kit';
 import { getPublicSiteAdmins, DEFAULT_SITE_AVATARS } from '$lib/server/siteAdmins';
 import { displayAvatarUrl } from '$lib/server/avatarProxy';
+import { SITES, type FreedomSite } from '$lib/sitesData';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ setHeaders }) => {
@@ -39,6 +40,21 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
 		])
 	);
 
+	const knownIds = new Set(SITES.map((s) => s.id));
+	const customSites: FreedomSite[] = [];
+	for (const [siteId, a] of Object.entries(payload.admins)) {
+		if (knownIds.has(siteId) || !a) continue;
+		const meta = a.siteMeta;
+		customSites.push({
+			id: siteId,
+			name: meta?.name?.trim() || a.role?.trim() || siteId,
+			description: meta?.description?.trim() || '',
+			url: meta?.url?.trim() || '',
+			image: meta?.image?.trim() || undefined,
+			category: meta?.category || 'קהילה'
+		});
+	}
+
 	setHeaders({ 'cache-control': 'public, max-age=60' });
-	return json({ admins, order: payload.order });
+	return json({ admins, order: payload.order, customSites });
 };

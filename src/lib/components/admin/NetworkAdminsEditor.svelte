@@ -9,6 +9,7 @@
 	import SiteAdminRow from '$lib/components/admin/SiteAdminRow.svelte';
 	import NetworkUsersTab from '$lib/components/admin/NetworkUsersTab.svelte';
 	import UserCrownModal from '$lib/components/admin/UserCrownModal.svelte';
+	import NewFullRoleModal, { type CreatedFullRole } from '$lib/components/admin/NewFullRoleModal.svelte';
 	import { SITE_ROWS_GRID_COLS } from '$lib/components/admin/sitesGrid';
 
 	type Panel = {
@@ -25,9 +26,10 @@
 	// מצב עריכה לטבלת האתרים
 	let editMode = $state(false);
 
-	// מודאל הכתרה
+	// מודאל הכתרה ומודאל יצירת תפקיד שלם
 	let crownTargetSite = $state<any | null>(null);
 	let showNewRoleModal = $state(false);
+	let showNewFullRoleModal = $state(false);
 
 	// סדר האתרים
 	const ORDER_KEY = 'admin:sitesOrder';
@@ -106,6 +108,32 @@
 				updatedAt: new Date().toISOString(),
 				updatedBy: 'me'
 			};
+		}
+	}
+
+	function handleFullRoleCreated(res: CreatedFullRole) {
+		if (!panel) return;
+		const newRow = {
+			...res.site,
+			admin: {
+				adminName: res.adminName,
+				adminEmail: res.adminEmail,
+				phone: res.phone,
+				role: res.role,
+				communityId: res.communityId ?? '',
+				avatar: res.avatar ?? '',
+				updatedAt: new Date().toISOString(),
+				updatedBy: 'me'
+			}
+		};
+		panel = {
+			...panel,
+			sites: [...panel.sites, newRow]
+		};
+		if (order.length && !order.includes(res.site.id)) {
+			const nextOrder = [...order, res.site.id];
+			order = nextOrder;
+			saveOrder(nextOrder);
 		}
 	}
 
@@ -217,6 +245,15 @@
 				>
 					<span>✨</span> מנה אדמין לתפקיד
 				</button>
+
+				<button
+					type="button"
+					onclick={() => (showNewFullRoleModal = true)}
+					disabled={!panel}
+					class="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-3.5 py-1.5 text-xs font-bold text-emerald-200 transition hover:bg-emerald-500/25 disabled:opacity-40"
+				>
+					<span>➕</span> הוסף תפקיד שלם
+				</button>
 			</div>
 
 			{#if orderError}
@@ -249,6 +286,18 @@
 		onassigned={(res) => {
 			handleAssigned(res);
 			showNewRoleModal = false;
+		}}
+	/>
+{/if}
+
+<!-- מודאל הוספת תפקיד שלם (אתר + תיאור + אדמין) -->
+{#if showNewFullRoleModal}
+	<NewFullRoleModal
+		existingIds={sites.map((s) => s.id)}
+		onclose={() => (showNewFullRoleModal = false)}
+		oncreated={(res) => {
+			handleFullRoleCreated(res);
+			showNewFullRoleModal = false;
 		}}
 	/>
 {/if}

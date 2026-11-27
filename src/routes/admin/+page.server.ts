@@ -1,5 +1,5 @@
 import { error, fail, redirect } from '@sveltejs/kit';
-import { SITES, getSite } from '$lib/sitesData';
+import { getSite } from '$lib/sitesData';
 import type { SiteAdminsMap } from '$lib/server/siteAdmins';
 import { isSuperAdmin } from '$lib/server/superAdmin';
 import {
@@ -8,10 +8,11 @@ import {
 	removeSiteAdmin,
 	setSiteAdminsOrder,
 	isNetworkAdmin,
-	DEFAULT_SITE_AVATARS
+	DEFAULT_SITE_AVATARS,
+	buildManagedSiteRows,
+	isValidCustomSiteId
 } from '$lib/server/siteAdmins';
 import { gravatarUrl } from '$lib/server/gravatar';
-import { displayAvatarUrl } from '$lib/server/avatarProxy';
 import type { PageServerLoad, Actions } from './$types';
 
 // /admin — "ניהול הרשת": פתוח לסופר-אדמין ולאדמיני אתרי הרשת בלבד. לוח המשימות
@@ -31,34 +32,9 @@ async function requireSuperAdmin(locals: App.Locals) {
 	return { user: session.user, jwt };
 }
 
-// חנות החירות לא מנוהלת בדף הזה
-const MANAGED_SITES = SITES.filter((s) => s.id !== 'freedom_store');
-
 /** שורות הטבלה — פרטי האתר + האדמין שלו, בלי התמונה המוטמעת (ראו avatarProxy) */
 function siteRows(admins: SiteAdminsMap) {
-	return MANAGED_SITES.map((s) => {
-		const a = admins[s.id] ?? null;
-		return {
-			...s,
-			admin: a
-				? {
-						adminEmail: a.adminEmail ?? '',
-						adminName: a.adminName ?? '',
-						role: a.role ?? '',
-						phone: a.phone ?? '',
-						communityId: a.communityId ?? '',
-						updatedAt: a.updatedAt ?? '',
-						updatedBy: a.updatedBy ?? '',
-						// avatar = כתובת התמונה לתצוגה (פרוקסי אם הועלתה תמונה, אחרת Gravatar
-						// לפי האימייל). ה-data URL עצמו נשאר בשרת ולא מועמס על הדף.
-						avatar:
-							(a.avatarUrl && !a.avatarUrl.includes('googleusercontent'))
-								? displayAvatarUrl(s.id, a.avatarUrl)
-								: (DEFAULT_SITE_AVATARS[s.id] || a.avatarUrl || '')
-					}
-				: null
-		};
-	});
+	return buildManagedSiteRows(admins);
 }
 
 const ORIGINAL_SITE_ROLES: Record<string, { adminName: string; role: string; avatarUrl?: string }> = {
@@ -137,7 +113,7 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 		}
 		return {
 			panel: Promise.resolve({
-				order: MANAGED_SITES.map((s) => s.id),
+				order: siteRows(mockAdmins).map((s) => s.id),
 				sites: siteRows(mockAdmins),
 				error: ''
 			})
@@ -197,7 +173,10 @@ export const actions: Actions = {
 		const phone = String(form.get('phone') ?? '').trim();
 		const communityId = String(form.get('communityId') ?? '').trim();
 
-		if (!getSite(siteId)) return fail(400, { siteId, error: 'אתר לא מוכר' });
+		const isKnownSite = !!getSite(siteId);
+		if (!isKnownSite && !isValidCustomSiteId(siteId)) {
+			return fail(400, { siteId, error: 'אתר לא מוכר' });
+		}
 		if (!adminName) return fail(400, { siteId, error: 'צריך למלא שם אדמין' });
 		// אימייל כבר לא מוצג בטופס — ערך קיים עובר כשדה חבוי; אם יש, מוודאים תקינות
 		if (adminEmail && !emailRe.test(adminEmail)) return fail(400, { siteId, error: 'כתובת אימייל לא תקינה' });
@@ -216,15 +195,18 @@ export const actions: Actions = {
 		// הדף לא מחזיק יותר את התמונה המוטמעת, ולכן שדה ריק פירושו "התמונה לא
 		// שונתה" — לוקחים את הקיימת מהשרת במקום למחוק אותה בכל שמירת שדה.
 		let keptAvatar = '';
-		if (!avatarUrl) {
-			try {
-				keptAvatar = (await getSiteAdmins(jwt)).admins[siteId]?.avatarUrl ?? '';
-			} catch {
-				keptAvatar = '';
+		let existingSiteMeta: SiteAdminsMap[string]['siteMeta'];
+		try {
+			const existing = (await getSiteAdmins(jwt)).admins[siteId];
+			existingSiteMeta = existing?.siteMeta;
+			if (!avatarUrl) {
+				keptAvatar = existing?.avatarUrl ?? '';
 			}
-			if (!keptAvatar && DEFAULT_SITE_AVATARS[siteId]) {
-				keptAvatar = DEFAULT_SITE_AVATARS[siteId];
-			}
+		} catch {
+			keptAvatar = '';
+		}
+		if (!avatarUrl && !keptAvatar && DEFAULT_SITE_AVATARS[siteId]) {
+			keptAvatar = DEFAULT_SITE_AVATARS[siteId];
 		}
 
 		try {
@@ -235,6 +217,7 @@ export const actions: Actions = {
 				phone: phone || undefined,
 				communityId: communityId || undefined,
 				avatarUrl: avatarUrl || keptAvatar || undefined,
+				siteMeta: existingSiteMeta,
 				updatedAt: new Date().toISOString(),
 				updatedBy: me.email ?? ''
 			});
@@ -250,7 +233,7 @@ export const actions: Actions = {
 		const { jwt } = await requireSuperAdmin(locals);
 		const form = await request.formData();
 		const siteId = String(form.get('siteId') ?? '');
-		if (!getSite(siteId)) return fail(400, { siteId, error: 'אתר לא מוכר' });
+		if (!getSite(siteId) && !isValidCustomSiteId(siteId)) return fail(400, { siteId, error: 'אתר לא מוכר' });
 		try {
 			await removeSiteAdmin(jwt, siteId);
 		} catch (e) {
@@ -272,7 +255,7 @@ export const actions: Actions = {
 			return fail(400, { error: 'סדר לא תקין' });
 		}
 		if (!Array.isArray(ids)) return fail(400, { error: 'סדר לא תקין' });
-		const order = ids.filter((id): id is string => typeof id === 'string' && !!getSite(id));
+		const order = ids.filter((id): id is string => typeof id === 'string' && (!!getSite(id) || isValidCustomSiteId(id)));
 		try {
 			await setSiteAdminsOrder(jwt, order);
 		} catch (e) {

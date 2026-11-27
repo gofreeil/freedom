@@ -6,7 +6,7 @@
 import { json } from '@sveltejs/kit';
 import { isSuperAdmin } from '$lib/server/superAdmin';
 import { STRAPI_URL } from '$lib/server/strapiAuth';
-import { setSiteAdmin, getSiteAdmins, normalizePhone, DEFAULT_SITE_AVATARS } from '$lib/server/siteAdmins';
+import { setSiteAdmin, getSiteAdmins, normalizePhone, DEFAULT_SITE_AVATARS, type CustomSiteMeta } from '$lib/server/siteAdmins';
 import { SITE_PREDEFINED_ROLES, type StrapiUserItem } from '$lib/networkRoles';
 import type { RequestHandler } from './$types';
 
@@ -108,6 +108,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		communityId?: string;
 		avatarUrl?: string;
 		appRole?: string;
+		siteMeta?: CustomSiteMeta;
 	};
 
 	try {
@@ -128,15 +129,31 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!siteId) return json({ error: 'siteId חסר' }, { status: 400 });
 	if (!adminName) return json({ error: 'שם אדמין חסר' }, { status: 400 });
 
+	const cleanSiteMeta: CustomSiteMeta | undefined =
+		body.siteMeta && typeof body.siteMeta === 'object' && String(body.siteMeta.name ?? '').trim()
+			? {
+					name: String(body.siteMeta.name).trim(),
+					description: String(body.siteMeta.description ?? '').trim() || undefined,
+					url: String(body.siteMeta.url ?? '').trim() || undefined,
+					image: String(body.siteMeta.image ?? '').trim() || undefined,
+					category: body.siteMeta.category || 'קהילה'
+				}
+			: undefined;
+
 	try {
-		// שמירה על התמונה הקיימת של האתר — לא דורסים תמונות בשיוך משתמש!
+		// שמירה על התמונה והמטא-דאטה הקיימים של האתר — לא דורסים בשיוך משתמש!
 		let keptAvatar: string | undefined;
+		let existingMeta: CustomSiteMeta | undefined;
 		try {
 			const existingData = await getSiteAdmins(auth.jwt);
-			keptAvatar = existingData.admins[siteId]?.avatarUrl || DEFAULT_SITE_AVATARS[siteId] || undefined;
+			const existing = existingData.admins[siteId];
+			keptAvatar = existing?.avatarUrl || DEFAULT_SITE_AVATARS[siteId] || undefined;
+			existingMeta = existing?.siteMeta;
 		} catch {
 			keptAvatar = DEFAULT_SITE_AVATARS[siteId] || undefined;
 		}
+
+		const finalSiteMeta = cleanSiteMeta ?? existingMeta;
 
 		// 1. שמירה במפת siteAdmins (שמירה בשרת המשותף)
 		await setSiteAdmin(auth.jwt, siteId, {
@@ -146,6 +163,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			phone: phone || undefined,
 			communityId: communityId || undefined,
 			avatarUrl: avatarUrl || keptAvatar,
+			siteMeta: finalSiteMeta,
 			updatedAt: new Date().toISOString(),
 			updatedBy: auth.email
 		});
@@ -175,7 +193,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		return json({ ok: true, siteId, adminName, adminEmail, phone, role });
+		return json({ ok: true, siteId, adminName, adminEmail, phone, role, siteMeta: finalSiteMeta });
 	} catch (e: any) {
 		console.error('[network-users crown failed]:', e);
 		return json({ error: e?.message ?? 'שמירת המינוי נכשלה' }, { status: 502 });
