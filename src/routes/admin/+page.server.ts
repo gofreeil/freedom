@@ -144,11 +144,13 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 				}
 			}
 			// סנכרון מראת מטא-דאטה ציבורית עבור תפקידים מותאמים אישית שכבר נוצרו לפני הוספת המראה
+			const mirrorJobs: Promise<void>[] = [];
 			for (const [sid, a] of Object.entries(admins)) {
 				if (!sid.startsWith(SITE_META_PREFIX) && a?.siteMeta?.name && !admins[SITE_META_PREFIX + sid]) {
-					syncSiteMetaMirror(jwt, sid, a.siteMeta).catch(() => {});
+					mirrorJobs.push(syncSiteMetaMirror(jwt, sid, a.siteMeta).catch(() => {}));
 				}
 			}
+			if (mirrorJobs.length) await Promise.all(mirrorJobs);
 			return {
 				order,
 				sites: siteRows(admins),

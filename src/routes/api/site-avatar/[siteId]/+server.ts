@@ -5,7 +5,7 @@
 // עצמו יישאר קל והתמונה תיטען במקביל ותישמר במטמון הדפדפן. ראו avatarProxy.ts.
 // ============================================================
 import { error } from '@sveltejs/kit';
-import { getPublicSiteAdmins } from '$lib/server/siteAdmins';
+import { getPublicSiteAdmins, SITE_META_PREFIX } from '$lib/server/siteAdmins';
 import { avatarVersion, decodeDataImage, isDataImage } from '$lib/server/avatarProxy';
 import type { RequestHandler } from './$types';
 
@@ -17,7 +17,11 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 		throw error(502, 'שגיאה בטעינת תמונת האחראי');
 	}
 
-	const raw = (admins[params.siteId]?.avatarUrl ?? '').trim();
+	let raw = (admins[params.siteId]?.avatarUrl ?? '').trim();
+	if (!raw && params.siteId.startsWith(SITE_META_PREFIX)) {
+		const baseId = params.siteId.slice(SITE_META_PREFIX.length);
+		raw = (admins[baseId]?.siteMeta?.image ?? '').trim();
+	}
 	if (!raw) throw error(404, 'אין תמונה');
 	// קישור חיצוני (Gravatar וכו') — מפנים אליו במקום להגיש אותו
 	if (!isDataImage(raw)) return new Response(null, { status: 302, headers: { location: raw } });
