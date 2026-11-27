@@ -156,6 +156,25 @@ export async function issueSsoJwtViaBackend(email: string): Promise<string | nul
 }
 
 /**
+ * בסוף הרשמה/כניסה עם Google או Facebook: שומר את התמונה והשם על רשומת המשתמש המשותפת,
+ * כדי שיוצגו בכל אתרי הרשת (וגם בחירות TV) במקום האות הראשונה של השם.
+ * הבאקאנד ממלא רק שדות ריקים; כשל לא מעכב את הכניסה.
+ */
+export async function saveOAuthProfile(jwt: string, avatarUrl?: string | null, name?: string | null): Promise<void> {
+	if (!jwt || (!avatarUrl && !name)) return;
+	try {
+		await fetch(STRAPI_URL + '/api/external-sso/my-profile', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
+			body: JSON.stringify({ avatarUrl: avatarUrl ?? '', name: name ?? '' }),
+			signal: AbortSignal.timeout(4_000)
+		});
+	} catch {
+		/* ננסה שוב בכניסה הבאה */
+	}
+}
+
+/**
  * מחזיר JWT של ה-Strapi המשותף למשתמש ברשימה המאוחדת, בלי סיסמה שהמשתמש מקליד.
  * שלושה מסלולים, מהזול ליקר (אותו דפוס כמו באתר הקהילה):
  *   1. login עם seed דטרמיניסטי — עובד אם החשבון נוצר תחת אותו stableId.

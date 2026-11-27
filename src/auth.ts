@@ -10,7 +10,8 @@ import {
 	jwtExpSeconds,
 	readCookie,
 	bestStrapiName,
-	friendlyName
+	friendlyName,
+	saveOAuthProfile
 } from '$lib/server/strapiAuth';
 import { syncAvatar } from '$lib/server/userAvatar';
 
@@ -165,6 +166,8 @@ export const { handle, signIn, signOut } = !AUTH_SECRET
 					const tempId = `${account.provider}_${account.providerAccountId}`;
 					const jwt = await getOrCreateStrapiJwt(user.email, tempId, AUTH_SECRET);
 					if (jwt) (user as { strapiJwt?: string }).strapiJwt = jwt;
+					// תמונת Google/Facebook והשם נשמרים ברשומה המשותפת (אם ריקה)
+					if (jwt) await saveOAuthProfile(jwt, user.image, user.name);
 					// מזהה יציב כמו באתר הקהילה: user.id = ה-seed שאיתו הונפק החשבון ב-Strapi.
 					// ברירת המחדל של Auth.js היא UUID אקראי חדש בכל התחברות — הרענון היומי
 					// (jwt callback) היה מנסה seed שלא תואם ונכשל תמיד.
