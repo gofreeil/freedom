@@ -153,6 +153,8 @@
 		}
 	}
 
+	let pointerDownOnBackdrop = false;
+
 	onMount(() => {
 		// טעינה ראשונית של רשימת משתמשים אם אין חיפוש
 		fetchUsers('');
@@ -163,8 +165,12 @@
 	class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 backdrop-blur-sm"
 	role="dialog"
 	aria-modal="true"
+	onpointerdown={(e) => {
+		pointerDownOnBackdrop = e.target === e.currentTarget;
+	}}
 	onclick={(e) => {
-		if (e.target === e.currentTarget) onclose();
+		if (pointerDownOnBackdrop && e.target === e.currentTarget) onclose();
+		pointerDownOnBackdrop = false;
 	}}
 >
 	<div

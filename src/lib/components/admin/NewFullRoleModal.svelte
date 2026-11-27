@@ -214,6 +214,8 @@
 		}
 	}
 
+	let pointerDownOnBackdrop = false;
+
 	const inputCls =
 		'w-full rounded-xl border border-white/10 bg-[#1b2335] px-3 py-2 text-xs text-white placeholder-gray-500 focus:border-sky-500 focus:outline-none';
 </script>
@@ -223,8 +225,12 @@
 	role="dialog"
 	aria-modal="true"
 	tabindex="-1"
+	onpointerdown={(e) => {
+		pointerDownOnBackdrop = e.target === e.currentTarget;
+	}}
 	onclick={(e) => {
-		if (e.target === e.currentTarget) onclose();
+		if (pointerDownOnBackdrop && e.target === e.currentTarget) onclose();
+		pointerDownOnBackdrop = false;
 	}}
 	onkeydown={(e) => {
 		if (e.key === 'Escape') onclose();
