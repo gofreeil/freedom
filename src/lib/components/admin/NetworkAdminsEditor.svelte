@@ -255,7 +255,7 @@
 					disabled={!panel}
 					class="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-3.5 py-1.5 text-xs font-bold text-emerald-200 transition hover:bg-emerald-500/25 disabled:opacity-40"
 				>
-					<span>➕</span> הוסף תפקיד שלם
+					<span>➕</span> הוסף תפקיד
 				</button>
 			</div>
 
