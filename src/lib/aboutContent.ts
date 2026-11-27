@@ -25,7 +25,6 @@ export interface AboutText {
 	register: string;
 	login: string;
 	contact: string;
-	socials: { facebook: string; youtube: string; telegram: string; tiktok: string };
 }
 
 export const ABOUT_TEXT: Record<AboutLang, AboutText> = {
@@ -46,8 +45,7 @@ export const ABOUT_TEXT: Record<AboutLang, AboutText> = {
 			'מי שנרשם אצלנו מזוהה אוטומטית בכל אתרי יוצאים לחירות. בלי הרשמה חוזרת, בלי עוד סיסמה — ועם גישה מלאה לכל הפלטפורמות.',
 		register: '✨ הרשמה',
 		login: 'כבר רשומים? התחברות',
-		contact: '✉️ צרו קשר',
-		socials: { facebook: 'פייסבוק', youtube: 'יוטיוב', telegram: 'טלגרם', tiktok: 'טיקטוק' }
+		contact: '✉️ צרו קשר'
 	},
 
 	en: {
@@ -67,8 +65,7 @@ export const ABOUT_TEXT: Record<AboutLang, AboutText> = {
 			'Anyone who signs up with us is automatically recognized on every Going to Freedom site. No repeat registration, no extra password — and full access to all platforms.',
 		register: '✨ Sign up',
 		login: 'Already registered? Log in',
-		contact: '✉️ Contact us',
-		socials: { facebook: 'Facebook', youtube: 'YouTube', telegram: 'Telegram', tiktok: 'TikTok' }
+		contact: '✉️ Contact us'
 	}
 };
 

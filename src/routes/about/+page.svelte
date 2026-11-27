@@ -46,13 +46,6 @@
 		return () => observer.disconnect();
 	});
 
-	const socials = $derived([
-		{ label: tx.socials.facebook, icon: '📘', href: 'https://www.facebook.com/share/17iu4gtxZH/' },
-		{ label: tx.socials.youtube, icon: '▶️', href: 'https://www.youtube.com/@freedomhasbegun' },
-		{ label: tx.socials.telegram, icon: '✈️', href: 'https://t.me/freedomisrael' },
-		{ label: tx.socials.tiktok, icon: '🎵', href: 'https://www.tiktok.com/@yahav_anter' }
-	]);
-
 	const schemas = [
 		aboutPageSchema(),
 		organizationSchema(),
@@ -197,19 +190,6 @@
 			>
 				{tx.contact}
 			</a>
-		</div>
-
-		<div class="mt-6 flex flex-wrap items-center justify-center gap-2">
-			{#each socials as s (s.href)}
-				<a
-					href={s.href}
-					target="_blank"
-					rel="noopener noreferrer"
-					class="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-[#1b2335] px-3.5 py-1.5 text-xs font-bold text-gray-300 transition hover:bg-[#272f3f] hover:text-white"
-				>
-					<span aria-hidden="true">{s.icon}</span>{s.label}
-				</a>
-			{/each}
 		</div>
 	</section>
 </div>
