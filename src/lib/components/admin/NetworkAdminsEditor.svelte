@@ -113,18 +113,21 @@
 
 	function handleFullRoleCreated(res: CreatedFullRole) {
 		if (!panel) return;
+		const hasAdmin = !!(res.adminName || res.adminEmail || res.phone);
 		const newRow = {
 			...res.site,
-			admin: {
-				adminName: res.adminName,
-				adminEmail: res.adminEmail,
-				phone: res.phone,
-				role: res.role,
-				communityId: res.communityId ?? '',
-				avatar: res.avatar ?? '',
-				updatedAt: new Date().toISOString(),
-				updatedBy: 'me'
-			}
+			admin: hasAdmin
+				? {
+						adminName: res.adminName,
+						adminEmail: res.adminEmail,
+						phone: res.phone,
+						role: res.role,
+						communityId: res.communityId ?? '',
+						avatar: res.avatar ?? '',
+						updatedAt: new Date().toISOString(),
+						updatedBy: 'me'
+					}
+				: null
 		};
 		panel = {
 			...panel,

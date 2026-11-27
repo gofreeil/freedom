@@ -146,28 +146,21 @@
 		let communityId = '';
 		let avatarUrl = '';
 
-		if (adminMode === 'strapi') {
-			if (!selectedUser) {
-				errorMsg = 'נא לבחור משתמש מ-Strapi או לעבור להזנה ידנית';
-				return;
-			}
+		if (adminMode === 'strapi' && selectedUser) {
 			adminName = selectedUser.nickname || selectedUser.username || selectedUser.email.split('@')[0];
 			adminEmail = selectedUser.email;
 			phone = selectedUser.phone ?? '';
 			communityId = String(selectedUser.id);
 			avatarUrl = selectedUser.avatarUrl ?? '';
-		} else {
+		} else if (adminMode === 'manual') {
 			adminName = manualName.trim();
 			adminEmail = manualEmail.trim().toLowerCase();
 			phone = manualPhone.trim();
 			communityId = manualCommunityId.trim();
-			if (!adminName) {
-				errorMsg = 'נא להזין שם אדמין';
-				return;
-			}
 		}
 
-		const finalRole = roleTitle.trim() || cleanName;
+		const hasAdmin = !!(adminName || adminEmail || phone);
+		const finalRole = roleTitle.trim() || (hasAdmin ? cleanName : '');
 		const cleanUrl = siteUrl.trim();
 		const cleanDesc = siteDescription.trim();
 		const cleanImg = siteImage.trim();
@@ -352,7 +345,7 @@
 			<!-- חלק 2: האדמין ושורת תיאור התפקיד -->
 			<div class="rounded-xl border border-white/10 bg-[#0e1422] p-3.5 space-y-2.5">
 				<div class="flex flex-wrap items-center justify-between gap-2">
-					<span class="text-xs font-black text-amber-300">2. אדמין התפקיד ותיאור</span>
+					<span class="text-xs font-black text-amber-300">2. אדמין התפקיד ותיאור <span class="font-normal text-gray-400">(אופציונלי — אפשר להשאיר פנוי)</span></span>
 					<div class="flex rounded-lg border border-white/10 bg-[#161e30] p-0.5 text-[11px]">
 						<button
 							type="button"

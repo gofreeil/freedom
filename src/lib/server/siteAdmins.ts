@@ -57,6 +57,8 @@ export function buildManagedSiteRows(admins: SiteAdminsMap) {
 
 	const formatAdmin = (siteId: string, a: SiteAdmin | null) => {
 		if (!a) return null;
+		// תפקיד שנפתח ללא אדמין (רק siteMeta) יוצג כ"דרוש רכז" (admin: null)
+		if (!a.adminName?.trim() && !a.adminEmail?.trim() && !a.phone?.trim()) return null;
 		let avatar = '';
 		if (a.avatarUrl && !a.avatarUrl.includes('googleusercontent')) {
 			avatar = displayAvatarUrl(siteId, a.avatarUrl);

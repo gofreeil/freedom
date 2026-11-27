@@ -127,7 +127,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const appRole = String(body.appRole ?? '').trim();
 
 	if (!siteId) return json({ error: 'siteId חסר' }, { status: 400 });
-	if (!adminName) return json({ error: 'שם אדמין חסר' }, { status: 400 });
 
 	const cleanSiteMeta: CustomSiteMeta | undefined =
 		body.siteMeta && typeof body.siteMeta === 'object' && String(body.siteMeta.name ?? '').trim()
@@ -139,6 +138,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					category: body.siteMeta.category || 'קהילה'
 				}
 			: undefined;
+
+	if (!adminName && !cleanSiteMeta) {
+		return json({ error: 'שם אדמין חסר' }, { status: 400 });
+	}
 
 	try {
 		// שמירה על התמונה והמטא-דאטה הקיימים של האתר — לא דורסים בשיוך משתמש!
@@ -162,7 +165,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			role: role || undefined,
 			phone: phone || undefined,
 			communityId: communityId || undefined,
-			avatarUrl: avatarUrl || keptAvatar,
+			avatarUrl: adminName ? (avatarUrl || keptAvatar) : undefined,
 			siteMeta: finalSiteMeta,
 			updatedAt: new Date().toISOString(),
 			updatedBy: auth.email

@@ -24,7 +24,9 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
 	}
 
 	const admins = Object.fromEntries(
-		Object.entries(payload.admins).map(([siteId, a]) => [
+		Object.entries(payload.admins)
+			.filter(([, a]) => a.adminName?.trim() || a.adminEmail?.trim() || a.phone?.trim())
+			.map(([siteId, a]) => [
 			siteId,
 			{
 				name: a.adminName ?? '',
